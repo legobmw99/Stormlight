@@ -5,6 +5,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -20,7 +21,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
@@ -37,6 +37,33 @@ public class StormlightTickHandler {
 		EntityPlayerSP player;
 		player = Minecraft.getMinecraft().thePlayer;
 		if(player != null){
+			//Recall
+			if(Registry.Recall.isPressed()){
+				//needs to be run on server
+/*				System.out.println("Working 1");
+				if(player.getHeldItemMainhand() == (ItemStack)null){
+					System.out.println("Working 2");
+					InventoryEnderChest inv = player.getInventoryEnderChest();
+					if(inv != null){
+						System.out.println("Working 3");
+						for(int i=0; i < inv.getSizeInventory(); i++){
+							System.out.println(i);
+							if (inv.getStackInSlot(i) != (ItemStack)null){ 
+								System.out.println("Working 4");
+								if(inv.getStackInSlot(i).isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))){
+									System.out.println("Working 5");
+									player.inventory.addItemStackToInventory(inv.getStackInSlot(i));
+									inv.removeStackFromSlot(i);
+									break;
+								} else{
+									continue;
+								}
+							}
+						}
+					}
+				}*/
+			}
+			//Surges
 			if(player.isPotionActive(Registry.effectStormlight)){
 				//Windrunners
 				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))){
@@ -96,12 +123,12 @@ public class StormlightTickHandler {
 				if(Registry.BindingTwo.isPressed()){
 
 				}
-				if(Registry.Reset.isPressed()){
-					Minecraft.getMinecraft().gameSettings.invertMouse = false;
-					Minecraft.getMinecraft().entityRenderer.stopUseShader();
-					Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
+			}
+			if(Registry.Reset.isPressed()){
+				Minecraft.getMinecraft().gameSettings.invertMouse = false;
+				Minecraft.getMinecraft().entityRenderer.stopUseShader();
+				Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
 
-				}
 			}
 		}
 	}

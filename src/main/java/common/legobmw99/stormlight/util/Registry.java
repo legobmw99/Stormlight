@@ -60,17 +60,18 @@ public class Registry {
 		BindingOne = new KeyBinding("key.BindingOne", Keyboard.KEY_F, "key.categories.stormlight");
 		BindingTwo = new KeyBinding("key.BindingTwo", Keyboard.KEY_G, "key.categories.stormlight");
 		Reset = new KeyBinding("key.Reset", Keyboard.KEY_R, "key.categories.stormlight");
-
+		Recall = new KeyBinding("key.Recall", Keyboard.KEY_V,"key.categories.stormlight");
         ClientRegistry.registerKeyBinding(BindingOne);
         ClientRegistry.registerKeyBinding(BindingTwo);
         ClientRegistry.registerKeyBinding(Reset);
+        ClientRegistry.registerKeyBinding(Recall);
 	}
 	public static void registerEffect() {
 		effectStormlight = (new effectStormlight(false, 0)).setPotionName("effect.stormlight");	
 
 	}
 	
-	public static final ToolMaterial SHARD = EnumHelper.addToolMaterial("SHARD", 5, 1, 10.0F, 9.0F, 14);
+	public static final ToolMaterial SHARD = EnumHelper.addToolMaterial("SHARD", 5, -1, 10.0F, 9.0F, 14);
 	public static Honorblade itemBlade;
 	public static final String[] Bladetype = {"windrunners","skybreakers","dustbringers","edgedancers","lightweavers","elsecallers","truthwaters","bondsmiths","willshapers","stonewards"};
 	public static final String[] Spheretype = {"charged","dun"};
@@ -79,6 +80,7 @@ public class Registry {
     public static KeyBinding BindingOne;
     public static KeyBinding BindingTwo;
     public static KeyBinding Reset;
+    public static KeyBinding Recall;
     public static SimpleNetworkWrapper network;
 	public static CreativeTabs tabStormlight = new CreativeTabStormlight(CreativeTabs.getNextID(), "Stormlight");
 
