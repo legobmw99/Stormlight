@@ -1,7 +1,7 @@
 Stormlight
 =========
 
-This mod adds the basics of [Surgebinding](http://coppermind.net/wiki/Surgebinding) from Brandon Sanderson's book series *Mistborn*. 
+This mod adds the basics of [Surgebinding](http://coppermind.net/wiki/Surgebinding) from Brandon Sanderson's book series *The Stormlight Archives*. 
 
 This mod is currently optimized around `Minecraft 1.10.2` and `Forge 12.18.1.2075`
 
