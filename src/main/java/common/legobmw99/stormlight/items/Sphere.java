@@ -66,7 +66,7 @@ public class Sphere extends Item{
 		}
 		 if (!worldIn.isRemote)
 	        {
-             entityLiving.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("stormlight"), 2400));
+             entityLiving.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("stormlight"), 4800));
 	        }
 
 		return stack;

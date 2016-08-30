@@ -14,7 +14,7 @@ public class effectStormlight extends Potion {
 	public effectStormlight(boolean isBadEffectIn, int liquidColorIn) {
 		super(isBadEffectIn, liquidColorIn);
 		setBeneficial();
-
+		this.setIconIndex(0,0);
 		GameRegistry.register(this, new ResourceLocation("stormlight"));
 	}
 	

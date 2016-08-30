@@ -1,6 +1,10 @@
 package common.legobmw99.stormlight.items;
 
+import java.util.List;
+
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -23,4 +27,16 @@ public class Honorblade extends ItemSword {
 			ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 		}
 	}
+	
+	@Override
+	public void addInformation(ItemStack par1ItemStack,
+			EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
+		par3List.add("\u00A7bThis sword seems to glow with strange light");
+	}
+	@Override
+	public boolean hasEffect(ItemStack par1ItemStack) {
+		//Add enchantment glint
+        return true;
+	}
+
 }
