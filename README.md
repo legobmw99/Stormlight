@@ -6,4 +6,4 @@ This mod adds the basics of [Surgebinding](http://coppermind.net/wiki/Surgebindi
 This mod is currently optimized around `Minecraft 1.10.2` and `Forge 12.18.1.2075`
 
 
-**Warning:** This version is extremely unfinished. Use at your own discretion 
+**Warning:** This version is extremely unfinished. Use at your own discretion. Want to see where it is heading? Check out [Design.md](./Design.md)
