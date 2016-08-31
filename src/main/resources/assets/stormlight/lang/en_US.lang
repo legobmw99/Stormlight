@@ -6,6 +6,16 @@ key.Reset=Release Surges
 
 item.sphere.dun.name=Dun Sphere
 item.sphere.charged.name=Charged Sphere
+
 item.honorblade.windrunners.name=Honorblade of the Windrunners
+item.honorblade.skybreakers.name=Honorblade of the Skybreakers
+item.honorblade.edgedancers.name=Honorblade of the Edgedancers
+item.honorblade.lightweavers.name=Honorblade of the Lightweavers
+item.honorblade.elsecallers.name=Honorblade of the Elsecallers
+item.honorblade.stonewards.name=Honorblade of the Stonewards
+item.honorblade.dustbringers.name=Honorblade of the Dustbringers
+item.honorblade.truthwatchers.name=Honorblade of the Truthwatchers
+item.honorblade.bondsmiths.name=Honorblade of the Bondsmiths
+item.honorblade.willshapers.name=Honorblade of the Willshapers
 
 effect.stormlight=Stormlight

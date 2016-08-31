@@ -79,7 +79,7 @@ public class Registry {
 	
 	public static final ToolMaterial SHARD = EnumHelper.addToolMaterial("SHARD", 5, -1, 10.0F, 9.0F, 14);
 	public static Honorblade itemBlade;
-	public static final String[] Bladetype = {"windrunners","skybreakers","dustbringers","edgedancers","lightweavers","elsecallers","truthwaters","bondsmiths","willshapers","stonewards"};
+	public static final String[] Bladetype = {"windrunners","skybreakers","dustbringers","edgedancers","lightweavers","elsecallers","truthwatchers","bondsmiths","willshapers","stonewards"};
 	public static final String[] Spheretype = {"charged","dun"};
 	public static Potion effectStormlight;
 	public static Sphere itemSphere;
