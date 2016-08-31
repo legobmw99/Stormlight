@@ -20,6 +20,7 @@ Create a mod which implements Surgebinding from Brandon Sanderson's *The Stormli
   5. Progression - Accelerates growth or heals. Basically bonemeal or regen
   6. Illumination - Can create illusions. Fake mobs or player?
   7. Transformation - Turn certain objects into other objects. Danger, Will Robinson.
+      * Possible transformations: cobble -> stone. obsidian -> lava. 
   8. Transportation - Able to teleport. Maybe just to spawn or between dimensions?
   9. Cohesion - Alter the structure of an object. Unclear as to use
   10. Tension - Alter the stiffness of an object. Unclear, perhaps simply grant haste or maybe decrease tool requirements

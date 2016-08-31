@@ -1,9 +1,15 @@
 package common.legobmw99.stormlight.handlers;
 
+import java.awt.Event;
+
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.Item;
@@ -12,16 +18,20 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.items.Honorblade;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
@@ -54,62 +64,29 @@ public class StormlightTickHandler {
 			if(player.isPotionActive(Registry.effectStormlight)){
 				//Windrunners
 				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))){
+					//TODO: work if in EChest
 					if(Registry.BindingOne.isPressed()){
-						if(player.rotationPitch < -80){
-							//up
-							Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
-							Minecraft.getMinecraft().gameSettings.invertMouse = true;
-							Registry.network.sendToServer(new EffectEntityPacket(25,25000, 24, Minecraft.getMinecraft().thePlayer.getEntityId()));
-							used = 0;
-						} else {
-							if(player.rotationPitch > 80){
-								//down
-								Minecraft.getMinecraft().entityRenderer.stopUseShader();
-								Minecraft.getMinecraft().gameSettings.invertMouse = false;
-								if(player.isPotionActive(Potion.getPotionById(25))){
-									if (used == 0){
-										Registry.network.sendToServer(new EffectEntityPacket(25,25000, -1, Minecraft.getMinecraft().thePlayer.getEntityId()));
-										used = 1;
-									}  else {
-										Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
-										used = 0;
-									}
-								}
-							} else {
-								Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
-								EnumFacing enumfacing = entity.getHorizontalFacing();
-								switch (enumfacing){
-								case SOUTH:
-									//toward positive z
-									player.motionZ = 5;
-									Registry.network.sendToServer(new MoveEntityPacket(0,0,5,player.getEntityId()));
-									break;
-								case WEST:
-									//toward negative x
-									player.motionX = -5;
-									Registry.network.sendToServer(new MoveEntityPacket(-5,0,0,player.getEntityId()));
-									break;
-								case NORTH:
-									//toward negative z
-									player.motionZ = -5;
-									Registry.network.sendToServer(new MoveEntityPacket(0,0,-5,player.getEntityId()));
-									break;
-								case EAST:
-									//toward positive x
-									player.motionX = 5;
-									Registry.network.sendToServer(new MoveEntityPacket(5,0,0,player.getEntityId()));
-									break;
-								default:
-									break;
+						Stormlight.surges.gravitation(player);
+					}
+					if(Registry.BindingTwo.isPressed()){
 
-								}
-							}
+					}
+					
+				}
+				//Elsecallers
+				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.elsecallers")))){
+					if(Registry.BindingOne.isPressed()){
+						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
+						Stormlight.surges.transportation(player, 1);
+						}else {
+							Stormlight.surges.transportation(player, 0);
 						}
 					}
+					if(Registry.BindingTwo.isPressed()){
+						Stormlight.surges.transformation(player);
+					}
 				}
-				if(Registry.BindingTwo.isPressed()){
-
-				}
+				
 			}
 			if(Registry.Reset.isPressed()){
 				Minecraft.getMinecraft().gameSettings.invertMouse = false;

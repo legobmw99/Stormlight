@@ -15,11 +15,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import common.legobmw99.stormlight.handlers.StormlightTickHandler;
 import common.legobmw99.stormlight.util.Registry;
+import common.legobmw99.stormlight.util.Surges;
 
 @Mod(modid = Stormlight.MODID, version = Stormlight.VERSION)
 public class Stormlight {
 	public static final String MODID = "stormlight";
 	public static final String VERSION ="@version@";
+	public static Surges surges;
 	
 	 @SidedProxy
 	    public static CommonProxy proxy;
@@ -94,6 +96,7 @@ public class Stormlight {
 	            // Typically initialization of models and such goes here:
 	            Registry.registerRenders();
 	            Registry.initKeybindings();
+	            Stormlight.surges = new Surges();
 	        }
 
 	        @Override

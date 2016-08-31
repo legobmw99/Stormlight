@@ -25,6 +25,8 @@ import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
+import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
+import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
 
 public class Registry {
 	
@@ -50,6 +52,8 @@ public class Registry {
 	       network.registerMessage(MoveEntityPacket.Handler.class, MoveEntityPacket.class, 1, Side.SERVER);
 	       network.registerMessage(EffectEntityPacket.Handler.class, EffectEntityPacket.class, 2, Side.SERVER);
 	       network.registerMessage(BoundBladePacket.Handler.class, BoundBladePacket.class, 3, Side.SERVER);
+	       network.registerMessage(TeleportPlayerPacket.Handler.class, TeleportPlayerPacket.class, 4, Side.SERVER);
+	       network.registerMessage(TransformBlockPacket.Handler.class, TransformBlockPacket.class, 5, Side.SERVER);
 
 
 	}
