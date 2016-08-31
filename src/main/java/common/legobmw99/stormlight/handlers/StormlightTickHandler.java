@@ -21,6 +21,9 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
+import common.legobmw99.stormlight.items.Honorblade;
+import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
@@ -39,29 +42,13 @@ public class StormlightTickHandler {
 		if(player != null){
 			//Recall
 			if(Registry.Recall.isPressed()){
-				//needs to be run on server
-/*				System.out.println("Working 1");
-				if(player.getHeldItemMainhand() == (ItemStack)null){
-					System.out.println("Working 2");
-					InventoryEnderChest inv = player.getInventoryEnderChest();
-					if(inv != null){
-						System.out.println("Working 3");
-						for(int i=0; i < inv.getSizeInventory(); i++){
-							System.out.println(i);
-							if (inv.getStackInSlot(i) != (ItemStack)null){ 
-								System.out.println("Working 4");
-								if(inv.getStackInSlot(i).isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))){
-									System.out.println("Working 5");
-									player.inventory.addItemStackToInventory(inv.getStackInSlot(i));
-									inv.removeStackFromSlot(i);
-									break;
-								} else{
-									continue;
-								}
-							}
-						}
-					}
-				}*/
+				if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getUnlocalizedName().contains("honorblade.")){
+					String type = player.getHeldItemMainhand().getUnlocalizedName().substring(16);
+					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),type, 0));
+				} else {
+					//TODO: figure out "type" here
+					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),"windrunners", 1));
+				}
 			}
 			//Surges
 			if(player.isPotionActive(Registry.effectStormlight)){

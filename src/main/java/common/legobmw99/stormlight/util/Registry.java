@@ -21,6 +21,7 @@ import org.lwjgl.input.Keyboard;
 import common.legobmw99.stormlight.effects.effectStormlight;
 import common.legobmw99.stormlight.items.Honorblade;
 import common.legobmw99.stormlight.items.Sphere;
+import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
@@ -48,6 +49,7 @@ public class Registry {
 	       network.registerMessage(StopFallPacket.Handler.class, StopFallPacket.class, 0, Side.SERVER);
 	       network.registerMessage(MoveEntityPacket.Handler.class, MoveEntityPacket.class, 1, Side.SERVER);
 	       network.registerMessage(EffectEntityPacket.Handler.class, EffectEntityPacket.class, 2, Side.SERVER);
+	       network.registerMessage(BoundBladePacket.Handler.class, BoundBladePacket.class, 3, Side.SERVER);
 
 
 	}
