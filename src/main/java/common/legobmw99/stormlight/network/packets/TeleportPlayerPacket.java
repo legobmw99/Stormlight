@@ -64,16 +64,17 @@ public TeleportPlayerPacket(){}
 	                    entityenderpearl.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 3.0F, 0.0F);
 	                    ctx.getServerHandler().playerEntity.worldObj.spawnEntityInWorld(entityenderpearl);
 	        			} else {
+	        				if(player.dimension != 0){
+	        					player.changeDimension(0);
+	        				}
 	        				if(player.getBedLocation() != null && player.getBedSpawnLocation(player.worldObj, player.getBedLocation(), false) != null){
 	        					player.connection.setPlayerLocation(player.getBedSpawnLocation(player.worldObj, player.getBedLocation(), false).getX(),player.getBedSpawnLocation(player.worldObj, player.getBedLocation(), false).getY(),player.getBedSpawnLocation(player.worldObj, player.getBedLocation(), false).getZ(), player.cameraYaw, player.cameraPitch);
 	        				} else {
 	        					player.connection.setPlayerLocation(ctx.getServerHandler().playerEntity.worldObj.getSpawnPoint().getX(),ctx.getServerHandler().playerEntity.worldObj.getSpawnPoint().getY(),ctx.getServerHandler().playerEntity.worldObj.getSpawnPoint().getZ(), player.cameraYaw, player.cameraPitch);
-
 	        				}
-	        					
 	        			}
-	        		}	            
-	        		}
+	        		}            
+	        	}
 	        });		return null;
 		}
 	}

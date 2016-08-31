@@ -84,7 +84,7 @@ public class BoundBladePacket implements IMessage {
 	        					if(inv != null){
 	        						for(int i=0; i < inv.getSizeInventory(); i++){
 	        							if (inv.getStackInSlot(i) != (ItemStack)null){ 
-	        								if(inv.getStackInSlot(i).isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:honorblade." + message.type)))){
+	        								if(inv.getStackInSlot(i).getUnlocalizedName().contains("honorblade.")){
 	        									player.inventory.setInventorySlotContents(player.inventory.currentItem,inv.getStackInSlot(i));
 	        									inv.removeStackFromSlot(i);
 	        									break;

@@ -56,8 +56,7 @@ public class StormlightTickHandler {
 					String type = player.getHeldItemMainhand().getUnlocalizedName().substring(16);
 					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),type, 0));
 				} else {
-					//TODO: figure out "type" here
-					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),"windrunners", 1));
+					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),"", 1));
 				}
 			}
 			//Surges
