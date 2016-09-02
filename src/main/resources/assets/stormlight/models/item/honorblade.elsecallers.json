@@ -1,6 +1,6 @@
 {
     "parent": "stormlight:item/honorblade",
     "textures": {
-        "layer0": "stormlight:items/elesecaller"
+        "layer0": "stormlight:items/elsecaller"
     }
 }

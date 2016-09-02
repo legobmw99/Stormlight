@@ -3,6 +3,7 @@ key.BindingOne=First Surge
 key.BindingTwo=Second Surge
 key.Reset=Release Surges
 
+itemGroup.Stormlight=Stormlight
 
 item.sphere.dun.name=Dun Sphere
 item.sphere.charged.name=Charged Sphere
