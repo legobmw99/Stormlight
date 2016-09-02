@@ -1,0 +1,6 @@
+{
+    "parent": "stormlight:item/honorblade",
+    "textures": {
+        "layer0": "stormlight:items/edgedancer"
+    }
+}
