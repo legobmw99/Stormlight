@@ -65,7 +65,11 @@ public class StormlightTickHandler {
 				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))){
 					//TODO: work if in EChest
 					if(Registry.BindingOne.isPressed()){
-						Stormlight.surges.gravitation(player);
+						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
+							Stormlight.surges.gravitation(player, 1);
+						}else {
+							Stormlight.surges.gravitation(player, 0);
+					}
 					}
 					if(Registry.BindingTwo.isPressed()){
 
