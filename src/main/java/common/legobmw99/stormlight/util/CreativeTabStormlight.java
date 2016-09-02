@@ -1,9 +1,6 @@
 package common.legobmw99.stormlight.util;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -20,7 +17,9 @@ public class CreativeTabStormlight extends CreativeTabs {
 	}
 	@Override
 	public ItemStack getIconItemStack() {
-		return new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners"));
+		//Make the icon a different honorblade every minute
+		int type = (int)(System.currentTimeMillis()/(1000*60)) % 10;
+		return new ItemStack(Item.getByNameOrId("stormlight:honorblade." + Registry.Bladetype[type]));
 	}
 	@Override
 	public Item getTabIconItem() {
