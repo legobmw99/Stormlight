@@ -63,7 +63,6 @@ public class StormlightTickHandler {
 			if(player.isPotionActive(Registry.effectStormlight)){
 				//Windrunners
 				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))){
-					//TODO: work if in EChest
 					if(Registry.BindingOne.isPressed()){
 						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
 							Stormlight.surges.gravitation(player, 1);
@@ -76,11 +75,25 @@ public class StormlightTickHandler {
 					}
 					
 				}
+				//Skybreakers
+				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.skybreakers")))){
+					if(Registry.BindingOne.isPressed()){
+						
+					}
+					if(Registry.BindingTwo.isPressed()){
+						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
+							Stormlight.surges.gravitation(player, 1);
+						}else {
+							Stormlight.surges.gravitation(player, 0);
+						}
+					}
+					
+				}
 				//Elsecallers
 				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.elsecallers")))){
 					if(Registry.BindingOne.isPressed()){
 						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
-						Stormlight.surges.transportation(player, 1);
+							Stormlight.surges.transportation(player, 1);
 						}else {
 							Stormlight.surges.transportation(player, 0);
 						}
@@ -89,7 +102,53 @@ public class StormlightTickHandler {
 						Stormlight.surges.transformation(player);
 					}
 				}
-				
+				//Edgedancers
+				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.edgedancers")))){
+					if(Registry.BindingOne.isPressed()){
+						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
+							Stormlight.surges.progression(player, 1);
+						}else {
+							Stormlight.surges.progression(player, 0);
+						}		
+					}
+					if(Registry.BindingTwo.isPressed()){
+									
+					}
+				}
+				//Truthwatchers
+				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.truthwatchers")))){
+					if(Registry.BindingOne.isPressed()){
+						
+					}
+					if(Registry.BindingTwo.isPressed()){
+						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
+							Stormlight.surges.progression(player, 1);
+						}else {
+							Stormlight.surges.progression(player, 0);
+						}					
+					}
+				}
+				//Lightweavers
+				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.lightweavers")))){
+					if(Registry.BindingOne.isPressed()){
+						Stormlight.surges.transformation(player);
+					}
+					if(Registry.BindingTwo.isPressed()){
+						
+					}
+				}
+				//Willshapers
+				if(player.inventory.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.willshapers")))){
+					if(Registry.BindingOne.isPressed()){
+					}
+					if(Registry.BindingTwo.isPressed()){
+						if(Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
+							Stormlight.surges.transportation(player, 1);
+						}else {
+							Stormlight.surges.transportation(player, 0);
+						}
+					}
+				}
 			}
 			if(Registry.Reset.isPressed()){
 				Minecraft.getMinecraft().gameSettings.invertMouse = false;

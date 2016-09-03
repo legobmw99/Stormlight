@@ -3,6 +3,7 @@ package common.legobmw99.stormlight.util;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -14,8 +15,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
-
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
+import common.legobmw99.stormlight.network.packets.GrowPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
 import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
@@ -137,5 +138,26 @@ public class Surges {
 			}
 		}
 	}
+	public void progression(EntityPlayer player, int i){
+		//Growth
+		if(i==0){
+			RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
+			if(ray.typeOfHit == RayTraceResult.Type.BLOCK){
+				IBlockState ibs = Minecraft.getMinecraft().theWorld.getBlockState(ray.getBlockPos());
+				if (ibs.getBlock() instanceof IGrowable){
+					IGrowable igrowable = (IGrowable)ibs.getBlock();
+			        if (igrowable.canGrow(player.worldObj, ray.getBlockPos(), ibs, player.worldObj.isRemote)){
+						Registry.network.sendToServer(new GrowPacket(ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));				
+			        }
+			    }
+			}
+		} else {
+			if(i==1){
+				Registry.network.sendToServer(new EffectEntityPacket(10,100, 4, Minecraft.getMinecraft().thePlayer.getEntityId()));
+
+			}
+		}
+	}
+	
 	
 }
