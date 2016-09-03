@@ -85,7 +85,7 @@ public class StormlightTickHandler {
 							Stormlight.surges.gravitation(player, 1);
 						}else {
 							Stormlight.surges.gravitation(player, 0);
-						}
+					}
 					}
 					
 				}
@@ -180,7 +180,7 @@ public class StormlightTickHandler {
 			Registry.network.sendToServer(new StopFallPacket());
 
 		}else{
-			if(event.getEntityLiving().isPotionActive(Potion.getPotionById(25))){
+			if(event.getEntityLiving().isPotionActive(Potion.getPotionById(25)) && event.getEntityLiving().dimension == 0){
 				Registry.network.sendToServer(new EffectEntityPacket(25,0, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
 			}
 			event.getEntityLiving().setGlowing(false);

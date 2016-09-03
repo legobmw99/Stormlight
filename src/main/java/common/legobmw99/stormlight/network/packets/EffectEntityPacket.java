@@ -60,7 +60,9 @@ public class EffectEntityPacket implements IMessage {
 	        			return;
 	        		} else {
 	        			target.removePotionEffect(Potion.getPotionById(message.id));
-	        			target.addPotionEffect(new PotionEffect(Potion.getPotionById(message.id), message.duration, message.level, true, false));
+	        			if(message.duration > 1){
+	        				target.addPotionEffect(new PotionEffect(Potion.getPotionById(message.id), message.duration, message.level, true, false));
+	        			}
 
 	        		}	            
 	        		}
