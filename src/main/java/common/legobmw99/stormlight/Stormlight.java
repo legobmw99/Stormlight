@@ -76,7 +76,6 @@ public class Stormlight {
 
 	        public void init(FMLInitializationEvent e) {
 	    		MinecraftForge.EVENT_BUS.register(new StormlightTickHandler());
-	    		FMLCommonHandler.instance().bus().register(new StormlightTickHandler());
 	    		Registry.registerEffect();
 	    		Registry.initRecipies();
 	        }
