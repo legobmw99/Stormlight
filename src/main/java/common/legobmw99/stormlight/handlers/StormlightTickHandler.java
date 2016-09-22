@@ -42,7 +42,57 @@ import common.legobmw99.stormlight.util.Registry;
 public class StormlightTickHandler {
 
 
-	int used = 0;
+	@SubscribeEvent
+	public void onDamage(LivingHurtEvent event) {
+		//Increase outgoing damage for stormlit people
+		if (event.getSource().getSourceOfDamage() instanceof EntityPlayerMP) {
+			EntityPlayerMP source = (EntityPlayerMP) event.getSource().getSourceOfDamage();
+			if (source.isPotionActive(Registry.effectStormlight)) {
+				event.setAmount(event.getAmount() + 2);
+			}
+		}
+		//Reduce incoming damage for stormlit people
+		if (event.getEntityLiving() instanceof EntityPlayerMP) {
+			EntityPlayerMP source = (EntityPlayerMP) event.getEntityLiving();
+			if (source.isPotionActive(Registry.effectStormlight)) {
+				event.setAmount(event.getAmount() - 2);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityUpdate(LivingUpdateEvent event){
+		if(event.getEntityLiving().isPotionActive(Registry.effectStormlight)){
+			event.getEntityLiving().setGlowing(true);
+			Registry.network.sendToServer(new StopFallPacket());
+		}else{
+			if(event.getEntityLiving().isPotionActive(Potion.getPotionById(25)) && event.getEntityLiving().dimension == 0){
+				Registry.network.sendToServer(new EffectEntityPacket(25,0, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
+			}
+			event.getEntityLiving().setGlowing(false);
+		}
+	}
+	
+	@SubscribeEvent(priority=EventPriority.NORMAL)
+	public void onItemToss(ItemTossEvent event){
+		if(event.getEntity().getEntityWorld().isThundering()){
+			if(event.getEntityItem()!= null){
+				if(event.getEntityItem().getEntityItem().isItemEqual(new ItemStack(Registry.itemSphere))){
+					double x,y,z;
+					int a;
+					x = event.getEntityItem().posX;
+					y = event.getEntityItem().posY;
+					z = event.getEntityItem().posZ;
+					a = event.getEntityItem().getEntityItem().stackSize;
+					EntityItem entity = new EntityItem(event.getEntity().getEntityWorld(), x, y, z, new ItemStack(Item.getByNameOrId("Stormlight:sphere.charged"), a, 0));
+					if(event.getEntity().isEntityAlive()){
+						event.getEntity().getEntityWorld().spawnEntityInWorld(entity);
+						event.getEntity().setDead();
+					}
+				}
+			}
+		}
+	}
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -68,7 +118,7 @@ public class StormlightTickHandler {
 							Stormlight.surges.gravitation(player, 1);
 						}else {
 							Stormlight.surges.gravitation(player, 0);
-					}
+						}
 					}
 					if(Registry.BindingTwo.isPressed()){
 
@@ -85,7 +135,7 @@ public class StormlightTickHandler {
 							Stormlight.surges.gravitation(player, 1);
 						}else {
 							Stormlight.surges.gravitation(player, 0);
-					}
+						}
 					}
 					
 				}
@@ -134,7 +184,7 @@ public class StormlightTickHandler {
 						Stormlight.surges.transformation(player);
 					}
 					if(Registry.BindingTwo.isPressed()){
-						
+				
 					}
 				}
 				//Willshapers
@@ -154,11 +204,9 @@ public class StormlightTickHandler {
 				Minecraft.getMinecraft().gameSettings.invertMouse = false;
 				Minecraft.getMinecraft().entityRenderer.stopUseShader();
 				Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
-
 			}
 		}
 	}
-
 
 	@SubscribeEvent
 	public void onWorldTick(WorldTickEvent event){
@@ -169,62 +217,6 @@ public class StormlightTickHandler {
 			info.setThunderTime(2400);
 			info.setRaining(true);
 			info.setThundering(true);
-
-		}
-
-	}
-	@SubscribeEvent
-	public void onEntityUpdate(LivingUpdateEvent event){
-		if(event.getEntityLiving().isPotionActive(Registry.effectStormlight)){
-			event.getEntityLiving().setGlowing(true);
-			Registry.network.sendToServer(new StopFallPacket());
-
-		}else{
-			if(event.getEntityLiving().isPotionActive(Potion.getPotionById(25)) && event.getEntityLiving().dimension == 0){
-				Registry.network.sendToServer(new EffectEntityPacket(25,0, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
-			}
-			event.getEntityLiving().setGlowing(false);
-		}
-
-	}
-
-	@SubscribeEvent(priority=EventPriority.NORMAL)
-	public void onItemToss(ItemTossEvent event){
-		if(event.getEntity().getEntityWorld().isThundering()){
-			if(event.getEntityItem()!= null){
-				if(event.getEntityItem().getEntityItem().isItemEqual(new ItemStack(Registry.itemSphere))){
-					double x,y,z;
-					int a;
-					x = event.getEntityItem().posX;
-					y = event.getEntityItem().posY;
-					z = event.getEntityItem().posZ;
-					a = event.getEntityItem().getEntityItem().stackSize;
-					EntityItem entity = new EntityItem(event.getEntity().getEntityWorld(), x, y, z, new ItemStack(Item.getByNameOrId("Stormlight:sphere.charged"), a, 0));
-					if(event.getEntity().isEntityAlive()){
-						event.getEntity().getEntityWorld().spawnEntityInWorld(entity);
-						event.getEntity().setDead();
-					}
-				}
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onDamage(LivingHurtEvent event) {
-		//Increase outgoing damage for stormlit people
-		if (event.getSource().getSourceOfDamage() instanceof EntityPlayerMP) {
-			EntityPlayerMP source = (EntityPlayerMP) event.getSource().getSourceOfDamage();
-			if (source.isPotionActive(Registry.effectStormlight)) {
-				event.setAmount(event.getAmount() + 2);
-			}
-		}
-		//Reduce incoming damage for stormlit people
-		if (event.getEntityLiving() instanceof EntityPlayerMP) {
-			EntityPlayerMP source = (EntityPlayerMP) event.getEntityLiving();
-			if (source.isPotionActive(Registry.effectStormlight)) {
-				event.setAmount(event.getAmount() - 2);
-
-			}
 		}
 	}
 }
