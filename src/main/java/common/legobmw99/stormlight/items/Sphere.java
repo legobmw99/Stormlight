@@ -33,12 +33,12 @@ public class Sphere extends Item{
 	}
 	@Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack) {
-		return EnumAction.DRINK;
+		return EnumAction.NONE;
 	}
 
 	@Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack) {
-		return 10;
+		return 5;
 	}
 	
 	@Override
