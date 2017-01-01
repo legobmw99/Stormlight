@@ -50,17 +50,17 @@ public class GrowPacket implements IMessage {
 
 		@Override
 		public IMessage onMessage(final GrowPacket message, final MessageContext ctx) {
-	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
+	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
 	        mainThread.addScheduledTask(new Runnable() {
 	            @Override
 	            public void run() {
 	            	BlockPos bp = new BlockPos(message.X, message.Y, message.Z);
-	            	IBlockState ibs = ctx.getServerHandler().playerEntity.worldObj.getBlockState(bp);
+	            	IBlockState ibs = ctx.getServerHandler().playerEntity.world.getBlockState(bp);
 		            IGrowable igrowable = (IGrowable)ibs.getBlock();
 
-	            	 if (igrowable.canUseBonemeal(ctx.getServerHandler().playerEntity.worldObj, ctx.getServerHandler().playerEntity.worldObj.rand, bp, ibs))
+	            	 if (igrowable.canUseBonemeal(ctx.getServerHandler().playerEntity.world, ctx.getServerHandler().playerEntity.world.rand, bp, ibs))
 	                    {
-	                        igrowable.grow(ctx.getServerHandler().playerEntity.worldObj, ctx.getServerHandler().playerEntity.worldObj.rand, bp, ibs);
+	                        igrowable.grow(ctx.getServerHandler().playerEntity.world, ctx.getServerHandler().playerEntity.world.rand, bp, ibs);
 	                    }     
 	        		}
 	        });		return null;

@@ -1,43 +1,27 @@
 package common.legobmw99.stormlight.handlers;
 
-import java.awt.Event;
-
-import org.lwjgl.opengl.GL11;
-
+import common.legobmw99.stormlight.Stormlight;
+import common.legobmw99.stormlight.network.packets.BoundBladePacket;
+import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
+import common.legobmw99.stormlight.network.packets.StopFallPacket;
+import common.legobmw99.stormlight.util.Registry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
-import common.legobmw99.stormlight.Stormlight;
-import common.legobmw99.stormlight.items.Honorblade;
-import common.legobmw99.stormlight.network.packets.BoundBladePacket;
-import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
-import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
-import common.legobmw99.stormlight.network.packets.StopFallPacket;
-import common.legobmw99.stormlight.util.Registry;
 
 public class StormlightTickHandler {
 
@@ -67,7 +51,7 @@ public class StormlightTickHandler {
 			Registry.network.sendToServer(new StopFallPacket());
 		}else{
 			if(event.getEntityLiving().isPotionActive(Potion.getPotionById(25)) && event.getEntityLiving().dimension == 0){
-				Registry.network.sendToServer(new EffectEntityPacket(25,0, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
+				Registry.network.sendToServer(new EffectEntityPacket(25,0, 0, Minecraft.getMinecraft().player.getEntityId()));
 			}
 			event.getEntityLiving().setGlowing(false);
 		}
@@ -83,10 +67,10 @@ public class StormlightTickHandler {
 					x = event.getEntityItem().posX;
 					y = event.getEntityItem().posY;
 					z = event.getEntityItem().posZ;
-					a = event.getEntityItem().getEntityItem().stackSize;
+					a = event.getEntityItem().getEntityItem().getCount();
 					EntityItem entity = new EntityItem(event.getEntity().getEntityWorld(), x, y, z, new ItemStack(Item.getByNameOrId("Stormlight:sphere.charged"), a, 0));
 					if(event.getEntity().isEntityAlive()){
-						event.getEntity().getEntityWorld().spawnEntityInWorld(entity);
+						event.getEntity().getEntityWorld().spawnEntity(entity);
 						event.getEntity().setDead();
 					}
 				}
@@ -98,15 +82,15 @@ public class StormlightTickHandler {
 	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		EntityPlayerSP player;
-		player = Minecraft.getMinecraft().thePlayer;
+		player = Minecraft.getMinecraft().player;
 		if(player != null){
 			//Recall
 			if(Registry.Recall.isPressed()){
 				if(player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getUnlocalizedName().contains("honorblade.")){
 					String type = player.getHeldItemMainhand().getUnlocalizedName().substring(16);
-					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),type, 0));
+					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().player.getEntityId(),type, 0));
 				} else {
-					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().thePlayer.getEntityId(),"", 1));
+					Registry.network.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().player.getEntityId(),"", 1));
 				}
 			}
 			//Surges
@@ -203,7 +187,7 @@ public class StormlightTickHandler {
 			if(Registry.Reset.isPressed()){
 				Minecraft.getMinecraft().gameSettings.invertMouse = false;
 				Minecraft.getMinecraft().entityRenderer.stopUseShader();
-				Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
+				Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().player.getEntityId()));
 			}
 		}
 	}

@@ -22,7 +22,7 @@ public class CreativeTabStormlight extends CreativeTabs {
 		return new ItemStack(Item.getByNameOrId("stormlight:honorblade." + Registry.Bladetype[type]));
 	}
 	@Override
-	public Item getTabIconItem() {
+	public ItemStack getTabIconItem() {
 		return null;
 	}
 

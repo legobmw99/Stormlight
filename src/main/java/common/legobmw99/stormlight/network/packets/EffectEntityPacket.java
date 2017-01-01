@@ -51,11 +51,11 @@ public class EffectEntityPacket implements IMessage {
 
 		@Override
 		public IMessage onMessage(final EffectEntityPacket message, final MessageContext ctx) {
-	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
+	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
 	        mainThread.addScheduledTask(new Runnable() {
 	            @Override
 	            public void run() {
-	        		EntityPlayerMP target = (EntityPlayerMP) ctx.getServerHandler().playerEntity.worldObj.getEntityByID(message.entityID);
+	        		EntityPlayerMP target = (EntityPlayerMP) ctx.getServerHandler().playerEntity.world.getEntityByID(message.entityID);
 	        		if (target == null) {
 	        			return;
 	        		} else {

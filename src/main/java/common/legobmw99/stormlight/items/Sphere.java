@@ -42,13 +42,13 @@ public class Sphere extends Item{
 	}
 	
 	@Override
-	   public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+	   public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
 	    {
-		if(itemStackIn.isItemEqual(new ItemStack(Item.getByNameOrId("Stormlight:sphere.charged")))){
+		if(playerIn.getHeldItem(hand).isItemEqual(new ItemStack(Item.getByNameOrId("Stormlight:sphere.charged")))){
 	        playerIn.setActiveHand(hand);
-	        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+	        return new ActionResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(hand));
 		} else {
-	        return new ActionResult(EnumActionResult.FAIL, itemStackIn);		
+	        return new ActionResult(EnumActionResult.FAIL, playerIn.getHeldItem(hand));		
 			}
 	    }
 
@@ -60,7 +60,7 @@ public class Sphere extends Item{
 		if(entityLiving != null && entityLiving instanceof EntityPlayer){
 			EntityPlayer player = (EntityPlayer) entityLiving;
 		if (player.capabilities.isCreativeMode != true) {
-			stack.stackSize--; 
+			stack.shrink(1);; 
 			player.inventory.addItemStackToInventory(new ItemStack(Registry.itemSphere, 1,0));
 		}
 		}

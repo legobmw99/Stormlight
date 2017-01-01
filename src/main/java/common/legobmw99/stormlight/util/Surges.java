@@ -58,7 +58,7 @@ public class Surges {
 				//up
 				Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
 				Minecraft.getMinecraft().gameSettings.invertMouse = true;
-				Registry.network.sendToServer(new EffectEntityPacket(25,25000, 24, Minecraft.getMinecraft().thePlayer.getEntityId()));
+				Registry.network.sendToServer(new EffectEntityPacket(25,25000, 24, Minecraft.getMinecraft().player.getEntityId()));
 				used = 0;
 			} else {
 				if(player.rotationPitch > 80){
@@ -67,10 +67,10 @@ public class Surges {
 					Minecraft.getMinecraft().gameSettings.invertMouse = false;
 					if(player.isPotionActive(Potion.getPotionById(25))){
 						if (used == 0){
-							Registry.network.sendToServer(new EffectEntityPacket(25,25000, -1, Minecraft.getMinecraft().thePlayer.getEntityId()));
+							Registry.network.sendToServer(new EffectEntityPacket(25,25000, -1, Minecraft.getMinecraft().player.getEntityId()));
 							used = 1;
 						}  else {
-							Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().thePlayer.getEntityId()));
+							Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().player.getEntityId()));
 							used = 0;
 						}
 					}
@@ -112,7 +112,7 @@ public class Surges {
 				double y = player.posY + 1.5;
 				double z = player.posZ;
 				double factor = 9;
-				List<EntityItem> items = player.worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
+				List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
 				for(EntityItem e: items)
 				{
 					e.addVelocity((x - e.posX) / factor, (y - e.posY) / factor, (z - e.posZ) / factor);
@@ -132,7 +132,7 @@ public class Surges {
 		RayTraceResult ray;
 		ray = player.rayTrace(20.0F, 0.0F);
 		if(ray.typeOfHit == RayTraceResult.Type.BLOCK){
-			IBlockState ibs = Minecraft.getMinecraft().theWorld.getBlockState(ray.getBlockPos());
+			IBlockState ibs = Minecraft.getMinecraft().world.getBlockState(ray.getBlockPos());
 			if(this.transformableIn.contains(ibs.getBlock().getStateId(ibs.getBlock().getDefaultState()))){
 				Registry.network.sendToServer(new TransformBlockPacket(this.transformableOut.get(this.transformableIn.indexOf(ibs.getBlock().getStateId(ibs.getBlock().getDefaultState()))),ray.getBlockPos()));				
 			}
@@ -143,17 +143,17 @@ public class Surges {
 		if(i==0){
 			RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
 			if(ray.typeOfHit == RayTraceResult.Type.BLOCK){
-				IBlockState ibs = Minecraft.getMinecraft().theWorld.getBlockState(ray.getBlockPos());
+				IBlockState ibs = Minecraft.getMinecraft().world.getBlockState(ray.getBlockPos());
 				if (ibs.getBlock() instanceof IGrowable){
 					IGrowable igrowable = (IGrowable)ibs.getBlock();
-			        if (igrowable.canGrow(player.worldObj, ray.getBlockPos(), ibs, player.worldObj.isRemote)){
+			        if (igrowable.canGrow(player.world, ray.getBlockPos(), ibs, player.world.isRemote)){
 						Registry.network.sendToServer(new GrowPacket(ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));				
 			        }
 			    }
 			}
 		} else {
 			if(i==1){
-				Registry.network.sendToServer(new EffectEntityPacket(10,100, 4, Minecraft.getMinecraft().thePlayer.getEntityId()));
+				Registry.network.sendToServer(new EffectEntityPacket(10,100, 4, Minecraft.getMinecraft().player.getEntityId()));
 
 			}
 		}
