@@ -3,6 +3,7 @@ package common.legobmw99.stormlight.network.packets;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -66,9 +67,9 @@ public class BoundBladePacket implements IMessage {
 	        				if(player.getHeldItemMainhand().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:honorblade." + message.type)))){
 	        					if(inv != null){
 	        						for(int i=0; i < inv.getSizeInventory(); i++){
-	        							if (inv.getStackInSlot(i) == (ItemStack)null){ 
+	        							if (inv.getStackInSlot(i).isEmpty()){ 
 	        								inv.setInventorySlotContents(i,player.getHeldItemMainhand());
-	        								player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
+	        								player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR,0));
 	        								break;
 	        							} else {
 	        								continue;
@@ -80,11 +81,12 @@ public class BoundBladePacket implements IMessage {
 	        				break;
 	        			case 1:
 	        				//Get from EChest
-	        				if(player.getHeldItemMainhand() == (ItemStack)null){
+	        				if(player.getHeldItemMainhand().isEmpty()){
 	        					if(inv != null){
 	        						for(int i=0; i < inv.getSizeInventory(); i++){
 	        							if (inv.getStackInSlot(i) != (ItemStack)null){ 
 	        								if(inv.getStackInSlot(i).getUnlocalizedName().contains("honorblade.")){
+
 	        									player.inventory.setInventorySlotContents(player.inventory.currentItem,inv.getStackInSlot(i));
 	        									inv.removeStackFromSlot(i);
 	        									break;
