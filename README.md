@@ -1,8 +1,6 @@
 Stormlight
 =========
 
-[![Build Status](https://drone.io/github.com/legobmw99/Stormlight/status.png)](https://drone.io/github.com/legobmw99/Stormlight/latest)
-
 This mod adds the basics of [Surgebinding](http://coppermind.net/wiki/Surgebinding) from Brandon Sanderson's book series *The Stormlight Archives*. 
 
 This mod is currently optimized around `Minecraft 1.11.2` and `Forge 13.20.0.2201`
