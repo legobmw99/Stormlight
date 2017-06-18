@@ -40,13 +40,6 @@ public class Registry {
 		}
 	}
 	
-	public static void initRecipies(){
-		GameRegistry.addShapedRecipe(new ItemStack(itemSphere, 8), new Object[] {
-			"GGG", "GDG", "GGG", 'G', new ItemStack(Blocks.GLASS, 1), 'D', new ItemStack(Items.DIAMOND,1) });
-		GameRegistry.addShapedRecipe(new ItemStack(itemSphere, 8), new Object[] {
-			"GGG", "GDG", "GGG", 'G', new ItemStack(Blocks.GLASS, 1), 'D', new ItemStack(Items.EMERALD,1) });
-	}
-	
 	public static void registerPackets(){
 	       network = NetworkRegistry.INSTANCE.newSimpleChannel("stormlight");
 	       network.registerMessage(StopFallPacket.Handler.class, StopFallPacket.class, 0, Side.SERVER);

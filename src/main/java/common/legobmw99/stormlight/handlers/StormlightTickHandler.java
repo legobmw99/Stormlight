@@ -29,8 +29,8 @@ public class StormlightTickHandler {
 	@SubscribeEvent
 	public void onDamage(LivingHurtEvent event) {
 		//Increase outgoing damage for stormlit people
-		if (event.getSource().getSourceOfDamage() instanceof EntityPlayerMP) {
-			EntityPlayerMP source = (EntityPlayerMP) event.getSource().getSourceOfDamage();
+		if (event.getSource().getTrueSource() instanceof EntityPlayerMP) {
+			EntityPlayerMP source = (EntityPlayerMP) event.getSource().getTrueSource();
 			if (source.isPotionActive(Registry.effectStormlight)) {
 				event.setAmount(event.getAmount() + 2);
 			}
@@ -61,13 +61,13 @@ public class StormlightTickHandler {
 	public void onItemToss(ItemTossEvent event){
 		if(event.getEntity().getEntityWorld().isThundering()){
 			if(event.getEntityItem()!= null){
-				if(event.getEntityItem().getEntityItem().isItemEqual(new ItemStack(Registry.itemSphere))){
+				if(event.getEntityItem().getItem().isItemEqual(new ItemStack(Registry.itemSphere))){
 					double x,y,z;
 					int a;
 					x = event.getEntityItem().posX;
 					y = event.getEntityItem().posY;
 					z = event.getEntityItem().posZ;
-					a = event.getEntityItem().getEntityItem().getCount();
+					a = event.getEntityItem().getItem().getCount();
 					EntityItem entity = new EntityItem(event.getEntity().getEntityWorld(), x, y, z, new ItemStack(Item.getByNameOrId("Stormlight:sphere.charged"), a, 0));
 					if(event.getEntity().isEntityAlive()){
 						event.getEntity().getEntityWorld().spawnEntity(entity);

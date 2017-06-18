@@ -55,11 +55,11 @@ public TransformBlockPacket(){}
 
 		@Override
 		public IMessage onMessage(final TransformBlockPacket message, final MessageContext ctx) {
-	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
+	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
 	        mainThread.addScheduledTask(new Runnable() {
 	            @Override
 	            public void run() {
-	            	ctx.getServerHandler().playerEntity.world.setBlockState(new BlockPos(message.x,message.y,message.z), (IBlockState) (Block.getBlockById(message.blockID).getBlockState().getBaseState()));
+	            	ctx.getServerHandler().player.world.setBlockState(new BlockPos(message.x,message.y,message.z), (IBlockState) (Block.getBlockById(message.blockID).getBlockState().getBaseState()));
 	        		}
 	        });		return null;
 		}

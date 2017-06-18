@@ -3,6 +3,9 @@ package common.legobmw99.stormlight;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import common.legobmw99.stormlight.handlers.StormlightTickHandler;
+import common.legobmw99.stormlight.util.Registry;
+import common.legobmw99.stormlight.util.Surges;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -11,10 +14,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import common.legobmw99.stormlight.handlers.StormlightTickHandler;
-import common.legobmw99.stormlight.util.Registry;
-import common.legobmw99.stormlight.util.Surges;
 
 @Mod(modid = Stormlight.MODID, version = Stormlight.VERSION)
 public class Stormlight {
@@ -76,7 +75,6 @@ public class Stormlight {
 	        public void init(FMLInitializationEvent e) {
 	    		MinecraftForge.EVENT_BUS.register(new StormlightTickHandler());
 	    		Registry.registerEffect();
-	    		Registry.initRecipies();
 	        }
 
 	        public void postInit(FMLPostInitializationEvent e) {

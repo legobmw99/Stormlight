@@ -51,18 +51,18 @@ public TeleportPlayerPacket(){}
 
 		@Override
 		public IMessage onMessage(final TeleportPlayerPacket message, final MessageContext ctx) {
-	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
+	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
 	        mainThread.addScheduledTask(new Runnable() {
 	            @Override
 	            public void run() {
-	        		EntityPlayerMP player = (EntityPlayerMP) ctx.getServerHandler().playerEntity.world.getEntityByID(message.entityID);
+	        		EntityPlayerMP player = (EntityPlayerMP) ctx.getServerHandler().player.world.getEntityByID(message.entityID);
 	        		if (player == null) {
 	        			return;
 	        		} else {
 	        			if(message.shiftHeld == 0){
-	        			EntityEnderPearl entityenderpearl = new EntityEnderPearl(ctx.getServerHandler().playerEntity.world, player);
+	        			EntityEnderPearl entityenderpearl = new EntityEnderPearl(ctx.getServerHandler().player.world, player);
 	                    entityenderpearl.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 3.0F, 0.0F);
-	                    ctx.getServerHandler().playerEntity.world.spawnEntity(entityenderpearl);
+	                    ctx.getServerHandler().player.world.spawnEntity(entityenderpearl);
 	        			} else {
 	        				if(player.dimension != 0){
 	        					player.changeDimension(0);
@@ -70,7 +70,7 @@ public TeleportPlayerPacket(){}
 	        				if(player.getBedLocation() != null && player.getBedSpawnLocation(player.world, player.getBedLocation(), false) != null){
 	        					player.connection.setPlayerLocation(player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getX(),player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getY(),player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getZ(), player.cameraYaw, player.cameraPitch);
 	        				} else {
-	        					player.connection.setPlayerLocation(ctx.getServerHandler().playerEntity.world.getSpawnPoint().getX(),ctx.getServerHandler().playerEntity.world.getSpawnPoint().getY(),ctx.getServerHandler().playerEntity.world.getSpawnPoint().getZ(), player.cameraYaw, player.cameraPitch);
+	        					player.connection.setPlayerLocation(ctx.getServerHandler().player.world.getSpawnPoint().getX(),ctx.getServerHandler().player.world.getSpawnPoint().getY(),ctx.getServerHandler().player.world.getSpawnPoint().getZ(), player.cameraYaw, player.cameraPitch);
 	        				}
 	        			}
 	        		}            
