@@ -1,21 +1,5 @@
 package common.legobmw99.stormlight.util;
 
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import org.lwjgl.input.Keyboard;
 
 import common.legobmw99.stormlight.effects.effectStormlight;
@@ -28,15 +12,26 @@ import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
 import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.potion.Potion;
+import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Registry {
 	
-	public static void initItems(FMLPreInitializationEvent e){
+	public static void initItems(Register e){
 		for (int meta = 0; meta < Bladetype.length; meta++) {
-			itemBlade = new Honorblade(SHARD, Bladetype[meta], e);
+			e.getRegistry().register(itemBlade = new Honorblade(SHARD, Bladetype[meta], e));
 		}
 		for (int meta = 0; meta < Spheretype.length; meta++) {
-			itemSphere = new Sphere(Spheretype[meta], e);
+			e.getRegistry().register(itemSphere = new Sphere(Spheretype[meta], e));
 		}
 	}
 	
@@ -68,8 +63,8 @@ public class Registry {
         ClientRegistry.registerKeyBinding(Reset);
         ClientRegistry.registerKeyBinding(Recall);
 	}
-	public static void registerEffect() {
-		effectStormlight = (new effectStormlight(false, 0)).setPotionName("effect.stormlight");	
+	public static void registerEffect(Register event) {
+		event.getRegistry().register(effectStormlight = (new effectStormlight(false, 0)).setPotionName("effect.stormlight"));	
 
 	}
 	

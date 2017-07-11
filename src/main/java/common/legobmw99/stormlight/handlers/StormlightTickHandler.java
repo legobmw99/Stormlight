@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -43,7 +44,17 @@ public class StormlightTickHandler {
 			}
 		}
 	}
-
+	
+    @SubscribeEvent
+    public void onRegisterItems(RegistryEvent.Register<Item> event){
+    	Registry.initItems(event);
+    	System.out.println("Registering Items");
+    }
+    @SubscribeEvent
+    public void onRegister(RegistryEvent.Register<Potion> event){
+		Registry.registerEffect(event);
+    }
+    
 	@SubscribeEvent
 	public void onEntityUpdate(LivingUpdateEvent event){
 		if(event.getEntityLiving().isPotionActive(Registry.effectStormlight)){

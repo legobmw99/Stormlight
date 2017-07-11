@@ -46,9 +46,9 @@ public class Stormlight {
 	    
 	    public static class CommonProxy {
 	        public void preInit(FMLPreInitializationEvent e) {
-	        	Registry.initItems(e);
 	        	Registry.registerPackets();
-	        	
+	    		MinecraftForge.EVENT_BUS.register(new StormlightTickHandler());
+
 	        	Potion[] potionTypes = null;
 
 	    		for (Field f : Potion.class.getDeclaredFields()) {
@@ -73,8 +73,6 @@ public class Stormlight {
 	        }
 
 	        public void init(FMLInitializationEvent e) {
-	    		MinecraftForge.EVENT_BUS.register(new StormlightTickHandler());
-	    		Registry.registerEffect();
 	        }
 
 	        public void postInit(FMLPostInitializationEvent e) {

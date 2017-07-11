@@ -1,7 +1,8 @@
 package common.legobmw99.stormlight.items;
 
+import common.legobmw99.stormlight.Stormlight;
+import common.legobmw99.stormlight.util.Registry;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -12,23 +13,23 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import common.legobmw99.stormlight.util.Registry;
+import net.minecraftforge.event.RegistryEvent.Register;
 
 public class Sphere extends Item{
-	public Sphere(String type, FMLPreInitializationEvent e){
+	public Sphere(String type, Register e){
 		super();
 		setCreativeTab(Registry.tabStormlight);
-		setRegistryName("sphere." + type);
+		setRegistryName(new ResourceLocation(Stormlight.MODID,"sphere." + type));
 		setUnlocalizedName("sphere." + type);
 		setMaxStackSize(16);
-		GameRegistry.register(this);
-		if(e.getSide() == Side.CLIENT){
+		
+		//this is literally so awful
+		try{
 			ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+		} catch (NoClassDefFoundError ex){
 		}
 	}
 	@Override

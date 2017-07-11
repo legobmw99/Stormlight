@@ -4,32 +4,29 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.util.Registry;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.RegistryEvent.Register;
 
 public class Honorblade extends ItemSword {
 
-	public Honorblade(ToolMaterial material, String type, FMLPreInitializationEvent e) {
+	public Honorblade(ToolMaterial material, String type, Register e) {
 		super(material);
 		setCreativeTab(Registry.tabStormlight);
-		setRegistryName("honorblade." + type);
+		setRegistryName(new ResourceLocation(Stormlight.MODID,"honorblade." + type));
 		setUnlocalizedName("honorblade." + type);
-		GameRegistry.register(this);
 		// Janky fix for rendering the way that I am creating multiple swords
-		if (e.getSide() == Side.CLIENT) {
-			ModelLoader.setCustomModelResourceLocation(this, 0,
-					new ModelResourceLocation(getRegistryName(), "inventory"));
+		//this is literally so awful
+		try{
+			ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+		} catch (NoClassDefFoundError ex){
 		}
 	}
 
