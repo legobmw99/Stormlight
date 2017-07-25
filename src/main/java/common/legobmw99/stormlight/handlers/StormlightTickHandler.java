@@ -1,13 +1,20 @@
 package common.legobmw99.stormlight.handlers;
 
+import java.util.List;
+
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.util.Registry;
+import elucent.albedo.event.GatherLightsEvent;
+import elucent.albedo.lighting.Light;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +24,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -45,10 +53,32 @@ public class StormlightTickHandler {
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
+	@Optional.Method(modid="albedo")
+	@SubscribeEvent
+	public void onLightGather(GatherLightsEvent event){
+		List<EntityPlayer> pList = Minecraft.getMinecraft().player.world.playerEntities;
+		for(EntityPlayer p: pList){
+			if(p.isPotionActive(Registry.effectStormlight)){
+				event.getLightList().add(Light.builder().pos(p).radius(3.0F).color(0.2F, 0.3F, 0.5F).build());
+			}
+		}
+		List<Entity> eList = Minecraft.getMinecraft().player.world.getLoadedEntityList();
+		for(Entity e: eList){
+			if(e instanceof EntityItem){
+				if(((EntityItem)e).getItem().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:sphere.charged")))){
+					event.getLightList().add(Light.builder().pos(e).radius(1.5F).color(0.2F, 0.3F, 0.5F).build());
+				}
+			}
+		}
+
+	}
+
+
+	
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> event){
     	Registry.initItems(event);
-    	System.out.println("Registering Items");
     }
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Potion> event){
@@ -215,5 +245,3 @@ public class StormlightTickHandler {
 		}
 	}
 }
-
-

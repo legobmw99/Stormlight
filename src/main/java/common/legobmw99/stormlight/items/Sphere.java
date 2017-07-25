@@ -52,7 +52,7 @@ public class Sphere extends Item{
 	        return new ActionResult(EnumActionResult.FAIL, playerIn.getHeldItem(hand));		
 			}
 	    }
-
+	
 	
 	@Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)

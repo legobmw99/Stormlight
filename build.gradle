@@ -37,7 +37,16 @@ minecraft {
     makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+repositories {
+    maven {
+        url 'https://repo.elytradev.com/'
+    }
+}
+
 dependencies {
+
+    provided 'elucent:albedo:2.0-SNAPSHOT'
+
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
