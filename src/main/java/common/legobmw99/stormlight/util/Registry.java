@@ -2,7 +2,10 @@ package common.legobmw99.stormlight.util;
 
 import org.lwjgl.input.Keyboard;
 
+import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.effects.effectStormlight;
+import common.legobmw99.stormlight.entity.RenderSpren;
+import common.legobmw99.stormlight.entity.EntitySpren;
 import common.legobmw99.stormlight.items.Honorblade;
 import common.legobmw99.stormlight.items.Sphere;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
@@ -14,13 +17,18 @@ import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
 import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Biomes;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -49,11 +57,18 @@ public class Registry {
 
 	}
 	
+	public static void registerEntities(){
+		int id = 1;
+        EntityRegistry.registerModEntity(new ResourceLocation(Stormlight.MODID, "Spren"), EntitySpren.class, "Spren", id++, Stormlight.instance, 64, 3, true, 0x996600, 0x00ff00);
+        EntityRegistry.addSpawn(EntitySpren.class, 25, 1, 1, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.ICE_PLAINS, Biomes.TAIGA, Biomes.FOREST, Biomes.DESERT,Biomes.JUNGLE,Biomes.MESA,Biomes.SAVANNA,Biomes.EXTREME_HILLS,Biomes.SWAMPLAND);
+
+	}
 	
     @SideOnly(Side.CLIENT)
 	public static void registerRenders(){
-    	
+        RenderingRegistry.registerEntityRenderingHandler(EntitySpren.class, RenderSpren.FACTORY);
 	}
+    
 	public static void initKeybindings(){
 		BindingOne = new KeyBinding("key.BindingOne", Keyboard.KEY_F, "key.categories.stormlight");
 		BindingTwo = new KeyBinding("key.BindingTwo", Keyboard.KEY_G, "key.categories.stormlight");
@@ -64,6 +79,7 @@ public class Registry {
         ClientRegistry.registerKeyBinding(Reset);
         ClientRegistry.registerKeyBinding(Recall);
 	}
+	
 	public static void registerEffect(Register event) {
 		event.getRegistry().register(effectStormlight = (new effectStormlight(false, 0)).setPotionName("effect.stormlight"));	
 

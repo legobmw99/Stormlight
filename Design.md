@@ -27,12 +27,15 @@ Create a mod which implements Surgebinding from Brandon Sanderson's *The Stormli
 * Simply inhaling Stormlight should grant some status effects.
 * Inhale Stormlight by clicking gems. 
 * Stormlight is used by surges and decreases over time.
-* Shardblades should be able to be summoned and dismissed.
+* Shardblades should be able to be summoned and dismissed. Dropping a shardblade counts as dismissal
+  * Stored in enderchests or as a single boolean in the Capability
 ### Crafting
 Gems are made from glass and a diamond or emerald. Creates tiny spheres (8?).
 ### Becoming a Surgebinder
 Difficult. Perhaps requires certain achievements, as a kind of skill-tree (Oaths). Easy way out is to say Honorblades only.
+### Spren
+ * Tiny, cube entities of different colors. Spawn randomly? Need more thought, but probably will be "tameable" through something heroic, a nether star or something
 ### Implementation
 Two options:
 1. Easy. Honorblades only, stormlight is a status effect
-2. Harder. Bonding and some sort of NBT data.
+2. Harder. Bonding and some sort of NBT data. A Capability with several fields - a Type field [1-10], power [0-5] and blade stored [0-1] at least.

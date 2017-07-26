@@ -1,0 +1,281 @@
+package common.legobmw99.stormlight.entity;
+
+import javax.annotation.Nullable;
+
+import elucent.albedo.lighting.ILightProvider;
+import elucent.albedo.lighting.Light;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIFollow;
+import net.minecraft.entity.ai.EntityAIFollowOwnerFlying;
+import net.minecraft.entity.ai.EntityAILandOnOwnersShoulder;
+import net.minecraft.entity.ai.EntityAIPanic;
+import net.minecraft.entity.ai.EntityAISit;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWaterFlying;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.ai.EntityFlyHelper;
+import net.minecraft.entity.passive.EntityFlying;
+import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateFlying;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
+public class EntitySpren extends EntityTameable implements EntityFlying, ILightProvider {
+
+	private static final DataParameter<Integer> SPREN_TYPE = EntityDataManager.createKey(EntitySpren.class,
+			DataSerializers.VARINT);
+	
+	private static final float[][] colors = {{0.55F,0.70F,0.38F},{0.98F,0.58F,0.09F},{0.38F,0.38F,0.38F},{},{},{},{},{},{},{}};
+
+	public EntitySpren(World worldIn) {
+		super(worldIn);
+		this.setSize(0.6F, 1.3F);
+		this.setTamed(false);
+        this.moveHelper = new EntityFlyHelper(this);
+		//this.setHomePosAndDistance(getPosition(), 15);
+	}
+	
+	
+
+	@Override
+	protected void entityInit() {
+		super.entityInit();
+		this.getDataManager().register(SPREN_TYPE, Integer.valueOf(0));
+	}
+	
+	@Override
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata){
+		int type;
+		switch (Biome.getIdForBiome(this.getEntityWorld().getBiome(getPosition()))) {
+		case 1: // Plains
+			type = 0; //Windrunners
+			break;
+		case 4: // Forest
+			type = 1; //Skybreakers
+			break;
+		case 2: // Desert
+			type = 2; //Dustbringers
+			break;
+		case 21: // Jungle
+			type = 3; //Edgedancers
+			break;
+		case 5: // Taiga
+			type = 4; //Truthwatchers
+			break;
+		case 12: // Ice plains
+			type = 5; //Lightweavers
+			break;
+		case 37: // Mesa
+			type = 6; //Elsecallers
+			break;
+		case 6: // Swamp
+			type = 7; //Willshapers
+			break;
+		case 3: // Extreme hills
+			type = 8; //Stonewards
+			break;
+		case 35: // Savanna
+			type = 9; //Bondsmiths
+			break;
+
+		default:
+			type = this.rand.nextInt(9);
+		}
+        this.setType(type);
+        return super.onInitialSpawn(difficulty, livingdata);
+    }
+	
+	@Override
+    protected void initEntityAI(){
+        this.aiSit = new EntityAISit(this);
+        this.tasks.addTask(0, new EntityAIPanic(this, 1.25D));
+        this.tasks.addTask(0, new EntityAISwimming(this));
+        this.tasks.addTask(1, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(2, this.aiSit);
+        this.tasks.addTask(2, new EntityAIFollowOwnerFlying(this, 1.0D, 5.0F, 1.0F));
+        this.tasks.addTask(2, new EntityAIWanderAvoidWaterFlying(this, 1.0D));
+        this.tasks.addTask(3, new EntityAIFollow(this, 1.0D, 3.0F, 7.0F));
+    }
+
+	@Override
+	public EntityAgeable createChild(EntityAgeable ageable) {
+		return null;
+	}
+
+	public void setType(int type) {
+		this.getDataManager().set(SPREN_TYPE, Integer.valueOf(type));
+	}
+
+	public int getType() {
+		return this.getDataManager().get(SPREN_TYPE).intValue();
+	}
+
+	@Override
+	protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
+        this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4000000059604645D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
+        
+		if(isTamed()){
+        	this.setEntityInvulnerable(true);
+		} 
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(18.0D);
+		
+	}
+
+	@Override
+	public int getMaxSpawnedInChunk() {
+		return 1;
+	}
+	
+	@Override
+    protected PathNavigate createNavigator(World worldIn)
+    {
+        PathNavigateFlying pathnavigateflying = new PathNavigateFlying(this, worldIn);
+        pathnavigateflying.setCanOpenDoors(true);
+        pathnavigateflying.setCanFloat(true);
+        pathnavigateflying.setCanEnterDoors(true);
+        return pathnavigateflying;
+    }
+	
+	@Override
+    protected boolean canTriggerWalking(){
+        return false;
+    }
+	
+	@Override
+    public void fall(float distance, float damageMultiplier){}
+
+	@Override
+    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos){}
+
+	@Override
+    public void setTamed(boolean tamed){
+        super.setTamed(tamed);
+        if (tamed){
+        	this.setEntityInvulnerable(true);
+        }
+    }
+	
+	@Override
+	public float getEyeHeight(){
+		return 0.8F;
+	}
+	
+	@Override
+	public boolean processInteract(EntityPlayer player, EnumHand hand) {
+		ItemStack itemstack = player.getHeldItem(hand);
+		if (isTamed()) {
+			if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
+				this.aiSit.setSitting(!this.isSitting());
+				this.isJumping = false;
+				this.navigator.clearPathEntity();
+				this.setAttackTarget((EntityLivingBase) null);
+			}
+		} else if (itemstack.getItem() == Items.NETHER_STAR && getType() > 0 /*TODO add check to see if already stormpowerful*/) {
+			if (!player.capabilities.isCreativeMode) {
+				itemstack.shrink(1);
+			}
+			if (!this.world.isRemote) {
+				if (!net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
+					this.setTamedBy(player);
+					this.navigator.clearPathEntity();
+					this.setAttackTarget((EntityLivingBase) null);
+					this.aiSit.setSitting(true);
+					this.setHealth(20.0F);
+					this.playTameEffect(true);
+					this.world.setEntityState(this, (byte) 7);
+				} else {
+					this.playTameEffect(false);
+					this.world.setEntityState(this, (byte) 6);
+				}
+				return true;
+			}
+		}
+		return super.processInteract(player, hand);
+	}
+	
+
+	@Override
+	public boolean isBreedingItem(ItemStack stack) {
+		return false;
+	}
+
+	@Override
+    public boolean attackEntityFrom(DamageSource source, float amount){
+        if (this.isEntityInvulnerable(source))
+        {
+            return false;
+        }
+        else
+        {
+            if (this.aiSit != null)
+            {
+                this.aiSit.setSitting(false);
+            }
+
+            return super.attackEntityFrom(source, amount);
+        }
+    }
+    
+	@Override
+	public void writeEntityToNBT(NBTTagCompound compound) {
+		super.writeEntityToNBT(compound);
+		compound.setInteger("TYPE", this.getType());
+	}
+
+	@Override
+	public void readEntityFromNBT(NBTTagCompound compound) {
+		super.readEntityFromNBT(compound);
+		this.setType(compound.getInteger("TYPE"));
+	}
+	
+	@Override
+    public SoundCategory getSoundCategory(){
+        return SoundCategory.NEUTRAL;
+    }
+
+    @Override
+    public boolean canBePushed(){
+        return true;
+    }
+
+	@Override
+	@Nullable
+	protected ResourceLocation getLootTable() {
+		return null;
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Optional.Method(modid = "albedo")
+	@Override
+	public Light provideLight() {
+
+		return Light.builder().color(/*colors[this.getType()][0],colors[this.getType()][1],colors[this.getType()][2]*/0.55F,0.70F,0.38F).radius(4).pos(posX,posY + this.height/2,posZ).build();
+	}
+}

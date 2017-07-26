@@ -14,8 +14,8 @@ public class effectStormlight extends Potion {
 	public effectStormlight(boolean isBadEffectIn, int liquidColorIn) {
 		super(isBadEffectIn, liquidColorIn);
 		this.setBeneficial();
-		this.setIconIndex(0,0);
-		this.setRegistryName( new ResourceLocation(Stormlight.MODID, "effect.stormlight"));
+		//this.setIconIndex(0,0);
+		this.setRegistryName(new ResourceLocation(Stormlight.MODID, "effect.stormlight"));
 	}
 	
 
@@ -23,10 +23,11 @@ public class effectStormlight extends Potion {
 	@SideOnly(Side.CLIENT)
 	public boolean hasStatusIcon() 
 	{
-	    Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Stormlight.MODID, "/textures/gui/effect.png"));
-		this.setIconIndex(0,0);
+	    Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Stormlight.MODID, "textures/gui/effect.png"));
+		//this.setIconIndex(0,0);
 	    return true;
 	}
+	
 	
 
 }

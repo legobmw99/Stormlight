@@ -14,6 +14,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -60,14 +61,18 @@ public class StormlightTickHandler {
 		List<EntityPlayer> pList = Minecraft.getMinecraft().player.world.playerEntities;
 		for(EntityPlayer p: pList){
 			if(p.isPotionActive(Registry.effectStormlight)){
-				event.getLightList().add(Light.builder().pos(p).radius(3.0F).color(0.2F, 0.3F, 0.5F).build());
+				event.getLightList().add(Light.builder().pos(p).radius(4.0F).color(0.4F, 0.6F, 1.0F).build());
 			}
 		}
 		List<Entity> eList = Minecraft.getMinecraft().player.world.getLoadedEntityList();
 		for(Entity e: eList){
 			if(e instanceof EntityItem){
 				if(((EntityItem)e).getItem().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:sphere.charged")))){
-					event.getLightList().add(Light.builder().pos(e).radius(1.5F).color(0.2F, 0.3F, 0.5F).build());
+					event.getLightList().add(Light.builder().pos(e).radius(2F).color(0.4F, 0.6F, 1.0F).build());
+				}
+			} else if (e instanceof EntityItemFrame){
+				if(((EntityItemFrame)e).getDisplayedItem().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:sphere.charged")))){
+					event.getLightList().add(Light.builder().pos(e).radius(2F).color(0.4F, 0.6F, 1.0F).build());
 				}
 			}
 		}
