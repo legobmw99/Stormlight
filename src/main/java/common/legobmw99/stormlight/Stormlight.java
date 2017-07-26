@@ -32,6 +32,8 @@ public class Stormlight {
 	@Mod.Instance
 	public static Stormlight instance;
 
+	@CapabilityInject(StormlightCapability.class)
+	public static final Capability<StormlightCapability> PLAYER_CAP = null;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

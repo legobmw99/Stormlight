@@ -7,6 +7,7 @@ import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.util.Registry;
+import common.legobmw99.stormlight.util.StormlightCapability;
 import elucent.albedo.event.GatherLightsEvent;
 import elucent.albedo.lighting.Light;
 import net.minecraft.client.Minecraft;
@@ -21,10 +22,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +38,22 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StormlightTickHandler {
 
+	@SubscribeEvent
+	public void onEntityAttachCapability(AttachCapabilitiesEvent<Entity> event){
+		if (event.getObject() instanceof EntityPlayer && !event.getObject().hasCapability(Stormlight.PLAYER_CAP, null)) {
+            event.addCapability(StormlightCapability.IDENTIFIER, new StormlightCapability());
+        }
+	}
+	
+    @SubscribeEvent
+    public void onPlayerClone(PlayerEvent.Clone event) {
+    	StormlightCapability oldCap = StormlightCapability.forPlayer(event.getOriginal()); // the dead player's cap
+    	StormlightCapability cap = StormlightCapability.forPlayer(event.getEntityPlayer()); // the clone's cap
+        if (oldCap.getType() >= 0) {
+            cap.setType(oldCap.getType()); // make sure the new player has the same  status
+            cap.setProgression(oldCap.getProgression());
+        }
+      }
 
 	@SubscribeEvent
 	public void onDamage(LivingHurtEvent event) {
