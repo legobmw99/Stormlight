@@ -1,5 +1,5 @@
 {
-    "parent": "stormlight:item/honorblade",
+    "parent": "stormlight:item/shardblade",
     "textures": {
         "layer0": "stormlight:items/stoneward"
     }

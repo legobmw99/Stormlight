@@ -23,7 +23,7 @@ public class effectStormlight extends Potion {
 	@SideOnly(Side.CLIENT)
 	public boolean hasStatusIcon() 
 	{
-	    Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Stormlight.MODID, "textures/gui/effect.png"));
+	    Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Stormlight.MODID, "gui/effect.png"));
 		//this.setIconIndex(0,0);
 	    return true;
 	}

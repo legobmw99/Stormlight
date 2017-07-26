@@ -9,15 +9,15 @@ itemGroup.Stormlight=Stormlight
 item.sphere.dun.name=Dun Sphere
 item.sphere.charged.name=Charged Sphere
 
-item.honorblade.windrunners.name=Honorblade of the Windrunners
-item.honorblade.skybreakers.name=Honorblade of the Skybreakers
-item.honorblade.edgedancers.name=Honorblade of the Edgedancers
-item.honorblade.lightweavers.name=Honorblade of the Lightweavers
-item.honorblade.elsecallers.name=Honorblade of the Elsecallers
-item.honorblade.stonewards.name=Honorblade of the Stonewards
-item.honorblade.dustbringers.name=Honorblade of the Dustbringers
-item.honorblade.truthwatchers.name=Honorblade of the Truthwatchers
-item.honorblade.bondsmiths.name=Honorblade of the Bondsmiths
-item.honorblade.willshapers.name=Honorblade of the Willshapers
+item.shardblade.windrunners.name=Shardblade of the Windrunners
+item.shardblade.skybreakers.name=Shardblade of the Skybreakers
+item.shardblade.edgedancers.name=Shardblade of the Edgedancers
+item.shardblade.lightweavers.name=Shardblade of the Lightweavers
+item.shardblade.elsecallers.name=Shardblade of the Elsecallers
+item.shardblade.stonewards.name=Shardblade of the Stonewards
+item.shardblade.dustbringers.name=Shardblade of the Dustbringers
+item.shardblade.truthwatchers.name=Shardblade of the Truthwatchers
+item.shardblade.bondsmiths.name=Shardblade of the Bondsmiths
+item.shardblade.willshapers.name=Shardblade of the Willshapers
 
 effect.stormlight=Stormlight

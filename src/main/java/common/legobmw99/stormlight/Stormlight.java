@@ -3,7 +3,8 @@ package common.legobmw99.stormlight;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import common.legobmw99.stormlight.handlers.StormlightTickHandler;
+import common.legobmw99.stormlight.handlers.ClientTickHandler;
+import common.legobmw99.stormlight.handlers.CommonTickHandler;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
 import common.legobmw99.stormlight.util.Surges;
@@ -53,7 +54,7 @@ public class Stormlight {
 	public static class CommonProxy {
 		public void preInit(FMLPreInitializationEvent e) {
 			Registry.registerPackets();
-			MinecraftForge.EVENT_BUS.register(new StormlightTickHandler());
+			MinecraftForge.EVENT_BUS.register(new CommonTickHandler());
 			Registry.registerEntities();
 
 			Potion[] potionTypes = null;
@@ -90,19 +91,17 @@ public class Stormlight {
 		@Override
 		public void preInit(FMLPreInitializationEvent e) {
 			super.preInit(e);
-
+			MinecraftForge.EVENT_BUS.register(new ClientTickHandler());
 			OBJLoader.INSTANCE.addDomain(MODID);
-			// Typically initialization of models and such goes here:
-			Registry.registerRenders();
-			Registry.initKeybindings();
 			Stormlight.surges = new Surges();
+			Registry.registerEntityRenders();
+			Registry.initKeybindings();
 		}
 
 		@Override
 		public void init(FMLInitializationEvent e) {
 			super.init(e);
-
-			// Initialize our input handler so we can listen to keys
+			Registry.registerItemRenders();
 		}
 	}
 
