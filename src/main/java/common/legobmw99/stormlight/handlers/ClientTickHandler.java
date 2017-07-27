@@ -35,13 +35,14 @@ public class ClientTickHandler {
 	public void onEntityRenderPre(RenderLivingEvent.Pre event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof EntitySpren) {
+			EntitySpren e = (EntitySpren) entity;
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GlStateManager.enableNormalize();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
 					GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GlStateManager.color(/* Use same colors as lights to change mob */1, 0, 0, 0.5F);
+			GlStateManager.color(e.getRed(e.getType()), e.getGreen(e.getType()),e.getBlue(e.getType()), 0.5F);
 		}
 	}
 

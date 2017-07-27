@@ -50,8 +50,17 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	private static final DataParameter<Integer> SPREN_TYPE = EntityDataManager.createKey(EntitySpren.class,
 			DataSerializers.VARINT);
 
-	private static final float[][] colors = { { 0.55F, 0.70F, 0.38F }, { 0.98F, 0.58F, 0.09F }, { 0.38F, 0.38F, 0.38F },
-			{}, {}, {}, {}, {}, {}, {} };
+	private static final float[][] colors = { 
+			{ 0.55F, 0.70F, 0.38F }, 
+			{0.98F, 0.58F, 0.09F }, 
+			{0.38F, 0.38F, 0.38F },
+			{1F,1F,1F},
+			{1F,1F,1F},
+			{1F,1F,1F},
+			{1F,1F,1F},
+			{1F,1F,1F},
+			{1F,1F,1F},
+			{1F,1F,1F}};
 
 	public EntitySpren(World worldIn) {
 		super(worldIn);
@@ -284,6 +293,19 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 					this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2);
 		}
 	}
+	
+	@SideOnly(Side.CLIENT)
+	public float getRed(int Type){
+		return colors[Type][0];
+	}
+	@SideOnly(Side.CLIENT)
+	public float getGreen(int Type){
+		return colors[Type][1];
+	}	
+	@SideOnly(Side.CLIENT)
+	public float getBlue(int Type){
+		return colors[Type][2];
+	}
 
 	@Override
 	public boolean canBePushed() {
@@ -300,11 +322,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	@Optional.Method(modid = "albedo")
 	@Override
 	public Light provideLight() {
-
 		return Light.builder()
-				.color(/*
-						 * colors[this.getType()][0],colors[this.getType()][1],
-						 * colors[this.getType()][2]
-						 */0.55F, 0.70F, 0.38F).radius(4).pos(posX, posY + this.height / 2, posZ).build();
+				.color(getRed(getType()), getGreen(getType()), getBlue(getType())).radius(4).pos(posX, posY + this.height / 2, posZ).build();
 	}
 }
