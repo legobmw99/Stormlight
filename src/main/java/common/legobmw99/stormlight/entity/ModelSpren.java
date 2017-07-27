@@ -20,7 +20,7 @@ public class ModelSpren extends ModelBase{
         this.renderer = new ModelRenderer(this, 0, 0);
         this.renderer.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
         this.renderer.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.renderer.offsetY = 0.5F;
+        this.renderer.offsetY = 1F;
 	}
 	
 	@Override
@@ -31,11 +31,11 @@ public class ModelSpren extends ModelBase{
 
         if (spren.isSitting())
         {
-            this.renderer.offsetY = 1.0F;
+            this.renderer.offsetY = 1.5F;
         }
         else
         {
-            this.renderer.offsetY = 0.5F;
+            this.renderer.offsetY = 1F;
         }
 
     }

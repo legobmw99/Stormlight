@@ -55,7 +55,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 
 	public EntitySpren(World worldIn) {
 		super(worldIn);
-		this.setSize(0.6F, 1.3F);
+		this.setSize(0.6F, 1F);
 		this.setTamed(false);
 		this.moveHelper = new EntityFlyHelper(this);
 		// this.setHomePosAndDistance(getPosition(), 15);
