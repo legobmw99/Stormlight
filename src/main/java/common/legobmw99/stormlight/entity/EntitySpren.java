@@ -3,6 +3,7 @@ package common.legobmw99.stormlight.entity;
 import javax.annotation.Nullable;
 
 import common.legobmw99.stormlight.Stormlight;
+import common.legobmw99.stormlight.util.Registry;
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
 import net.minecraft.block.state.IBlockState;
@@ -51,23 +52,22 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			DataSerializers.VARINT);
 
 	private static final float[][] colors = { 
-			{ 0.55F, 0.70F, 0.38F }, 
-			{0.98F, 0.58F, 0.09F }, 
+			{0.55F, 0.70F, 0.38F}, 
+			{0.02F, 0.40F, 0.13F},
+			{0.98F, 0.58F, 0.09F}, 
+			{0.33F, 0.48F, 0.04F},
+			{0.04F, 0.40F, 0.35F},
+			{1.00F, 1.00F, 1.00F},
+			{0.85F, 0.27F, 0.08F},
+			{0.03F, 0.98F, 0.70F},
 			{0.38F, 0.38F, 0.38F },
-			{1F,1F,1F},
-			{1F,1F,1F},
-			{1F,1F,1F},
-			{1F,1F,1F},
-			{1F,1F,1F},
-			{1F,1F,1F},
-			{1F,1F,1F}};
+			{0.74F, 0.70F, 0.37F}};
 
 	public EntitySpren(World worldIn) {
 		super(worldIn);
 		this.setSize(0.6F, 1F);
 		this.setTamed(false);
 		this.moveHelper = new EntityFlyHelper(this);
-		// this.setHomePosAndDistance(getPosition(), 15);
 	}
 
 	@Override
@@ -116,6 +116,9 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			type = this.rand.nextInt(9);
 		}
 		this.setType(type);
+		String name = Registry.BLADE_TYPES[getType()];
+		name = name.substring(0, 1).toUpperCase() + name.substring(1);
+		this.setCustomNameTag(name);
 		return super.onInitialSpawn(difficulty, livingdata);
 	}
 

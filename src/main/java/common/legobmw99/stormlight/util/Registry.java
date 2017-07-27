@@ -62,7 +62,7 @@ public class Registry {
 		
 		EntityRegistry.addSpawn(EntitySpren.class, 25, 1, 1, EnumCreatureType.CREATURE, Biomes.PLAINS,
 				Biomes.ICE_PLAINS, Biomes.TAIGA, Biomes.FOREST, Biomes.DESERT, Biomes.JUNGLE, Biomes.MESA,
-				Biomes.SAVANNA, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND);
+				Biomes.SAVANNA, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.MUSHROOM_ISLAND);
 	}
 
 	@SideOnly(Side.CLIENT)
