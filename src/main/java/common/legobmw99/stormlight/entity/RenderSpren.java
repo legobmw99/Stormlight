@@ -20,7 +20,6 @@ public class RenderSpren extends RenderLiving<EntitySpren> {
 
 	@Override
 	protected ResourceLocation getEntityTexture(EntitySpren entity) {
-		
 		return mobTexture;
 	}
 

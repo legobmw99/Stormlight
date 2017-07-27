@@ -274,7 +274,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
-		if (this.rand.nextInt(10) == 0) {
+		if (this.rand.nextInt(15) == 0) {
 			double d0 = this.rand.nextGaussian() * 0.02D;
 			double d1 = this.rand.nextGaussian() * 0.02D;
 			double d2 = this.rand.nextGaussian() * 0.02D;
