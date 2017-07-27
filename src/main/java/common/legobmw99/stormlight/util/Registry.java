@@ -6,8 +6,8 @@ import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.effects.effectStormlight;
 import common.legobmw99.stormlight.entity.EntitySpren;
 import common.legobmw99.stormlight.entity.RenderSpren;
-import common.legobmw99.stormlight.items.Shardblade;
-import common.legobmw99.stormlight.items.Sphere;
+import common.legobmw99.stormlight.items.ItemShardblade;
+import common.legobmw99.stormlight.items.ItemSphere;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.GrowPacket;
@@ -40,8 +40,8 @@ public class Registry {
 
 	public static void initItems(Register e) {
 		e.getRegistry().registerAll(
-				itemBlade = new Shardblade(SHARD), 
-				itemSphere = new Sphere());
+				itemBlade = new ItemShardblade(SHARD), 
+				itemSphere = new ItemSphere());
 	}
 
 	public static void registerPackets() {
@@ -58,7 +58,8 @@ public class Registry {
 	public static void registerEntities() {
 		int id = 1;
 		EntityRegistry.registerModEntity(new ResourceLocation(Stormlight.MODID, "Spren"), EntitySpren.class, "Spren",
-				id++, Stormlight.instance, 64, 3, true, 0x996600, 0x00ff00);
+				id++, Stormlight.instance, 64, 3, true, 0xEDE2FF, 0xC698CE);
+		
 		EntityRegistry.addSpawn(EntitySpren.class, 25, 1, 1, EnumCreatureType.CREATURE, Biomes.PLAINS,
 				Biomes.ICE_PLAINS, Biomes.TAIGA, Biomes.FOREST, Biomes.DESERT, Biomes.JUNGLE, Biomes.MESA,
 				Biomes.SAVANNA, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND);
@@ -98,8 +99,8 @@ public class Registry {
 	public static final String[] BLADE_TYPES = { "windrunners", "skybreakers", "dustbringers", "edgedancers","lightweavers", "elsecallers", "truthwatchers", "bondsmiths", "willshapers", "stonewards" };
 	public static final String[] SPHERE_TYPES = { "dun", "charged"};
 	public static Potion effectStormlight;
-	public static Sphere itemSphere;
-	public static Shardblade itemBlade;
+	public static ItemSphere itemSphere;
+	public static ItemShardblade itemBlade;
 	public static KeyBinding BindingOne;
 	public static KeyBinding BindingTwo;
 	public static KeyBinding Reset;

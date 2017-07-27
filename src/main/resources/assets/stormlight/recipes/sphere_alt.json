@@ -1,7 +1,8 @@
 {
   "result": {
-    "item": "stormlight:sphere.dun",
-    "count": 8
+    "item": "stormlight:sphere",
+    "count": 8,
+    "data": 0
   },
   "pattern": [
     "GGG",

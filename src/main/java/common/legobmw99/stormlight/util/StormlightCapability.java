@@ -14,7 +14,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 public class StormlightCapability implements ICapabilitySerializable<NBTTagCompound>{
 	
-    public static final ResourceLocation IDENTIFIER = new ResourceLocation(Stormlight.MODID, "Surgebinding_Data");
+    public static final ResourceLocation IDENTIFIER = new ResourceLocation(Stormlight.MODID, "surgebinding_data");
     public static final int WINDRUNNERS = 0, SKYBREAKERS = 1, DUSTBRINGERS = 2, EDGEDANCERS = 3, TRUTHWATCHERS = 4, LIGHTWEAVERS = 5, ELSECALLERS = 6, WILLSHAPERS = 7, STONEWARDS = 8, BONDSMITHS = 9;
     
     private int surgebindingType = -1;

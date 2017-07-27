@@ -31,17 +31,17 @@ public class ClientTickHandler {
 		List<EntityPlayer> pList = Minecraft.getMinecraft().player.world.playerEntities;
 		for(EntityPlayer p: pList){
 			if(p.isPotionActive(Registry.effectStormlight)){
-				event.getLightList().add(Light.builder().pos(p).radius(4.0F).color(0.4F, 0.6F, 1.0F).build());
+				event.getLightList().add(Light.builder().pos(p.posX,p.posY+1.0,p.posZ).radius(4.5F).color(0.4F, 0.6F, 1.0F).build());
 			}
 		}
 		List<Entity> eList = Minecraft.getMinecraft().player.world.getLoadedEntityList();
 		for(Entity e: eList){
 			if(e instanceof EntityItem){
-				if(((EntityItem)e).getItem().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:sphere.charged")))){
+				if(((EntityItem)e).getItem().isItemEqual(new ItemStack(Registry.itemSphere, 1 , 1))){
 					event.getLightList().add(Light.builder().pos(e).radius(2F).color(0.4F, 0.6F, 1.0F).build());
 				}
 			} else if (e instanceof EntityItemFrame){
-				if(((EntityItemFrame)e).getDisplayedItem().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:sphere.charged")))){
+				if(((EntityItemFrame)e).getDisplayedItem().isItemEqual(new ItemStack(Registry.itemSphere, 1 , 1))){
 					event.getLightList().add(Light.builder().pos(e).radius(2F).color(0.4F, 0.6F, 1.0F).build());
 				}
 			}

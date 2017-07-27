@@ -18,7 +18,7 @@ Create a mod which implements Surgebinding from Brandon Sanderson's *The Stormli
   3. Division - Breaks stuff. Can divide gollems back into blocks
   4. Abrasion - Can manipulate friction. In effect, speed boosting or climbing ability.
   5. Progression - Accelerates growth or heals. Basically bonemeal or regen
-  6. Illumination - Can create illusions. Fake mobs or player?
+  6. Illumination - Can create illusions. Fake mobs or player? Possible structure recreation (with fallingsand)
   7. Transformation - Turn certain objects into other objects. Danger, Will Robinson.
       * Possible transformations: cobble -> stone. obsidian -> lava. 
   8. Transportation - Able to teleport. Maybe just to spawn or between dimensions?

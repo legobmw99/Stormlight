@@ -20,9 +20,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class Shardblade extends ItemSword {
+public class ItemShardblade extends ItemSword {
 
-	public Shardblade(ToolMaterial material) {
+	public ItemShardblade(ToolMaterial material) {
 		super(material);
 		setCreativeTab(Registry.tabStormlight);
 		setRegistryName(new ResourceLocation(Stormlight.MODID,"shardblade"));

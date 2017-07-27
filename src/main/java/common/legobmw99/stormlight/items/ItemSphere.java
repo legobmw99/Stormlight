@@ -12,7 +12,6 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -21,32 +20,16 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class Sphere extends Item {
-	public Sphere() {
+public class ItemSphere extends Item {
+	public ItemSphere() {
 		super();
 		setCreativeTab(Registry.tabStormlight);
 		setRegistryName(new ResourceLocation(Stormlight.MODID, "sphere"));
 		setMaxStackSize(16);
 		setHasSubtypes(true);
-		// this is literally so awful
-		try {
-			ModelLoader.setCustomModelResourceLocation(this, 0,
-					new ModelResourceLocation(getRegistryName(), "inventory"));
-		} catch (NoClassDefFoundError ex) {
-		}
-	}
-
-	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int meta = itemStack.getItemDamage();
-		if ((meta < 0) || (meta >= Registry.SPHERE_TYPES.length)) {
-			meta = 0;
-		}
-		return "item.sphere" + "." + Registry.SPHERE_TYPES[meta];
 	}
 
 	@Override
@@ -61,8 +44,7 @@ public class Sphere extends Item {
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
-		if (playerIn.getHeldItem(hand).isItemEqual(new ItemStack(this))
-				&& playerIn.getHeldItem(hand).getItemDamage() == 1) {
+		if (playerIn.getHeldItem(hand).getItemDamage() == 1) {
 			playerIn.setActiveHand(hand);
 			return new ActionResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(hand));
 		} else {
@@ -81,7 +63,11 @@ public class Sphere extends Item {
 			}
 		}
 		if (!worldIn.isRemote) {
-			entityLiving.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("stormlight:effect.stormlight"), 4800));
+			if(entityLiving.isPotionActive(Registry.effectStormlight)){
+				entityLiving.addPotionEffect(new PotionEffect(Registry.effectStormlight, Math.min(4800+ entityLiving.getActivePotionEffect(Registry.effectStormlight).getDuration(), 19200)));
+			} else {
+				entityLiving.addPotionEffect(new PotionEffect(Registry.effectStormlight, 4800));
+			}
 		}
 		return stack;
 	}
@@ -98,9 +84,18 @@ public class Sphere extends Item {
 				new ModelResourceLocation(getRegistryName() + ".charged", "inventory"));
 		
 		for (int i = 0; i < Registry.SPHERE_TYPES.length; i++) {        
-			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(this, i,
-					new ModelResourceLocation(getRegistryName() +"." + Registry.SPHERE_TYPES[i], "inventory"));
+			Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
+			.register(this, i, new ModelResourceLocation(getRegistryName() +"." + Registry.SPHERE_TYPES[i], "inventory"));
 		}
+	}
+	
+	@Override
+	public String getUnlocalizedName(ItemStack itemStack) {
+		int meta = itemStack.getItemDamage();
+		if ((meta < 0) || (meta >= Registry.SPHERE_TYPES.length)) {
+			meta = 0;
+		}
+		return "item.sphere" + "." + Registry.SPHERE_TYPES[meta];
 	}
 
 	@Override

@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "stormlight:sphere",
+    "count": 8,
+    "data": 0
+  },
+  "pattern": [
+    "GGG",
+    "GDG",
+    "GGG"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  }
+}

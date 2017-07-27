@@ -1,7 +1,8 @@
 {
   "result": {
-    "item": "stormlight:sphere.dun",
-    "count": 8
+    "item": "stormlight:sphere",
+    "count": 1,
+    "data": 0
   },
   "pattern": [
     "GGG",
@@ -11,7 +12,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "D": {
-      "item": "minecraft:diamond"
+      "item": "minecraft:quartz"
     },
     "G": {
       "item": "minecraft:glass"

@@ -30,7 +30,7 @@ public class Stormlight {
 	@SidedProxy
 	public static CommonProxy proxy;
 
-	@Mod.Instance
+	@Mod.Instance(value = "stormlight")
 	public static Stormlight instance;
 
 	@CapabilityInject(StormlightCapability.class)
@@ -80,6 +80,7 @@ public class Stormlight {
 		}
 
 		public void init(FMLInitializationEvent e) {
+			StormlightCapability.register();
 		}
 
 		public void postInit(FMLPostInitializationEvent e) {

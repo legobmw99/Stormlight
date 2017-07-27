@@ -41,6 +41,7 @@ public class CommonTickHandler {
 	@SubscribeEvent
 	public void onEntityAttachCapability(AttachCapabilitiesEvent<Entity> event){
 		if (event.getObject() instanceof EntityPlayer && !event.getObject().hasCapability(Stormlight.PLAYER_CAP, null)) {
+			System.out.println(Stormlight.PLAYER_CAP);
             event.addCapability(StormlightCapability.IDENTIFIER, new StormlightCapability());
         }
 	}
