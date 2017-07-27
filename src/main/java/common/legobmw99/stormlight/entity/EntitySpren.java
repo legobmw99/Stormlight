@@ -3,6 +3,7 @@ package common.legobmw99.stormlight.entity;
 import javax.annotation.Nullable;
 
 import common.legobmw99.stormlight.Stormlight;
+import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.util.Registry;
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
@@ -111,8 +112,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 		case 35: // Savanna
 			type = 9; // Bondsmiths
 			break;
-
-		default:
+		default: //Mushroom biome, and any other if using spawn egg
 			type = this.rand.nextInt(9);
 		}
 		this.setType(type);
@@ -222,6 +222,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 				if (!net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
 					this.setTamedBy(player);
 					player.getCapability(Stormlight.PLAYER_CAP, null).setType(this.getType());
+					Registry.network.sendTo(new StormlightCapabilityPacket(player.getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) player);
 					this.navigator.clearPathEntity();
 					this.setAttackTarget((EntityLivingBase) null);
 					this.aiSit.setSitting(true);
@@ -244,6 +245,8 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 		if (!this.world.isRemote && this.getOwner() instanceof EntityPlayerMP) {
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setType(-1);
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setProgression(-1);
+			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
+
 		}
 		super.onDeath(cause);
 	}

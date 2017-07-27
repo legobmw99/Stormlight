@@ -13,12 +13,10 @@ import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.GrowPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
+import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
 import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EnumCreatureType;
@@ -53,6 +51,8 @@ public class Registry {
 		network.registerMessage(TeleportPlayerPacket.Handler.class, TeleportPlayerPacket.class, 4, Side.SERVER);
 		network.registerMessage(TransformBlockPacket.Handler.class, TransformBlockPacket.class, 5, Side.SERVER);
 		network.registerMessage(GrowPacket.Handler.class, GrowPacket.class, 6, Side.SERVER);
+		network.registerMessage(StormlightCapabilityPacket.Handler.class, StormlightCapabilityPacket.class, 7, Side.CLIENT);
+
 	}
 
 	public static void registerEntities() {

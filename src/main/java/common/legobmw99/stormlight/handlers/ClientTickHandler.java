@@ -7,9 +7,11 @@ import org.lwjgl.util.Color;
 
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.entity.EntitySpren;
+import common.legobmw99.stormlight.items.ItemShardblade;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.util.Registry;
+import common.legobmw99.stormlight.util.StormlightCapability;
 import elucent.albedo.event.GatherLightsEvent;
 import elucent.albedo.lighting.Light;
 import net.minecraft.client.Minecraft;
@@ -42,7 +44,7 @@ public class ClientTickHandler {
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
 					GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GlStateManager.color(e.getRed(e.getType()), e.getGreen(e.getType()),e.getBlue(e.getType()), 0.5F);
+			GlStateManager.color(e.getRed(e.getType()), e.getGreen(e.getType()), e.getBlue(e.getType()), 0.5F);
 		}
 	}
 
@@ -87,121 +89,119 @@ public class ClientTickHandler {
 		EntityPlayerSP player;
 		player = Minecraft.getMinecraft().player;
 		if (player != null) {
-			// Recall
-			if (Registry.Recall.isPressed()) {
-				if (player.getHeldItemMainhand() != null
-						&& player.getHeldItemMainhand().getUnlocalizedName().contains("honorblade.")) {
-					String type = player.getHeldItemMainhand().getUnlocalizedName().substring(16);
-					Registry.network
-							.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().player.getEntityId(), type, 0));
-				} else {
-					Registry.network
-							.sendToServer(new BoundBladePacket(Minecraft.getMinecraft().player.getEntityId(), "", 1));
+			StormlightCapability cap = StormlightCapability.forPlayer(player);
+			System.out.println(cap.getType());
+			if (cap != null && cap.getType() >= 0
+					&& cap.getProgression() > -2 /* Dummy check, for now */) {
+				// Shardblade
+				if (Registry.Recall.isPressed()) {
+					Registry.network.sendToServer(new BoundBladePacket());
 				}
-			}
-			// Surges
-			if (player.isPotionActive(Registry.effectStormlight)) {
-				// Windrunners
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))) {
-					if (Registry.BindingOne.isPressed()) {
-						if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-							Stormlight.surges.gravitation(player, 1);
-						} else {
-							Stormlight.surges.gravitation(player, 0);
+
+				// Surges
+				if (player.isPotionActive(Registry.effectStormlight)) {
+					// Windrunners
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))) {
+						if (Registry.BindingOne.isPressed()) {
+							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
+								Stormlight.surges.gravitation(player, 1);
+							} else {
+								Stormlight.surges.gravitation(player, 0);
+							}
+						}
+						if (Registry.BindingTwo.isPressed()) {
+
+						}
+
+					}
+					// Skybreakers
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.skybreakers")))) {
+						if (Registry.BindingOne.isPressed()) {
+
+						}
+						if (Registry.BindingTwo.isPressed()) {
+							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
+								Stormlight.surges.gravitation(player, 1);
+							} else {
+								Stormlight.surges.gravitation(player, 0);
+							}
+						}
+
+					}
+					// Elsecallers
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.elsecallers")))) {
+						if (Registry.BindingOne.isPressed()) {
+							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
+								Stormlight.surges.transportation(player, 1);
+							} else {
+								Stormlight.surges.transportation(player, 0);
+							}
+						}
+						if (Registry.BindingTwo.isPressed()) {
+							Stormlight.surges.transformation(player);
 						}
 					}
-					if (Registry.BindingTwo.isPressed()) {
+					// Edgedancers
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.edgedancers")))) {
+						if (Registry.BindingOne.isPressed()) {
+							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
+								Stormlight.surges.progression(player, 1);
+							} else {
+								Stormlight.surges.progression(player, 0);
+							}
+						}
+						if (Registry.BindingTwo.isPressed()) {
 
-					}
-
-				}
-				// Skybreakers
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.skybreakers")))) {
-					if (Registry.BindingOne.isPressed()) {
-
-					}
-					if (Registry.BindingTwo.isPressed()) {
-						if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-							Stormlight.surges.gravitation(player, 1);
-						} else {
-							Stormlight.surges.gravitation(player, 0);
 						}
 					}
+					// Truthwatchers
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.truthwatchers")))) {
+						if (Registry.BindingOne.isPressed()) {
 
-				}
-				// Elsecallers
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.elsecallers")))) {
-					if (Registry.BindingOne.isPressed()) {
-						if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-							Stormlight.surges.transportation(player, 1);
-						} else {
-							Stormlight.surges.transportation(player, 0);
+						}
+						if (Registry.BindingTwo.isPressed()) {
+							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
+								Stormlight.surges.progression(player, 1);
+							} else {
+								Stormlight.surges.progression(player, 0);
+							}
 						}
 					}
-					if (Registry.BindingTwo.isPressed()) {
-						Stormlight.surges.transformation(player);
-					}
-				}
-				// Edgedancers
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.edgedancers")))) {
-					if (Registry.BindingOne.isPressed()) {
-						if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-							Stormlight.surges.progression(player, 1);
-						} else {
-							Stormlight.surges.progression(player, 0);
+					// Lightweavers
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.lightweavers")))) {
+						if (Registry.BindingOne.isPressed()) {
+							Stormlight.surges.transformation(player);
+						}
+						if (Registry.BindingTwo.isPressed()) {
+
 						}
 					}
-					if (Registry.BindingTwo.isPressed()) {
-
-					}
-				}
-				// Truthwatchers
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.truthwatchers")))) {
-					if (Registry.BindingOne.isPressed()) {
-
-					}
-					if (Registry.BindingTwo.isPressed()) {
-						if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-							Stormlight.surges.progression(player, 1);
-						} else {
-							Stormlight.surges.progression(player, 0);
+					// Willshapers
+					if (player.inventory
+							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.willshapers")))) {
+						if (Registry.BindingOne.isPressed()) {
+						}
+						if (Registry.BindingTwo.isPressed()) {
+							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
+								Stormlight.surges.transportation(player, 1);
+							} else {
+								Stormlight.surges.transportation(player, 0);
+							}
 						}
 					}
 				}
-				// Lightweavers
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.lightweavers")))) {
-					if (Registry.BindingOne.isPressed()) {
-						Stormlight.surges.transformation(player);
-					}
-					if (Registry.BindingTwo.isPressed()) {
-
-					}
+				if (Registry.Reset.isPressed()) {
+					Minecraft.getMinecraft().gameSettings.invertMouse = false;
+					Minecraft.getMinecraft().entityRenderer.stopUseShader();
+					Registry.network.sendToServer(
+							new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
 				}
-				// Willshapers
-				if (player.inventory
-						.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.willshapers")))) {
-					if (Registry.BindingOne.isPressed()) {
-					}
-					if (Registry.BindingTwo.isPressed()) {
-						if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-							Stormlight.surges.transportation(player, 1);
-						} else {
-							Stormlight.surges.transportation(player, 0);
-						}
-					}
-				}
-			}
-			if (Registry.Reset.isPressed()) {
-				Minecraft.getMinecraft().gameSettings.invertMouse = false;
-				Minecraft.getMinecraft().entityRenderer.stopUseShader();
-				Registry.network
-						.sendToServer(new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
 			}
 		}
 	}

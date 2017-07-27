@@ -1,6 +1,9 @@
 
 package common.legobmw99.stormlight.network.packets;
 
+import common.legobmw99.stormlight.items.ItemShardblade;
+import common.legobmw99.stormlight.util.Registry;
+import common.legobmw99.stormlight.util.StormlightCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -15,94 +18,41 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class BoundBladePacket implements IMessage {
-	public BoundBladePacket(){}
-
-	
-	
-	private int entityID;
-	private String type;
-	private int sendorrecieve;
-	public BoundBladePacket(int entityID, String type, int sor) {
-
-		this.entityID = entityID;
-		this.type = type;
-		this.sendorrecieve = sor;
+	public BoundBladePacket() {
 	}
+
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		
-
-		entityID =  ByteBufUtils.readVarInt(buf, 5);
-		type = ByteBufUtils.readUTF8String(buf);
-		sendorrecieve =ByteBufUtils.readVarInt(buf, 5);
-
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		
-		ByteBufUtils.writeVarInt(buf, entityID, 5);		
-		ByteBufUtils.writeUTF8String(buf, type);
-		ByteBufUtils.writeVarInt(buf,(int)(sendorrecieve), 5);
-
 	}
 
-	public static class Handler implements IMessageHandler<BoundBladePacket, IMessage>{
+	public static class Handler implements IMessageHandler<BoundBladePacket, IMessage> {
 
 		@Override
 		public IMessage onMessage(final BoundBladePacket message, final MessageContext ctx) {
-	        IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
-	        mainThread.addScheduledTask(new Runnable() {
-	            @Override
-	            public void run() {
-	        		EntityPlayerMP player = (EntityPlayerMP) ctx.getServerHandler().player.world.getEntityByID(message.entityID);
-	        		if (player == null) {
-	        			return;
-	        		} else {
-    					InventoryEnderChest inv = player.getInventoryEnderChest();
-
-	        			switch (message.sendorrecieve){
-	        			case 0:
-	        				//Send to EChest
-	        				if(player.getHeldItemMainhand().isItemEqual(new ItemStack(Item.getByNameOrId("stormlight:honorblade." + message.type)))){
-	        					if(inv != null){
-	        						for(int i=0; i < inv.getSizeInventory(); i++){
-	        							if (inv.getStackInSlot(i).isEmpty()){ 
-	        								inv.setInventorySlotContents(i,player.getHeldItemMainhand());
-	        								player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR,0));
-	        								break;
-	        							} else {
-	        								continue;
-	        							}
-	        						}
-	        					}
-	        				}
-	        			
-	        				break;
-	        			case 1:
-	        				//Get from EChest
-	        				if(player.getHeldItemMainhand().isEmpty()){
-	        					if(inv != null){
-	        						for(int i=0; i < inv.getSizeInventory(); i++){
-	        							if (inv.getStackInSlot(i) != (ItemStack)null){ 
-	        								if(inv.getStackInSlot(i).getUnlocalizedName().contains("honorblade.")){
-
-	        									player.inventory.setInventorySlotContents(player.inventory.currentItem,inv.getStackInSlot(i));
-	        									inv.removeStackFromSlot(i);
-	        									break;
-	        								} else{
-	        									continue;
-	        								}
-	        							}
-	        						}
-	        					}
-	        				}
-	        				break;
-	        			}
-
-	        		}	            
-	        		}
-	        });		return null;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
+			mainThread.addScheduledTask(new Runnable() {
+				@Override
+				public void run() {
+					EntityPlayerMP player = ctx.getServerHandler().player;
+					if (player != null) {
+						StormlightCapability cap = StormlightCapability.forPlayer(player);
+						if (cap != null) {
+							if (cap.getType() >= 0 && cap.isBladeStored()) {
+								player.inventory.addItemStackToInventory(new ItemStack(Registry.itemBlade, 1, cap.getType()));
+								cap.setBladeStored(false);
+							} else if (player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ItemShardblade && player.getHeldItemMainhand().getItemDamage() == cap.getType()){
+								player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR, 0));
+								cap.setBladeStored(true);
+							}
+						}
+					}
+				}
+			});
+			return null;
 		}
 	}
 }
