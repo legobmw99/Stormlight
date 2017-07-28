@@ -25,7 +25,6 @@ public class Stormlight {
 	public static final String VERSION = "@VERSION@";
 	
 	//TODO find a way to not have this be a thing
-	public static Surges surges;
 
 	@SidedProxy
 	public static CommonProxy proxy;
@@ -94,7 +93,6 @@ public class Stormlight {
 			super.preInit(e);
 			MinecraftForge.EVENT_BUS.register(new ClientTickHandler());
 			OBJLoader.INSTANCE.addDomain(MODID);
-			Stormlight.surges = new Surges();
 			Registry.registerEntityRenders();
 			Registry.initKeybindings();
 		}

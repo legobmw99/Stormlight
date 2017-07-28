@@ -10,12 +10,10 @@ import common.legobmw99.stormlight.items.ItemShardblade;
 import common.legobmw99.stormlight.items.ItemSphere;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
-import common.legobmw99.stormlight.network.packets.GrowPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
-import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
-import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
+import common.legobmw99.stormlight.network.packets.SurgeFiredPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.creativetab.CreativeTabs;
@@ -48,10 +46,8 @@ public class Registry {
 		network.registerMessage(MoveEntityPacket.Handler.class, MoveEntityPacket.class, 1, Side.SERVER);
 		network.registerMessage(EffectEntityPacket.Handler.class, EffectEntityPacket.class, 2, Side.SERVER);
 		network.registerMessage(BoundBladePacket.Handler.class, BoundBladePacket.class, 3, Side.SERVER);
-		network.registerMessage(TeleportPlayerPacket.Handler.class, TeleportPlayerPacket.class, 4, Side.SERVER);
-		network.registerMessage(TransformBlockPacket.Handler.class, TransformBlockPacket.class, 5, Side.SERVER);
-		network.registerMessage(GrowPacket.Handler.class, GrowPacket.class, 6, Side.SERVER);
-		network.registerMessage(StormlightCapabilityPacket.Handler.class, StormlightCapabilityPacket.class, 7, Side.CLIENT);
+		network.registerMessage(StormlightCapabilityPacket.Handler.class, StormlightCapabilityPacket.class, 4, Side.CLIENT);
+		network.registerMessage(SurgeFiredPacket.Handler.class, SurgeFiredPacket.class, 7, Side.SERVER);
 
 	}
 
@@ -96,7 +92,7 @@ public class Registry {
 	}
 
 	public static final ToolMaterial SHARD = EnumHelper.addToolMaterial("SHARD", 5, -1, 10.0F, 9.0F, 14);
-	public static final String[] BLADE_TYPES = { "windrunners", "skybreakers", "dustbringers", "edgedancers","lightweavers", "elsecallers", "truthwatchers", "bondsmiths", "willshapers", "stonewards" };
+	public static final String[] BLADE_TYPES = { "windrunners", "skybreakers", "dustbringers", "edgedancers","truthwatchers", "lightweavers", "elsecallers", "willshapers", "stonewards", "bondsmiths"};
 	public static final String[] SPHERE_TYPES = { "dun", "charged"};
 	public static Potion effectStormlight;
 	public static ItemSphere itemSphere;

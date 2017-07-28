@@ -1,102 +1,118 @@
 package common.legobmw99.stormlight.util;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
+import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
+import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
+import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
-import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
-import common.legobmw99.stormlight.network.packets.GrowPacket;
-import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
-import common.legobmw99.stormlight.network.packets.TeleportPlayerPacket;
-import common.legobmw99.stormlight.network.packets.TransformBlockPacket;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class Surges {
-	private LinkedList<Integer>  transformableIn;
-	private LinkedList<Integer>  transformableOut;
-	
 
-	public Surges(){
-		this.buildLists();
-	}
-	
+	private static List<String> transformableIn = buildInList();
+	private static List<String> transformableOut = buildOutList();
 
-	private void buildLists() {
-		this.transformableIn = new LinkedList<Integer>();
-		this.transformableOut = new LinkedList<Integer>();
-
-		this.transformableIn.add(Blocks.COBBLESTONE.getStateId(Blocks.COBBLESTONE.getDefaultState()));
-		this.transformableOut.add(Blocks.STONE.getStateId(Blocks.STONE.getDefaultState()));
-		
-		this.transformableIn.add(Blocks.SANDSTONE.getStateId(Blocks.SANDSTONE.getDefaultState()));
-		this.transformableOut.add(Blocks.RED_SANDSTONE.getStateId(Blocks.RED_SANDSTONE.getDefaultState()));
-		
-		this.transformableIn.add(Blocks.GRASS.getStateId(Blocks.GRASS.getDefaultState()));
-		this.transformableOut.add(Blocks.MYCELIUM.getStateId(Blocks.MYCELIUM.getDefaultState()));
-		
-		this.transformableIn.add(Blocks.OBSIDIAN.getStateId(Blocks.OBSIDIAN.getDefaultState()));
-		this.transformableOut.add(Blocks.LAVA.getStateId(Blocks.LAVA.getDefaultState()));
-		
+	private static List<String> buildOutList() {
+		List<String> list = new ArrayList<String>();
+		list.add(Blocks.STONE.getRegistryName().toString());
+		list.add(Blocks.RED_SANDSTONE.getRegistryName().toString());
+		list.add(Blocks.MYCELIUM.getRegistryName().toString());
+		list.add(Blocks.LAVA.getRegistryName().toString());
+		list.add(Blocks.HAY_BLOCK.getRegistryName().toString());
+		return list;
 	}
 
+	private static List<String> buildInList() {
+		List<String> list = new ArrayList<String>();
+		list.add(Blocks.COBBLESTONE.getRegistryName().toString());
+		list.add(Blocks.SANDSTONE.getRegistryName().toString());
+		list.add(Blocks.GRASS.getRegistryName().toString());
+		list.add(Blocks.OBSIDIAN.getRegistryName().toString());
+		list.add(Blocks.STONE.getRegistryName().toString());
+		return list;
+	}
 
 	int used = 0;
-	public void gravitation(EntityPlayer player, int i){
-		//Basic lashing
-		if(i == 0){
-			if(player.rotationPitch < -80){
-				//up
+
+	public void gravitation(EntityPlayerMP player, boolean shiftHeld) {
+		if (shiftHeld) {
+			// reverse lashing
+			double range = 10;
+			double x = player.posX;
+			double y = player.posY + 1.5;
+			double z = player.posZ;
+			double factor = 9;
+			List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class,
+					new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
+			for (EntityItem e : items) {
+				e.addVelocity((x - e.posX) / factor, (y - e.posY) / factor, (z - e.posZ) / factor);
+				Registry.network.sendToServer(new MoveEntityPacket((x - e.posX) / factor, (y - e.posY) / factor,
+						(z - e.posZ) / factor, e.getEntityId()));
+
+			}
+
+		} else { // Basic lashing
+			if (player.rotationPitch < -80) {
+				// up
 				Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
 				Minecraft.getMinecraft().gameSettings.invertMouse = true;
-				Registry.network.sendToServer(new EffectEntityPacket(25,25000, 24, Minecraft.getMinecraft().player.getEntityId()));
+				Registry.network.sendToServer(
+						new EffectEntityPacket(25, 25000, 24, Minecraft.getMinecraft().player.getEntityId()));
 				used = 0;
 			} else {
-				if(player.rotationPitch > 80){
-					//down
+				if (player.rotationPitch > 80) {
+					// down
 					Minecraft.getMinecraft().entityRenderer.stopUseShader();
 					Minecraft.getMinecraft().gameSettings.invertMouse = false;
-					if(player.isPotionActive(Potion.getPotionById(25))){
-						if (used == 0){
-							Registry.network.sendToServer(new EffectEntityPacket(25,25000, -1, Minecraft.getMinecraft().player.getEntityId()));
+					if (player.isPotionActive(Potion.getPotionById(25))) {
+						if (used == 0) {
+							Registry.network.sendToServer(new EffectEntityPacket(25, 25000, -1,
+									Minecraft.getMinecraft().player.getEntityId()));
 							used = 1;
-						}  else {
-							Registry.network.sendToServer(new EffectEntityPacket(25,1, 0, Minecraft.getMinecraft().player.getEntityId()));
+						} else {
+							Registry.network.sendToServer(
+									new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
 							used = 0;
 						}
 					}
 				} else {
 					Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
 					EnumFacing enumfacing = entity.getHorizontalFacing();
-					switch (enumfacing){
+					switch (enumfacing) {
 					case SOUTH:
-						//toward positive z
+						// toward positive z
 						player.motionZ = 5;
-						Registry.network.sendToServer(new MoveEntityPacket(0,0,5,player.getEntityId()));
+						Registry.network.sendToServer(new MoveEntityPacket(0, 0, 5, player.getEntityId()));
 						break;
 					case WEST:
-						//toward negative x
+						// toward negative x
 						player.motionX = -5;
-						Registry.network.sendToServer(new MoveEntityPacket(-5,0,0,player.getEntityId()));
+						Registry.network.sendToServer(new MoveEntityPacket(-5, 0, 0, player.getEntityId()));
 						break;
 					case NORTH:
-						//toward negative z
+						// toward negative z
 						player.motionZ = -5;
-						Registry.network.sendToServer(new MoveEntityPacket(0,0,-5,player.getEntityId()));
+						Registry.network.sendToServer(new MoveEntityPacket(0, 0, -5, player.getEntityId()));
 						break;
 					case EAST:
-						//toward positive x
+						// toward positive x
 						player.motionX = 5;
-						Registry.network.sendToServer(new MoveEntityPacket(5,0,0,player.getEntityId()));
+						Registry.network.sendToServer(new MoveEntityPacket(5, 0, 0, player.getEntityId()));
 						break;
 					default:
 						break;
@@ -104,60 +120,66 @@ public class Surges {
 					}
 				}
 			}
-		} else {
-			//reverse lashing
-			if(i == 1){
-				double range = 10;
-				double x = player.posX;
-				double y = player.posY + 1.5;
-				double z = player.posZ;
-				double factor = 9;
-				List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
-				for(EntityItem e: items)
-				{
-					e.addVelocity((x - e.posX) / factor, (y - e.posY) / factor, (z - e.posZ) / factor);
-					Registry.network.sendToServer(new MoveEntityPacket((x - e.posX) / factor, (y - e.posY) / factor, (z - e.posZ) / factor,e.getEntityId()));
+		}
+	}
+	
+	
 
+	public static void transportation(EntityPlayerMP player, boolean shiftHeld) {
+		if (shiftHeld) {
+			if (player.dimension != 0) {
+				player.changeDimension(0);
+			}
+			if (player.getBedLocation() != null
+					&& player.getBedSpawnLocation(player.world, player.getBedLocation(), false) != null) {
+				player.connection.setPlayerLocation(
+						player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getX(),
+						player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getY(),
+						player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getZ(),
+						player.cameraYaw, player.cameraPitch);
+			} else {
+				player.connection.setPlayerLocation(player.world.getSpawnPoint().getX(),
+						player.world.getHeight(player.world.getSpawnPoint()).getY(), player.world.getSpawnPoint().getZ(), player.cameraYaw,
+						player.cameraPitch);
+			}
+		} else {
+			EntityEnderPearl entityenderpearl = new EntityEnderPearl(player.world, player);
+			entityenderpearl.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 3.0F, 0.0F);
+			player.getEntityWorld().spawnEntity(entityenderpearl);
+		}
+	}
+
+	private static boolean isBlockSafe(World world, BlockPos pos) {
+		return world.isBlockLoaded(pos) && world.getBlockState(pos).getBlock() != Blocks.AIR;
+	}
+
+	public static void transformation(World world, BlockPos pos) {
+		if (isBlockSafe(world, pos)) {
+			Block block = world.getBlockState(pos).getBlock();
+			if (transformableIn.contains(block.getRegistryName().toString())) {
+				Block newBlock = Block.getBlockFromName(
+						transformableOut.get(transformableIn.indexOf(block.getRegistryName().toString())));
+				world.setBlockState(pos, newBlock.getDefaultState());
+			}
+		}
+	}
+
+	public static void progression(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+		if (shiftHeld) { // Regen
+			player.addPotionEffect(new PotionEffect(Potion.getPotionById(10), 100, 4, true, true));
+		} else { // Growth
+			if (isBlockSafe(player.getEntityWorld(), pos)) {
+				IBlockState ibs = player.getEntityWorld().getBlockState(pos);
+				if (ibs.getBlock() instanceof IGrowable) {
+					IGrowable igrowable = (IGrowable) ibs.getBlock();
+					if (igrowable.canGrow(player.world, pos, ibs, player.world.isRemote)) {
+						if (igrowable.canUseBonemeal(player.world, player.world.rand, pos, ibs)) {
+							igrowable.grow(player.world, player.world.rand, pos, ibs);
+						}
+					}
 				}
 			}
 		}
 	}
-	public void transportation(EntityPlayer player, int i){
-		Registry.network.sendToServer(new TeleportPlayerPacket(player.getEntityId(), i));
-	}
-	
-	public void transformation(EntityPlayer player) {
-		//doesnt work with meta values it seems
-		//basically has to go down to ids and back up 
-		RayTraceResult ray;
-		ray = player.rayTrace(20.0F, 0.0F);
-		if(ray.typeOfHit == RayTraceResult.Type.BLOCK){
-			IBlockState ibs = Minecraft.getMinecraft().world.getBlockState(ray.getBlockPos());
-			if(this.transformableIn.contains(ibs.getBlock().getStateId(ibs.getBlock().getDefaultState()))){
-				Registry.network.sendToServer(new TransformBlockPacket(this.transformableOut.get(this.transformableIn.indexOf(ibs.getBlock().getStateId(ibs.getBlock().getDefaultState()))),ray.getBlockPos()));				
-			}
-		}
-	}
-	public void progression(EntityPlayer player, int i){
-		//Growth
-		if(i==0){
-			RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
-			if(ray.typeOfHit == RayTraceResult.Type.BLOCK){
-				IBlockState ibs = Minecraft.getMinecraft().world.getBlockState(ray.getBlockPos());
-				if (ibs.getBlock() instanceof IGrowable){
-					IGrowable igrowable = (IGrowable)ibs.getBlock();
-			        if (igrowable.canGrow(player.world, ray.getBlockPos(), ibs, player.world.isRemote)){
-						Registry.network.sendToServer(new GrowPacket(ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));				
-			        }
-			    }
-			}
-		} else {
-			if(i==1){
-				Registry.network.sendToServer(new EffectEntityPacket(10,100, 4, Minecraft.getMinecraft().player.getEntityId()));
 
-			}
-		}
-	}
-	
-	
 }

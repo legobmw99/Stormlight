@@ -60,6 +60,7 @@ public class MoveEntityPacket implements IMessage {
 	        			target.motionX = message.motionX;
 	        			target.motionY = message.motionY;
 	        			target.motionZ = message.motionZ;
+	        			target.velocityChanged = true;
 	        		}	            }
 	        });		return null;
 		}

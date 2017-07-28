@@ -1,5 +1,6 @@
 package common.legobmw99.stormlight.util;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import common.legobmw99.stormlight.Stormlight;
@@ -20,6 +21,7 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
     private int surgebindingType = -1;
 	private int progression = -1;
     private boolean bladeStored = true;
+    private UUID sprenID = null;
     
     public static StormlightCapability forPlayer(Entity e) {
         return e.getCapability(Stormlight.PLAYER_CAP, null);
@@ -32,6 +34,14 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
 
 	public void setType(int type) {
 		this.surgebindingType = type;
+	}
+	
+	public UUID getSprenID() {
+		return sprenID;
+	}
+
+	public void setSprenID(UUID sprenID) {
+		this.sprenID = sprenID;
 	}
 
 	public int getProgression() {
@@ -62,6 +72,7 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
         nbt.setInteger("surgebindingType", this.getType());
         nbt.setInteger("progression", this.getProgression());
         nbt.setBoolean("bladeStored", this.isBladeStored());
+        nbt.setString("sprenID", this.sprenID.toString());
 		return nbt;
 	}
 
@@ -70,6 +81,7 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
 		this.surgebindingType = nbt.getInteger("surgebindingType");
 		this.progression = nbt.getInteger("progression");
 		this.bladeStored = nbt.getBoolean("bladeStored");
+		this.sprenID = UUID.fromString(nbt.getString("sprenID"));
 	}
     
     @Override

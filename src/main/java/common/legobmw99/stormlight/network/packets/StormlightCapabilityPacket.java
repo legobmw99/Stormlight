@@ -1,5 +1,7 @@
 package common.legobmw99.stormlight.network.packets;
 
+import java.util.UUID;
+
 import common.legobmw99.stormlight.util.StormlightCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -18,11 +20,13 @@ public class StormlightCapabilityPacket implements IMessage {
 	private int type;
 	private int progression;
 	private int bladeStored;
+	private String sprenID;
 
 	public StormlightCapabilityPacket(StormlightCapability c) {
 		this.type = c.getType();
 		this.progression = c.getProgression();
 		this.bladeStored = c.isBladeStored() ? 1 : 0;
+		this.sprenID = c.getSprenID().toString();
 	}
 
 	@Override
@@ -30,6 +34,8 @@ public class StormlightCapabilityPacket implements IMessage {
 		type = ByteBufUtils.readVarInt(buf, 5);
 		progression = ByteBufUtils.readVarInt(buf, 5);
 		bladeStored = ByteBufUtils.readVarInt(buf, 5);
+		sprenID = ByteBufUtils.readUTF8String(buf);
+		
 	}
 
 	@Override
@@ -37,6 +43,7 @@ public class StormlightCapabilityPacket implements IMessage {
 		ByteBufUtils.writeVarInt(buf, type, 5);
 		ByteBufUtils.writeVarInt(buf, progression, 5);
 		ByteBufUtils.writeVarInt(buf, bladeStored, 5);
+		ByteBufUtils.writeUTF8String(buf, sprenID);
 	}
 
 	public static class Handler implements IMessageHandler<StormlightCapabilityPacket, IMessage> {
@@ -53,6 +60,7 @@ public class StormlightCapabilityPacket implements IMessage {
 						cap.setType(message.type);
 						cap.setProgression(message.progression);
 						cap.setBladeStored(message.bladeStored == 1);
+						cap.setSprenID(UUID.fromString(message.sprenID));
 					}
 
 				}

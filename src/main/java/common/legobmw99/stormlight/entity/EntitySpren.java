@@ -212,7 +212,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 				this.navigator.clearPathEntity();
 				this.setAttackTarget((EntityLivingBase) null);
 			}
-		} else if (itemstack.getItem() == Items.NETHER_STAR && getType() > 0
+		} else if (itemstack.getItem() == Items.NETHER_STAR
 				&& player.hasCapability(Stormlight.PLAYER_CAP, null)
 				&& player.getCapability(Stormlight.PLAYER_CAP, null).getType() < 0) {
 			if (!player.capabilities.isCreativeMode) {
@@ -222,11 +222,13 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 				if (!net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
 					this.setTamedBy(player);
 					player.getCapability(Stormlight.PLAYER_CAP, null).setType(this.getType());
+					player.getCapability(Stormlight.PLAYER_CAP, null).setSprenID(this.getPersistentID());
 					Registry.network.sendTo(new StormlightCapabilityPacket(player.getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) player);
 					this.navigator.clearPathEntity();
 					this.setAttackTarget((EntityLivingBase) null);
 					this.aiSit.setSitting(true);
 					this.setHealth(20.0F);
+					this.setCustomNameTag("");
 					this.playTameEffect(true);
 					this.world.setEntityState(this, (byte) 7);
 				} else {
@@ -245,11 +247,14 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 		if (!this.world.isRemote && this.getOwner() instanceof EntityPlayerMP) {
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setType(-1);
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setProgression(-1);
+			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setBladeStored(true);
+			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setSprenID(null);
 			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
 
 		}
 		super.onDeath(cause);
 	}
+	
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {

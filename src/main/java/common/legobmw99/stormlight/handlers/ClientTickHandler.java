@@ -10,6 +10,7 @@ import common.legobmw99.stormlight.entity.EntitySpren;
 import common.legobmw99.stormlight.items.ItemShardblade;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
+import common.legobmw99.stormlight.network.packets.SurgeFiredPacket;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
 import elucent.albedo.event.GatherLightsEvent;
@@ -23,6 +24,7 @@ import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -90,118 +92,36 @@ public class ClientTickHandler {
 		player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			StormlightCapability cap = StormlightCapability.forPlayer(player);
-			System.out.println(cap.getType());
-			if (cap != null && cap.getType() >= 0
-					&& cap.getProgression() > -2 /* Dummy check, for now */) {
-				// Shardblade
-				if (Registry.Recall.isPressed()) {
-					Registry.network.sendToServer(new BoundBladePacket());
+			if (cap != null && cap.getType() >= 0) {
+
+				if (cap.getProgression() > -2 /* Dummy check, for now */) {
+					// Shardblade recall
+					if (Registry.Recall.isPressed()) {
+						Registry.network.sendToServer(new BoundBladePacket());
+					}
 				}
-
-				// Surges
-				if (player.isPotionActive(Registry.effectStormlight)) {
-					// Windrunners
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.windrunners")))) {
+				
+				if (cap.getProgression() > -2 /* Dummy check, for now */) {
+					// Surges
+					if (player.isPotionActive(Registry.effectStormlight)) {
+						System.out.println(cap.getType());
 						if (Registry.BindingOne.isPressed()) {
-							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-								Stormlight.surges.gravitation(player, 1);
-							} else {
-								Stormlight.surges.gravitation(player, 0);
-							}
+							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
+							Registry.network.sendToServer(new SurgeFiredPacket(0,
+									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
 						}
 						if (Registry.BindingTwo.isPressed()) {
-
-						}
-
-					}
-					// Skybreakers
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.skybreakers")))) {
-						if (Registry.BindingOne.isPressed()) {
-
-						}
-						if (Registry.BindingTwo.isPressed()) {
-							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-								Stormlight.surges.gravitation(player, 1);
-							} else {
-								Stormlight.surges.gravitation(player, 0);
-							}
-						}
-
-					}
-					// Elsecallers
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.elsecallers")))) {
-						if (Registry.BindingOne.isPressed()) {
-							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-								Stormlight.surges.transportation(player, 1);
-							} else {
-								Stormlight.surges.transportation(player, 0);
-							}
-						}
-						if (Registry.BindingTwo.isPressed()) {
-							Stormlight.surges.transformation(player);
-						}
-					}
-					// Edgedancers
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.edgedancers")))) {
-						if (Registry.BindingOne.isPressed()) {
-							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-								Stormlight.surges.progression(player, 1);
-							} else {
-								Stormlight.surges.progression(player, 0);
-							}
-						}
-						if (Registry.BindingTwo.isPressed()) {
-
-						}
-					}
-					// Truthwatchers
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.truthwatchers")))) {
-						if (Registry.BindingOne.isPressed()) {
-
-						}
-						if (Registry.BindingTwo.isPressed()) {
-							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-								Stormlight.surges.progression(player, 1);
-							} else {
-								Stormlight.surges.progression(player, 0);
-							}
-						}
-					}
-					// Lightweavers
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.lightweavers")))) {
-						if (Registry.BindingOne.isPressed()) {
-							Stormlight.surges.transformation(player);
-						}
-						if (Registry.BindingTwo.isPressed()) {
-
-						}
-					}
-					// Willshapers
-					if (player.inventory
-							.hasItemStack(new ItemStack(Item.getByNameOrId("stormlight:honorblade.willshapers")))) {
-						if (Registry.BindingOne.isPressed()) {
-						}
-						if (Registry.BindingTwo.isPressed()) {
-							if (Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
-								Stormlight.surges.transportation(player, 1);
-							} else {
-								Stormlight.surges.transportation(player, 0);
-							}
+							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
+							Registry.network.sendToServer(new SurgeFiredPacket(1,
+									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
 						}
 					}
 				}
-				if (Registry.Reset.isPressed()) {
-					Minecraft.getMinecraft().gameSettings.invertMouse = false;
-					Minecraft.getMinecraft().entityRenderer.stopUseShader();
-					Registry.network.sendToServer(
-							new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
-				}
+			}
+			if (Registry.Reset.isPressed()) {
+				Minecraft.getMinecraft().gameSettings.invertMouse = false;
+				Minecraft.getMinecraft().entityRenderer.stopUseShader();
+				Registry.network.sendToServer(new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
 			}
 		}
 	}
