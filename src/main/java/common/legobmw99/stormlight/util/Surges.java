@@ -53,14 +53,14 @@ public class Surges {
 	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
 		if(shiftHeld){ //Allow climbing
 			//Use the same method in EntityLivingBase.move() to determine if a player is near a block.
-			if(!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(0.1, 0, 0.1)).isEmpty() || 
-					!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(-0.1, 0, -0.1)).isEmpty()){
+			if(!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(0.15, 0, 0.15)).isEmpty() || 
+					!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(-0.15, 0, -0.15)).isEmpty()){
                 player.motionY = 0.2D;
                 player.velocityChanged = true;
 			}
 		} else { //Allow slipping
 			if(player.onGround ){
-				player.addPotionEffect(new PotionEffect(Potion.getPotionById(1), 21, 1, true, false));
+				player.addPotionEffect(new PotionEffect(Potion.getPotionById(1), 100, 1, true, false));
 			}
 		}
 	}
@@ -121,8 +121,8 @@ public class Surges {
 				player.motionZ += 1 * Math.cos(facing);
 				player.motionX += -1 * Math.sin(facing);
 
-				player.motionZ = MathHelper.clamp(player.motionZ, -5, 5);
-				player.motionX = MathHelper.clamp(player.motionX, -5, 5);
+				player.motionZ = MathHelper.clamp(player.motionZ, -2.5, 2.5);
+				player.motionX = MathHelper.clamp(player.motionX, -2.5, 2.5);
 
 				player.velocityChanged = true;
 
@@ -164,7 +164,9 @@ public class Surges {
 					IGrowable igrowable = (IGrowable) ibs.getBlock();
 					if (igrowable.canGrow(player.world, pos, ibs, player.world.isRemote)) {
 						if (igrowable.canUseBonemeal(player.world, player.world.rand, pos, ibs)) {
-							igrowable.grow(player.world, player.world.rand, pos, ibs);
+							igrowable.grow(player.world, player.world.rand, pos, ibs);							
+							//Should spawn bonemeal particles
+							player.getEntityWorld().playEvent(player, 2005, pos, 15);
 						}
 					}
 				}
