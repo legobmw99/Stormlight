@@ -70,6 +70,8 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 		this.setTamed(false);
 		this.moveHelper = new EntityFlyHelper(this);
 	}
+	
+
 
 	@Override
 	protected void entityInit() {
@@ -299,6 +301,9 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 					this.posX + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width,
 					this.posY + 0.5D + (double) (this.rand.nextFloat() * this.height),
 					this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2);
+		}
+		if (this.rand.nextInt(30) == 0) {
+			this.heal(2.0F);
 		}
 	}
 	
