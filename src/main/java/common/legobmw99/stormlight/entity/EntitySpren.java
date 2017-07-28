@@ -222,7 +222,6 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 				if (!net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
 					this.setTamedBy(player);
 					player.getCapability(Stormlight.PLAYER_CAP, null).setType(this.getType());
-					player.getCapability(Stormlight.PLAYER_CAP, null).setSprenID(this.getPersistentID());
 					Registry.network.sendTo(new StormlightCapabilityPacket(player.getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) player);
 					this.navigator.clearPathEntity();
 					this.setAttackTarget((EntityLivingBase) null);
@@ -248,7 +247,6 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setType(-1);
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setProgression(-1);
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setBladeStored(true);
-			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setSprenID(null);
 			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
 
 		}
