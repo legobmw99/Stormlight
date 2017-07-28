@@ -42,8 +42,9 @@ public class BoundBladePacket implements IMessage {
 						StormlightCapability cap = StormlightCapability.forPlayer(player);
 						if (cap != null) {
 							if (cap.getType() >= 0 && cap.isBladeStored()) {
-								player.inventory.addItemStackToInventory(new ItemStack(Registry.itemBlade, 1, cap.getType()));
-								cap.setBladeStored(false);
+								if(player.inventory.addItemStackToInventory(new ItemStack(Registry.itemBlade, 1, cap.getType()))){
+									cap.setBladeStored(false);
+								}
 							} else if (player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ItemShardblade && player.getHeldItemMainhand().getItemDamage() == cap.getType()){
 								player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR, 0));
 								cap.setBladeStored(true);
