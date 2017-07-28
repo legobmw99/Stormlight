@@ -23,18 +23,6 @@ public class Surges {
 	private static List<String> transformableIn = buildInList();
 	private static List<String> transformableOut = buildOutList();
 
-	private static List<String> buildOutList() {
-		List<String> list = new ArrayList<String>();
-		list.add(Blocks.STONE.getRegistryName().toString());
-		list.add(Blocks.RED_SANDSTONE.getRegistryName().toString());
-		list.add(Blocks.MYCELIUM.getRegistryName().toString());
-		list.add(Blocks.LAVA.getRegistryName().toString());
-		list.add(Blocks.HAY_BLOCK.getRegistryName().toString());
-		list.add(Blocks.PUMPKIN.getRegistryName().toString());
-		list.add(Blocks.MELON_BLOCK.getRegistryName().toString());
-		return list;
-	}
-
 	private static List<String> buildInList() {
 		List<String> list = new ArrayList<String>();
 		list.add(Blocks.COBBLESTONE.getRegistryName().toString());
@@ -48,7 +36,38 @@ public class Surges {
 		return list;
 	}
 
-	int used = 0;
+	private static List<String> buildOutList() {
+		List<String> list = new ArrayList<String>();
+		list.add(Blocks.STONE.getRegistryName().toString());
+		list.add(Blocks.RED_SANDSTONE.getRegistryName().toString());
+		list.add(Blocks.MYCELIUM.getRegistryName().toString());
+		list.add(Blocks.LAVA.getRegistryName().toString());
+		list.add(Blocks.HAY_BLOCK.getRegistryName().toString());
+		list.add(Blocks.PUMPKIN.getRegistryName().toString());
+		list.add(Blocks.MELON_BLOCK.getRegistryName().toString());
+		return list;
+	}
+
+	
+	
+	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
+
+	}
+
+	public static void adhesion(World world, BlockPos pos, boolean shiftHeld) {
+
+	}
+
+	public static void cohesion(World entityWorld, BlockPos pos, boolean shiftHeld) {
+
+	}
+
+	public static void division(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+		// TODO config to disable this
+		if (isBlockSafe(player.getEntityWorld(), pos)) {
+			player.getEntityWorld().newExplosion(player, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, true);
+		}
+	}
 
 	public static void gravitation(EntityPlayerMP player, boolean shiftHeld) {
 		if (shiftHeld) {
@@ -61,7 +80,7 @@ public class Surges {
 			List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class,
 					new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
 			for (Entity e : items) {
-				if(e != player){
+				if (e != player) {
 					e.motionX = (x - e.posX) / factor;
 					e.motionY = (y - e.posY) / factor;
 					e.motionZ = (z - e.posZ) / factor;
@@ -70,32 +89,73 @@ public class Surges {
 			}
 
 		} else { // Basic lashing
-			
+
 			if (player.rotationPitch < -70) {
-				if(player.hasNoGravity()){
+				if (player.hasNoGravity()) {
 					player.motionY += 0.5;
 					player.motionY = MathHelper.clamp(player.motionY, 0, 2.0);
 					player.velocityChanged = true;
 				} else {
-					player.setNoGravity(true); 
+					player.setNoGravity(true);
 					player.motionY = 0;
 					player.velocityChanged = true;
 				}
 			} else if (player.rotationPitch > 70) {
-				if(player.hasNoGravity()){
-					player.setNoGravity(false); 
+				if (player.hasNoGravity()) {
+					player.setNoGravity(false);
 				}
-				
+
 			} else {
 				double facing = Math.toRadians(MathHelper.wrapDegrees(player.rotationYawHead));
-				player.motionZ +=  1 * Math.cos(facing);
+				player.motionZ += 1 * Math.cos(facing);
 				player.motionX += -1 * Math.sin(facing);
-				
+
 				player.motionZ = MathHelper.clamp(player.motionZ, -5, 5);
 				player.motionX = MathHelper.clamp(player.motionX, -5, 5);
 
 				player.velocityChanged = true;
 
+			}
+		}
+	}
+
+	public static void illumination(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+
+	}
+
+	private static boolean isBlockSafe(World world, BlockPos pos) {
+		return world.isBlockLoaded(pos) && world.getBlockState(pos).getBlock() != Blocks.AIR;
+	}
+
+	public static void progression(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+		if (shiftHeld) { // Regen
+			player.addPotionEffect(new PotionEffect(Potion.getPotionById(10), 100, 4, true, true));
+		} else { // Growth
+			if (isBlockSafe(player.getEntityWorld(), pos)) {
+				IBlockState ibs = player.getEntityWorld().getBlockState(pos);
+				if (ibs.getBlock() instanceof IGrowable) {
+					IGrowable igrowable = (IGrowable) ibs.getBlock();
+					if (igrowable.canGrow(player.world, pos, ibs, player.world.isRemote)) {
+						if (igrowable.canUseBonemeal(player.world, player.world.rand, pos, ibs)) {
+							igrowable.grow(player.world, player.world.rand, pos, ibs);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public static void tension(World entityWorld, BlockPos pos, boolean shiftHeld) {
+
+	}
+
+	public static void transformation(World world, BlockPos pos, boolean shiftHeld) {
+		if (isBlockSafe(world, pos)) {
+			Block block = world.getBlockState(pos).getBlock();
+			if (transformableIn.contains(block.getRegistryName().toString())) {
+				Block newBlock = Block.getBlockFromName(
+						transformableOut.get(transformableIn.indexOf(block.getRegistryName().toString())));
+				world.setBlockState(pos, newBlock.getDefaultState());
 			}
 		}
 	}
@@ -121,39 +181,6 @@ public class Surges {
 			EntityEnderPearl entityenderpearl = new EntityEnderPearl(player.world, player);
 			entityenderpearl.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 3.0F, 0.0F);
 			player.getEntityWorld().spawnEntity(entityenderpearl);
-		}
-	}
-
-	private static boolean isBlockSafe(World world, BlockPos pos) {
-		return world.isBlockLoaded(pos) && world.getBlockState(pos).getBlock() != Blocks.AIR;
-	}
-
-	public static void transformation(World world, BlockPos pos) {
-		if (isBlockSafe(world, pos)) {
-			Block block = world.getBlockState(pos).getBlock();
-			if (transformableIn.contains(block.getRegistryName().toString())) {
-				Block newBlock = Block.getBlockFromName(
-						transformableOut.get(transformableIn.indexOf(block.getRegistryName().toString())));
-				world.setBlockState(pos, newBlock.getDefaultState());
-			}
-		}
-	}
-
-	public static void progression(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
-		if (shiftHeld) { // Regen
-			player.addPotionEffect(new PotionEffect(Potion.getPotionById(10), 100, 4, true, true));
-		} else { // Growth
-			if (isBlockSafe(player.getEntityWorld(), pos)) {
-				IBlockState ibs = player.getEntityWorld().getBlockState(pos);
-				if (ibs.getBlock() instanceof IGrowable) {
-					IGrowable igrowable = (IGrowable) ibs.getBlock();
-					if (igrowable.canGrow(player.world, pos, ibs, player.world.isRemote)) {
-						if (igrowable.canUseBonemeal(player.world, player.world.rand, pos, ibs)) {
-							igrowable.grow(player.world, player.world.rand, pos, ibs);
-						}
-					}
-				}
-			}
 		}
 	}
 

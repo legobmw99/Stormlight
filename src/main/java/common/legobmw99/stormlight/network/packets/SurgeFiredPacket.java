@@ -69,13 +69,13 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 								Surges.gravitation(player, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-
+								Surges.adhesion(player.getEntityWorld(), pos, shiftHeld);
 							}
 							
 							break;
 						case StormlightCapability.SKYBREAKERS:
 							if (message.surgeUsed == FIRST) {
-
+								Surges.division(player, pos, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 								Surges.gravitation(player, shiftHeld);
 							}
@@ -83,9 +83,9 @@ public class SurgeFiredPacket implements IMessage {
 							break;
 						case StormlightCapability.DUSTBRINGERS:
 							if (message.surgeUsed == FIRST) {
-
+								Surges.abrasion(player, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-
+								Surges.division(player, pos, shiftHeld);
 							}
 							
 							break;
@@ -93,13 +93,13 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 								Surges.progression(player, pos, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-
+								Surges.abrasion(player, shiftHeld);
 							}
 							
 							break;
 						case StormlightCapability.TRUTHWATCHERS:
 							if (message.surgeUsed == FIRST) {
-
+								Surges.illumination(player, pos, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 								Surges.progression(player, pos, shiftHeld);
 							}
@@ -107,9 +107,9 @@ public class SurgeFiredPacket implements IMessage {
 							break;
 						case StormlightCapability.LIGHTWEAVERS:
 							if (message.surgeUsed == FIRST) {
-								Surges.transformation(player.getEntityWorld(), pos);
+								Surges.transformation(player.getEntityWorld(), pos, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-
+								Surges.illumination(player, pos, shiftHeld);
 							}
 							
 							break;
@@ -117,13 +117,13 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 								Surges.transportation(player, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-								Surges.transformation(player.getEntityWorld(), pos);
+								Surges.transformation(player.getEntityWorld(), pos, shiftHeld);
 							}
 							
 							break;
 						case StormlightCapability.WILLSHAPERS:
 							if (message.surgeUsed == FIRST) {
-
+								Surges.cohesion(player.getEntityWorld(),pos,shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 								Surges.transportation(player, shiftHeld);
 							}
@@ -131,17 +131,17 @@ public class SurgeFiredPacket implements IMessage {
 							break;
 						case StormlightCapability.STONEWARDS:
 							if (message.surgeUsed == FIRST) {
-
+								Surges.tension(player.getEntityWorld(),pos,shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-
+								Surges.cohesion(player.getEntityWorld(),pos,shiftHeld);
 							}
 							
 							break;
 						case StormlightCapability.BONDSMITHS:
 							if (message.surgeUsed == FIRST) {
-
+								Surges.adhesion(player.getEntityWorld(), pos, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-
+								Surges.tension(player.getEntityWorld(),pos,shiftHeld);
 							}
 							
 							break;

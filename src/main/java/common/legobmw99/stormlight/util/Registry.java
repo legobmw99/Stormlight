@@ -9,8 +9,6 @@ import common.legobmw99.stormlight.entity.RenderSpren;
 import common.legobmw99.stormlight.items.ItemShardblade;
 import common.legobmw99.stormlight.items.ItemSphere;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
-import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
-import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.network.packets.SurgeFiredPacket;
 import net.minecraft.client.Minecraft;
@@ -41,12 +39,9 @@ public class Registry {
 
 	public static void registerPackets() {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("stormlight");
-		network.registerMessage(StopFallPacket.Handler.class, StopFallPacket.class, 0, Side.SERVER);
-		network.registerMessage(MoveEntityPacket.Handler.class, MoveEntityPacket.class, 1, Side.SERVER);
-		network.registerMessage(BoundBladePacket.Handler.class, BoundBladePacket.class, 3, Side.SERVER);
-		network.registerMessage(StormlightCapabilityPacket.Handler.class, StormlightCapabilityPacket.class, 4, Side.CLIENT);
-		network.registerMessage(SurgeFiredPacket.Handler.class, SurgeFiredPacket.class, 7, Side.SERVER);
-
+		network.registerMessage(StormlightCapabilityPacket.Handler.class, StormlightCapabilityPacket.class, 0, Side.CLIENT);
+		network.registerMessage(SurgeFiredPacket.Handler.class, SurgeFiredPacket.class, 1, Side.SERVER);
+		network.registerMessage(BoundBladePacket.Handler.class, BoundBladePacket.class, 2, Side.SERVER);
 	}
 
 	public static void registerEntities() {

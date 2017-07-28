@@ -2,12 +2,12 @@ package common.legobmw99.stormlight.handlers;
 
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.items.ItemShardblade;
-import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -65,6 +65,16 @@ public class CommonTickHandler {
 				event.setAmount(event.getAmount() + 2);
 			}
 		}
+		
+		//Don't hurt Dustbringers with their own explosions
+		if(event.getSource().getTrueSource() == event.getEntityLiving() && event.getSource().getDamageType().equals("explosion")){
+			event.setCanceled(true);
+		}
+		//Don't hurt their pets either
+		if(event.getEntityLiving() instanceof EntityTameable && ((EntityTameable)event.getEntityLiving()).getOwner() == event.getSource().getTrueSource() && event.getSource().getDamageType().equals("explosion")){
+			event.setCanceled(true);
+		}
+		
 		// Reduce incoming damage for stormlit people
 		if (event.getEntityLiving() instanceof EntityPlayerMP) {
 			EntityPlayerMP source = (EntityPlayerMP) event.getEntityLiving();
@@ -88,7 +98,7 @@ public class CommonTickHandler {
 	public void onEntityUpdate(LivingUpdateEvent event) {
 		if (event.getEntityLiving().isPotionActive(Registry.effectStormlight)) {
 			event.getEntityLiving().setGlowing(true);
-			Registry.network.sendToServer(new StopFallPacket());
+			event.getEntityLiving().fallDistance = 0;
 		} else {
 			event.getEntityLiving().setGlowing(false);
 		}
