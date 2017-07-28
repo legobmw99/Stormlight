@@ -51,9 +51,19 @@ public class Surges {
 	}
 
 	
-	
 	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
-		
+		if(shiftHeld){ //Allow climbing
+			//Use the same method in EntityLivingBase.move() to determine if a player is near a block.
+			if(!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(0.1, 0, 0.1)).isEmpty() || 
+					!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(-0.1, 0, -0.1)).isEmpty()){
+                player.motionY = 0.2D;
+                player.velocityChanged = true;
+			}
+		} else { //Allow slipping
+			if(player.onGround ){
+				
+			}
+		}
 	}
 
 	public static void adhesion(World world, BlockPos pos, boolean shiftHeld) {
