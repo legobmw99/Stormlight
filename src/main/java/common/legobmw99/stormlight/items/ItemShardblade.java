@@ -36,6 +36,11 @@ public class ItemShardblade extends ItemSword {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		tooltip.add("\u00A7bThis sword seems to glow with strange light");
 	}
+	
+	@Override 
+	public boolean isEnchantable(ItemStack stack){
+		return false;
+	}
 
 	@Override
 	public boolean hasEffect(ItemStack par1ItemStack) {
