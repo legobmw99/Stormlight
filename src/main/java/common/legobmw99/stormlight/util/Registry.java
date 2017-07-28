@@ -9,7 +9,6 @@ import common.legobmw99.stormlight.entity.RenderSpren;
 import common.legobmw99.stormlight.items.ItemShardblade;
 import common.legobmw99.stormlight.items.ItemSphere;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
-import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
@@ -44,7 +43,6 @@ public class Registry {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("stormlight");
 		network.registerMessage(StopFallPacket.Handler.class, StopFallPacket.class, 0, Side.SERVER);
 		network.registerMessage(MoveEntityPacket.Handler.class, MoveEntityPacket.class, 1, Side.SERVER);
-		network.registerMessage(EffectEntityPacket.Handler.class, EffectEntityPacket.class, 2, Side.SERVER);
 		network.registerMessage(BoundBladePacket.Handler.class, BoundBladePacket.class, 3, Side.SERVER);
 		network.registerMessage(StormlightCapabilityPacket.Handler.class, StormlightCapabilityPacket.class, 4, Side.CLIENT);
 		network.registerMessage(SurgeFiredPacket.Handler.class, SurgeFiredPacket.class, 7, Side.SERVER);
@@ -78,11 +76,9 @@ public class Registry {
 	public static void initKeybindings() {
 		BindingOne = new KeyBinding("key.BindingOne", Keyboard.KEY_F, "key.categories.stormlight");
 		BindingTwo = new KeyBinding("key.BindingTwo", Keyboard.KEY_G, "key.categories.stormlight");
-		Reset = new KeyBinding("key.Reset", Keyboard.KEY_R, "key.categories.stormlight");
 		Recall = new KeyBinding("key.Recall", Keyboard.KEY_V, "key.categories.stormlight");
 		ClientRegistry.registerKeyBinding(BindingOne);
 		ClientRegistry.registerKeyBinding(BindingTwo);
-		ClientRegistry.registerKeyBinding(Reset);
 		ClientRegistry.registerKeyBinding(Recall);
 	}
 
@@ -99,7 +95,6 @@ public class Registry {
 	public static ItemShardblade itemBlade;
 	public static KeyBinding BindingOne;
 	public static KeyBinding BindingTwo;
-	public static KeyBinding Reset;
 	public static KeyBinding Recall;
 	public static SimpleNetworkWrapper network;
 	public static CreativeTabs tabStormlight = new CreativeTabStormlight(CreativeTabs.getNextID(), "Stormlight");

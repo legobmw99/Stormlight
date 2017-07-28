@@ -1,23 +1,13 @@
 package common.legobmw99.stormlight.handlers;
 
-import java.util.List;
-
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.items.ItemShardblade;
-import common.legobmw99.stormlight.network.packets.BoundBladePacket;
-import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.StopFallPacket;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
-import elucent.albedo.event.GatherLightsEvent;
-import elucent.albedo.lighting.Light;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -31,13 +21,9 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CommonTickHandler {
 
@@ -104,9 +90,6 @@ public class CommonTickHandler {
 			event.getEntityLiving().setGlowing(true);
 			Registry.network.sendToServer(new StopFallPacket());
 		} else {
-			if (event.getEntityLiving().isPotionActive(Potion.getPotionById(25)) && event.getEntityLiving().dimension == 0) {
-				Registry.network.sendToServer(new EffectEntityPacket(25, 0, 0, Minecraft.getMinecraft().player.getEntityId()));
-			}
 			event.getEntityLiving().setGlowing(false);
 		}
 	}

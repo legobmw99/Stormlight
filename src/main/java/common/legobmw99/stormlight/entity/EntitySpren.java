@@ -248,7 +248,6 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setProgression(-1);
 			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setBladeStored(true);
 			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
-
 		}
 		super.onDeath(cause);
 	}

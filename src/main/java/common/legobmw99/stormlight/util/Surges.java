@@ -3,23 +3,18 @@ package common.legobmw99.stormlight.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
-import common.legobmw99.stormlight.network.packets.MoveEntityPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderPearl;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class Surges {
@@ -34,6 +29,8 @@ public class Surges {
 		list.add(Blocks.MYCELIUM.getRegistryName().toString());
 		list.add(Blocks.LAVA.getRegistryName().toString());
 		list.add(Blocks.HAY_BLOCK.getRegistryName().toString());
+		list.add(Blocks.PUMPKIN.getRegistryName().toString());
+		list.add(Blocks.MELON_BLOCK.getRegistryName().toString());
 		return list;
 	}
 
@@ -44,12 +41,15 @@ public class Surges {
 		list.add(Blocks.GRASS.getRegistryName().toString());
 		list.add(Blocks.OBSIDIAN.getRegistryName().toString());
 		list.add(Blocks.STONE.getRegistryName().toString());
+		list.add(Blocks.MELON_BLOCK.getRegistryName().toString());
+		list.add(Blocks.PUMPKIN.getRegistryName().toString());
+
 		return list;
 	}
 
 	int used = 0;
 
-	public void gravitation(EntityPlayerMP player, boolean shiftHeld) {
+	public static void gravitation(EntityPlayerMP player, boolean shiftHeld) {
 		if (shiftHeld) {
 			// reverse lashing
 			double range = 10;
@@ -57,73 +57,45 @@ public class Surges {
 			double y = player.posY + 1.5;
 			double z = player.posZ;
 			double factor = 9;
-			List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class,
+			List<Entity> items = player.world.getEntitiesWithinAABB(Entity.class,
 					new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
-			for (EntityItem e : items) {
-				e.addVelocity((x - e.posX) / factor, (y - e.posY) / factor, (z - e.posZ) / factor);
-				Registry.network.sendToServer(new MoveEntityPacket((x - e.posX) / factor, (y - e.posY) / factor,
-						(z - e.posZ) / factor, e.getEntityId()));
-
+			for (Entity e : items) {
+				e.motionX = (x - e.posX) / factor;
+				e.motionY = (y - e.posY) / factor;
+				e.motionZ = (z - e.posZ) / factor;
+				e.velocityChanged = true;
 			}
 
 		} else { // Basic lashing
-			if (player.rotationPitch < -80) {
-				// up
-				Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
-				Minecraft.getMinecraft().gameSettings.invertMouse = true;
-				Registry.network.sendToServer(
-						new EffectEntityPacket(25, 25000, 24, Minecraft.getMinecraft().player.getEntityId()));
-				used = 0;
-			} else {
-				if (player.rotationPitch > 80) {
-					// down
-					Minecraft.getMinecraft().entityRenderer.stopUseShader();
-					Minecraft.getMinecraft().gameSettings.invertMouse = false;
-					if (player.isPotionActive(Potion.getPotionById(25))) {
-						if (used == 0) {
-							Registry.network.sendToServer(new EffectEntityPacket(25, 25000, -1,
-									Minecraft.getMinecraft().player.getEntityId()));
-							used = 1;
-						} else {
-							Registry.network.sendToServer(
-									new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
-							used = 0;
-						}
-					}
+			
+			if (player.rotationPitch < -70) {
+				if(player.hasNoGravity()){
+					player.motionY += 0.5;
+					player.motionY = MathHelper.clamp(player.motionY, 0, 2.5);
+					player.velocityChanged = true;
 				} else {
-					Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
-					EnumFacing enumfacing = entity.getHorizontalFacing();
-					switch (enumfacing) {
-					case SOUTH:
-						// toward positive z
-						player.motionZ = 5;
-						Registry.network.sendToServer(new MoveEntityPacket(0, 0, 5, player.getEntityId()));
-						break;
-					case WEST:
-						// toward negative x
-						player.motionX = -5;
-						Registry.network.sendToServer(new MoveEntityPacket(-5, 0, 0, player.getEntityId()));
-						break;
-					case NORTH:
-						// toward negative z
-						player.motionZ = -5;
-						Registry.network.sendToServer(new MoveEntityPacket(0, 0, -5, player.getEntityId()));
-						break;
-					case EAST:
-						// toward positive x
-						player.motionX = 5;
-						Registry.network.sendToServer(new MoveEntityPacket(5, 0, 0, player.getEntityId()));
-						break;
-					default:
-						break;
-
-					}
+					player.setNoGravity(true); 
+					player.motionY = 0;
+					player.velocityChanged = true;
 				}
+			} else if (player.rotationPitch > 70) {
+				if(player.hasNoGravity()){
+					player.setNoGravity(false); 
+				}
+				
+			} else {
+				double facing = Math.toRadians(MathHelper.wrapDegrees(player.rotationYawHead));
+				player.motionZ +=  2 * Math.cos(facing);
+				player.motionX += -2 * Math.sin(facing);
+				
+				player.motionZ = MathHelper.clamp(player.motionZ, -5, 5);
+				player.motionX = MathHelper.clamp(player.motionX, -5, 5);
+
+				player.velocityChanged = true;
+
 			}
 		}
 	}
-	
-	
 
 	public static void transportation(EntityPlayerMP player, boolean shiftHeld) {
 		if (shiftHeld) {
@@ -139,8 +111,8 @@ public class Surges {
 						player.cameraYaw, player.cameraPitch);
 			} else {
 				player.connection.setPlayerLocation(player.world.getSpawnPoint().getX(),
-						player.world.getHeight(player.world.getSpawnPoint()).getY(), player.world.getSpawnPoint().getZ(), player.cameraYaw,
-						player.cameraPitch);
+						player.world.getHeight(player.world.getSpawnPoint()).getY(),
+						player.world.getSpawnPoint().getZ(), player.cameraYaw, player.cameraPitch);
 			}
 		} else {
 			EntityEnderPearl entityenderpearl = new EntityEnderPearl(player.world, player);

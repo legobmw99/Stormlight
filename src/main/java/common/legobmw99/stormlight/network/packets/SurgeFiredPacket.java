@@ -67,7 +67,7 @@ public class SurgeFiredPacket implements IMessage {
 						switch (cap.getType()) {
 						case StormlightCapability.WINDRUNNERS:
 							if (message.surgeUsed == FIRST) {
-								// Surges.gravitation(player, shiftHeld);
+								Surges.gravitation(player, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 
 							}
@@ -77,7 +77,7 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 
 							} else if (message.surgeUsed == SECOND) {
-								// Surges.gravitation(player, shiftHeld);
+								Surges.gravitation(player, shiftHeld);
 							}
 							
 							break;

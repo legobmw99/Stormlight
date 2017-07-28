@@ -3,13 +3,9 @@ package common.legobmw99.stormlight.handlers;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 
-import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.entity.EntitySpren;
-import common.legobmw99.stormlight.items.ItemShardblade;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
-import common.legobmw99.stormlight.network.packets.EffectEntityPacket;
 import common.legobmw99.stormlight.network.packets.SurgeFiredPacket;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
@@ -22,7 +18,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -104,7 +99,6 @@ public class ClientTickHandler {
 				if (cap.getProgression() > -2 /* Dummy check, for now */) {
 					// Surges
 					if (player.isPotionActive(Registry.effectStormlight)) {
-						System.out.println(cap.getType());
 						if (Registry.BindingOne.isPressed()) {
 							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
 							Registry.network.sendToServer(new SurgeFiredPacket(0,
@@ -115,13 +109,18 @@ public class ClientTickHandler {
 							Registry.network.sendToServer(new SurgeFiredPacket(1,
 									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
 						}
+						
+						/* TODO: effect for gravitation
+						 * Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
+						 * Minecraft.getMinecraft().gameSettings.invertMouse = true; 
+						 * 
+						 * and
+						 * 
+						 * Minecraft.getMinecraft().gameSettings.invertMouse = false;
+						 * Minecraft.getMinecraft().entityRenderer.stopUseShader();
+						 */
 					}
 				}
-			}
-			if (Registry.Reset.isPressed()) {
-				Minecraft.getMinecraft().gameSettings.invertMouse = false;
-				Minecraft.getMinecraft().entityRenderer.stopUseShader();
-				Registry.network.sendToServer(new EffectEntityPacket(25, 1, 0, Minecraft.getMinecraft().player.getEntityId()));
 			}
 		}
 	}
