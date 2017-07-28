@@ -59,9 +59,7 @@ public class Surges {
                 player.velocityChanged = true;
 			}
 		} else { //Allow slipping
-			if(player.onGround ){
-				player.addPotionEffect(new PotionEffect(Potion.getPotionById(1), 100, 1, true, false));
-			}
+			//This is actually done on the client side 
 		}
 	}
 
@@ -69,7 +67,8 @@ public class Surges {
 		
 	}
 
-	public static void cohesion(World entityWorld, BlockPos pos, boolean shiftHeld) {
+	public static void cohesion(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+		player.addPotionEffect(new PotionEffect(Potion.getPotionById(3), 1200, 1, false, true));
 		
 	}
 

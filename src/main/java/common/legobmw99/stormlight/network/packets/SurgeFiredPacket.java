@@ -123,7 +123,7 @@ public class SurgeFiredPacket implements IMessage {
 							break;
 						case StormlightCapability.WILLSHAPERS:
 							if (message.surgeUsed == FIRST) {
-								Surges.cohesion(player.getEntityWorld(),pos,shiftHeld);
+								Surges.cohesion(player,pos,shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 								Surges.transportation(player, shiftHeld);
 							}
@@ -133,7 +133,7 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 								Surges.tension(player.getEntityWorld(),pos,shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-								Surges.cohesion(player.getEntityWorld(),pos,shiftHeld);
+								Surges.cohesion(player,pos,shiftHeld);
 							}
 							
 							break;
