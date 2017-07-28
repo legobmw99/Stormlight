@@ -97,7 +97,11 @@ public class CommonTickHandler {
 	@SubscribeEvent
 	public void onEntityUpdate(LivingUpdateEvent event) {
 		if (event.getEntityLiving().isPotionActive(Registry.effectStormlight)) {
-			event.getEntityLiving().setGlowing(true);
+			if(!event.getEntityLiving().isPotionActive(Potion.getPotionById(14))){
+				event.getEntityLiving().setGlowing(true);
+			} else {
+				event.getEntityLiving().setGlowing(false);
+			}
 			event.getEntityLiving().fallDistance = 0;
 		} else {
 			event.getEntityLiving().setGlowing(false);

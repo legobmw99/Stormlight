@@ -63,7 +63,7 @@ public class SurgeFiredPacket implements IMessage {
 					boolean shiftHeld = message.shiftHeld == 1;
 					BlockPos pos = new BlockPos(message.x, message.y, message.z);
 
-					if (cap != null) {
+					if (cap != null && /*Dummy check for now*/ cap.getProgression() > -2) {
 						switch (cap.getType()) {
 						case StormlightCapability.WINDRUNNERS:
 							if (message.surgeUsed == FIRST) {

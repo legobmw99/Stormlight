@@ -8,9 +8,11 @@ import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -51,15 +53,15 @@ public class Surges {
 	
 	
 	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
-
+		
 	}
 
 	public static void adhesion(World world, BlockPos pos, boolean shiftHeld) {
-
+		
 	}
 
 	public static void cohesion(World entityWorld, BlockPos pos, boolean shiftHeld) {
-
+		
 	}
 
 	public static void division(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
@@ -120,7 +122,23 @@ public class Surges {
 	}
 
 	public static void illumination(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
-
+		if(player.getEntityWorld().isBlockLoaded(pos)){
+			if(shiftHeld){
+				player.addPotionEffect(new PotionEffect(Potion.getPotionById(14), 1200, 0, true, false));
+			} else { //Spawn ghost blocks
+				if(player.getHeldItemMainhand().getItem() instanceof ItemBlock){
+					//Allow rudimentary 'building'
+					while(!player.world.getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(pos)).isEmpty()){
+						pos = pos.up();
+					}
+					EntityFallingBlock entity = new EntityFallingBlock(player.getEntityWorld(), pos.getX() + .5, pos.getY(),pos.getZ() +.5,((ItemBlock)player.getHeldItemMainhand().getItem()).getBlock().getDefaultState());
+					entity.setNoGravity(true);
+					entity.setEntityInvulnerable(true);
+					entity.fallTime = -500;
+					player.getEntityWorld().spawnEntity(entity);
+				}
+			}
+		}
 	}
 
 	private static boolean isBlockSafe(World world, BlockPos pos) {

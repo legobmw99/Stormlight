@@ -19,6 +19,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.fml.common.Optional;
@@ -62,7 +63,7 @@ public class ClientTickHandler {
 	public void onLightGather(GatherLightsEvent event) {
 		List<EntityPlayer> pList = Minecraft.getMinecraft().player.world.playerEntities;
 		for (EntityPlayer p : pList) {
-			if (p.isPotionActive(Registry.effectStormlight)) {
+			if (p.isPotionActive(Registry.effectStormlight) && !p.isPotionActive(Potion.getPotionById(14))) {
 				event.getLightList().add(
 						Light.builder().pos(p.posX, p.posY + 1.0, p.posZ).radius(4.5F).color(0.4F, 0.6F, 1.0F).build());
 			}
@@ -81,11 +82,17 @@ public class ClientTickHandler {
 		}
 	}
 	
+	//Slow down how often the Surges repeat-fire
+	boolean shouldFire = false;
 	@SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         // Run once per tick, only if in game, and only if there is a player
         if (event.phase == TickEvent.Phase.END && (!Minecraft.getMinecraft().isGamePaused() && Minecraft.getMinecraft().player != null)) {
+        	if(!shouldFire){
+        		shouldFire = true;
+        		return;
+        	}
         	EntityPlayerSP player;
     		player = Minecraft.getMinecraft().player;
     		if (player != null) {
@@ -116,6 +123,7 @@ public class ClientTickHandler {
     				}
     			}
     		}
+    		shouldFire = false;
     	}
 	}
 
