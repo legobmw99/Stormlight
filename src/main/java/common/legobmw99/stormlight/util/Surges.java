@@ -8,6 +8,7 @@ import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
@@ -57,13 +58,15 @@ public class Surges {
 			double y = player.posY + 1.5;
 			double z = player.posZ;
 			double factor = 9;
-			List<Entity> items = player.world.getEntitiesWithinAABB(Entity.class,
+			List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class,
 					new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
 			for (Entity e : items) {
-				e.motionX = (x - e.posX) / factor;
-				e.motionY = (y - e.posY) / factor;
-				e.motionZ = (z - e.posZ) / factor;
-				e.velocityChanged = true;
+				if(e != player){
+					e.motionX = (x - e.posX) / factor;
+					e.motionY = (y - e.posY) / factor;
+					e.motionZ = (z - e.posZ) / factor;
+					e.velocityChanged = true;
+				}
 			}
 
 		} else { // Basic lashing
@@ -71,7 +74,7 @@ public class Surges {
 			if (player.rotationPitch < -70) {
 				if(player.hasNoGravity()){
 					player.motionY += 0.5;
-					player.motionY = MathHelper.clamp(player.motionY, 0, 2.5);
+					player.motionY = MathHelper.clamp(player.motionY, 0, 2.0);
 					player.velocityChanged = true;
 				} else {
 					player.setNoGravity(true); 
@@ -85,8 +88,8 @@ public class Surges {
 				
 			} else {
 				double facing = Math.toRadians(MathHelper.wrapDegrees(player.rotationYawHead));
-				player.motionZ +=  2 * Math.cos(facing);
-				player.motionX += -2 * Math.sin(facing);
+				player.motionZ +=  1 * Math.cos(facing);
+				player.motionX += -1 * Math.sin(facing);
 				
 				player.motionZ = MathHelper.clamp(player.motionZ, -5, 5);
 				player.motionX = MathHelper.clamp(player.motionX, -5, 5);

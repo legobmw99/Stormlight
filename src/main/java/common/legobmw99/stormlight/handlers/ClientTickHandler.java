@@ -24,6 +24,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -79,49 +80,57 @@ public class ClientTickHandler {
 			}
 		}
 	}
+	
+	@SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        // Run once per tick, only if in game, and only if there is a player
+        if (event.phase == TickEvent.Phase.END && (!Minecraft.getMinecraft().isGamePaused() && Minecraft.getMinecraft().player != null)) {
+        	EntityPlayerSP player;
+    		player = Minecraft.getMinecraft().player;
+    		if (player != null) {
+    			StormlightCapability cap = StormlightCapability.forPlayer(player);
+    			if (cap != null && cap.getType() >= 0) {
+
+    				if (cap.getProgression() > -2 /* Dummy check, for now */) {
+    					// Shardblade recall
+    					if (Registry.Recall.isPressed()) {
+    						Registry.network.sendToServer(new BoundBladePacket());
+    					}
+    				}
+    				
+    				if (cap.getProgression() > -2 /* Dummy check, for now */) {
+    					// Surges
+    					if (player.isPotionActive(Registry.effectStormlight)) {
+    						if (Registry.BindingOne.isKeyDown()) {
+    							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
+    							Registry.network.sendToServer(new SurgeFiredPacket(0,
+    									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
+    						}
+    						if (Registry.BindingTwo.isKeyDown()) {
+    							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
+    							Registry.network.sendToServer(new SurgeFiredPacket(1,
+    									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
+    						}
+       					}
+    				}
+    			}
+    		}
+    	}
+	}
+
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
-		EntityPlayerSP player;
-		player = Minecraft.getMinecraft().player;
-		if (player != null) {
-			StormlightCapability cap = StormlightCapability.forPlayer(player);
-			if (cap != null && cap.getType() >= 0) {
-
-				if (cap.getProgression() > -2 /* Dummy check, for now */) {
-					// Shardblade recall
-					if (Registry.Recall.isPressed()) {
-						Registry.network.sendToServer(new BoundBladePacket());
-					}
-				}
-				
-				if (cap.getProgression() > -2 /* Dummy check, for now */) {
-					// Surges
-					if (player.isPotionActive(Registry.effectStormlight)) {
-						if (Registry.BindingOne.isPressed()) {
-							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
-							Registry.network.sendToServer(new SurgeFiredPacket(0,
-									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
-						}
-						if (Registry.BindingTwo.isPressed()) {
-							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
-							Registry.network.sendToServer(new SurgeFiredPacket(1,
-									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos().getX(),ray.getBlockPos().getY(),ray.getBlockPos().getZ()));
-						}
-						
-						/* TODO: effect for gravitation
-						 * Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
-						 * Minecraft.getMinecraft().gameSettings.invertMouse = true; 
-						 * 
-						 * and
-						 * 
-						 * Minecraft.getMinecraft().gameSettings.invertMouse = false;
-						 * Minecraft.getMinecraft().entityRenderer.stopUseShader();
-						 */
-					}
-				}
-			}
-		}
+		/* TODO: effect for gravitation?
+		 * Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/flip.json"));
+		 * Minecraft.getMinecraft().gameSettings.invertMouse = true; 
+		 * 
+		 * and
+		 * 
+		 * Minecraft.getMinecraft().gameSettings.invertMouse = false;
+		 * Minecraft.getMinecraft().entityRenderer.stopUseShader();
+		 */
 	}
 }
