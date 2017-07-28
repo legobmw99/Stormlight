@@ -50,7 +50,6 @@ public class Surges {
 		return list;
 	}
 
-	
 	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
 		if(shiftHeld){ //Allow climbing
 			//Use the same method in EntityLivingBase.move() to determine if a player is near a block.
@@ -61,7 +60,7 @@ public class Surges {
 			}
 		} else { //Allow slipping
 			if(player.onGround ){
-				
+				player.addPotionEffect(new PotionEffect(Potion.getPotionById(1), 21, 1, true, false));
 			}
 		}
 	}
