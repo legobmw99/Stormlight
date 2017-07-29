@@ -19,35 +19,31 @@ public class SurgeFiredPacket implements IMessage {
 
 	private int surgeUsed;
 	private int shiftHeld;
-	private int x, y, z;
+	private long blockPos;
 
 	public SurgeFiredPacket() {
 	}
 
-	public SurgeFiredPacket(int used, boolean shift, int x, int y, int z) {
+	public SurgeFiredPacket(int used, boolean shift, BlockPos pos) {
 		surgeUsed = used;
 		shiftHeld = shift ? 1 : 0;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.blockPos = pos.toLong();
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		surgeUsed = ByteBufUtils.readVarInt(buf, 5);
 		shiftHeld = ByteBufUtils.readVarInt(buf, 5);
-		x = ByteBufUtils.readVarInt(buf, 5);
-		y = ByteBufUtils.readVarInt(buf, 5);
-		z = ByteBufUtils.readVarInt(buf, 5);
+		blockPos = buf.readLong();
+		
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		ByteBufUtils.writeVarInt(buf, surgeUsed, 5);
 		ByteBufUtils.writeVarInt(buf, shiftHeld, 5);
-		ByteBufUtils.writeVarInt(buf, x, 5);
-		ByteBufUtils.writeVarInt(buf, y, 5);
-		ByteBufUtils.writeVarInt(buf, z, 5);
+		buf.writeLong(blockPos);
+
 	}
 
 	public static class Handler implements IMessageHandler<SurgeFiredPacket, IMessage> {
@@ -61,7 +57,7 @@ public class SurgeFiredPacket implements IMessage {
 					EntityPlayerMP player = ctx.getServerHandler().player;
 					StormlightCapability cap = StormlightCapability.forPlayer(player);
 					boolean shiftHeld = message.shiftHeld == 1;
-					BlockPos pos = new BlockPos(message.x, message.y, message.z);
+					BlockPos pos = BlockPos.fromLong(message.blockPos);
 
 					if (cap != null && /*Dummy check for now*/ cap.getProgression() > -2) {
 						switch (cap.getType()) {
