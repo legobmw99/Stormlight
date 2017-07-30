@@ -51,25 +51,26 @@ public class Surges {
 	}
 
 	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
-		if(shiftHeld){ //Allow climbing
-			//Use the same method in EntityLivingBase.move() to determine if a player is near a block.
-			if(!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(0.15, 0, 0.15)).isEmpty() || 
-					!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(-0.15, 0, -0.15)).isEmpty()){
-                player.motionY = 0.2D;
-                player.velocityChanged = true;
+		if (shiftHeld) {// Allow slipping
+			// This is the best we can really do
+			player.addPotionEffect(new PotionEffect(Potion.getPotionById(1), 600, 2, true, false));
+		} else { // Allow climbing
+			// Use the same method in EntityLivingBase.move() to determine if a player is near a block.
+			if (!player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(0.15, 0, 0.15)).isEmpty()
+					|| !player.getEntityWorld().getCollisionBoxes(player, player.getEntityBoundingBox().offset(-0.15, 0, -0.15)).isEmpty()) {
+				player.motionY = 0.2D;
+				player.velocityChanged = true;
 			}
-		} else { //Allow slipping
-			//This is actually done on the client side 
 		}
 	}
 
 	public static void adhesion(World world, BlockPos pos, boolean shiftHeld) {
-		
+
 	}
 
 	public static void cohesion(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
-		player.addPotionEffect(new PotionEffect(Potion.getPotionById(3), 1200, 1, false, true));
-		
+		player.addPotionEffect(new PotionEffect(Potion.getPotionById(3), 600, 1, false, true));
+
 	}
 
 	public static void division(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
@@ -130,16 +131,19 @@ public class Surges {
 	}
 
 	public static void illumination(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
-		if(player.getEntityWorld().isBlockLoaded(pos)){
-			if(shiftHeld){
-				player.addPotionEffect(new PotionEffect(Potion.getPotionById(14), 1200, 0, true, false));
-			} else { //Spawn ghost blocks
-				if(player.getHeldItemMainhand().getItem() instanceof ItemBlock){
-					//Allow rudimentary 'building'
-					while(!player.world.getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(pos)).isEmpty()){
+		if (player.getEntityWorld().isBlockLoaded(pos)) {
+			if (shiftHeld) {
+				player.addPotionEffect(new PotionEffect(Potion.getPotionById(14), 600, 0, true, false));
+			} else { // Spawn ghost blocks
+				if (player.getHeldItemMainhand().getItem() instanceof ItemBlock) {
+					// Allow rudimentary 'building'
+					while (!player.world.getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(pos))
+							.isEmpty()) {
 						pos = pos.up();
 					}
-					EntityFallingBlock entity = new EntityFallingBlock(player.getEntityWorld(), pos.getX() + .5, pos.getY(),pos.getZ() +.5,((ItemBlock)player.getHeldItemMainhand().getItem()).getBlock().getDefaultState());
+					EntityFallingBlock entity = new EntityFallingBlock(player.getEntityWorld(), pos.getX() + .5,
+							pos.getY(), pos.getZ() + .5,
+							((ItemBlock) player.getHeldItemMainhand().getItem()).getBlock().getDefaultState());
 					entity.setNoGravity(true);
 					entity.setEntityInvulnerable(true);
 					entity.fallTime = -500;
@@ -163,8 +167,8 @@ public class Surges {
 					IGrowable igrowable = (IGrowable) ibs.getBlock();
 					if (igrowable.canGrow(player.world, pos, ibs, player.world.isRemote)) {
 						if (igrowable.canUseBonemeal(player.world, player.world.rand, pos, ibs)) {
-							igrowable.grow(player.world, player.world.rand, pos, ibs);							
-							//Should spawn bonemeal particles
+							igrowable.grow(player.world, player.world.rand, pos, ibs);
+							// Should spawn bonemeal particles
 							player.getEntityWorld().playEvent(player, 2005, pos, 15);
 						}
 					}

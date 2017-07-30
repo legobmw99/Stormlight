@@ -119,21 +119,7 @@ public class ClientTickHandler {
     							RayTraceResult ray = player.rayTrace(20.0F, 0.0F);
     							Registry.network.sendToServer(new SurgeFiredPacket(1,
     									Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown(), ray.getBlockPos())); //All serverside surges
-    							
-    							
-    							if(cap.getType() == cap.EDGEDANCERS || cap.getType() == cap.DUSTBRINGERS && !Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()){
-    								if(player.onGround){
-        								if(!(Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()|| Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown())){
-        									player.motionX *= 3;
-        									player.motionZ *= 3;
-        								} else {
-        									player.motionX *= 1.5;
-            								player.motionZ *= 1.5;
-        								}
-    								}
-    							}
-    							
-    							
+							
     						}
        					}
     				}
