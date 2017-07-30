@@ -42,10 +42,11 @@ public class ItemShardblade extends ItemSword {
 		return false;
 	}
 
+    @SideOnly(Side.CLIENT)
 	@Override
 	public boolean hasEffect(ItemStack stack) {
 		// Add enchantment glint
-		return true;
+		return false;
 	}
 	
 	@SideOnly(Side.CLIENT)
