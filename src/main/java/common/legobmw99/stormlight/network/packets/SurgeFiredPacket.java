@@ -103,7 +103,7 @@ public class SurgeFiredPacket implements IMessage {
 							break;
 						case StormlightCapability.LIGHTWEAVERS:
 							if (message.surgeUsed == FIRST) {
-								Surges.transformation(player.getEntityWorld(), pos, shiftHeld);
+								Surges.transformation(player, pos, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 								Surges.illumination(player, pos, shiftHeld);
 							}
@@ -113,7 +113,7 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 								Surges.transportation(player, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-								Surges.transformation(player.getEntityWorld(), pos, shiftHeld);
+								Surges.transformation(player, pos, shiftHeld);
 							}
 							
 							break;

@@ -12,20 +12,24 @@ import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class Surges {
 
-	private static List<String> transformableIn = buildInList();
-	private static List<String> transformableOut = buildOutList();
+	private static List<String> transformableBlocksIn = buildBlocksInList();
+	private static List<String> transformableBlocksOut = buildBlocksOutList();
 
-	private static List<String> buildInList() {
+	private static List<String> buildBlocksInList() {
 		List<String> list = new ArrayList<String>();
 		list.add(Blocks.COBBLESTONE.getRegistryName().toString());
 		list.add(Blocks.SANDSTONE.getRegistryName().toString());
@@ -38,7 +42,7 @@ public class Surges {
 		return list;
 	}
 
-	private static List<String> buildOutList() {
+	private static List<String> buildBlocksOutList() {
 		List<String> list = new ArrayList<String>();
 		list.add(Blocks.STONE.getRegistryName().toString());
 		list.add(Blocks.RED_SANDSTONE.getRegistryName().toString());
@@ -176,18 +180,37 @@ public class Surges {
 			}
 		}
 	}
+	
+	private static void switchItemInMainhand(EntityPlayerMP player, Item toItem){
+		ItemStack toItemStack = new ItemStack(toItem,player.getHeldItemMainhand().getCount());
+		player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR, 0));
+		player.inventory.setInventorySlotContents(player.inventory.currentItem, toItemStack);
+	}
 
 	public static void tension(World entityWorld, BlockPos pos, boolean shiftHeld) {
 
 	}
 
-	public static void transformation(World world, BlockPos pos, boolean shiftHeld) {
-		if (isBlockSafe(world, pos)) {
-			Block block = world.getBlockState(pos).getBlock();
-			if (transformableIn.contains(block.getRegistryName().toString())) {
-				Block newBlock = Block.getBlockFromName(
-						transformableOut.get(transformableIn.indexOf(block.getRegistryName().toString())));
-				world.setBlockState(pos, newBlock.getDefaultState());
+	public static void transformation(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+		if(shiftHeld){
+			if(player.getHeldItemMainhand().getItem() == Items.STICK){
+				if(player.world.rand.nextInt(100) == 0) {
+					switchItemInMainhand(player, Items.FIRE_CHARGE);
+					player.sendMessage(new TextComponentString("<Stick> I am.... fire"));
+				} else {
+					player.sendMessage(new TextComponentString("<Stick> I am a stick"));
+				}
+			}
+			
+		} else {
+			if (isBlockSafe(player.world, pos)) {
+				Block block = player.world.getBlockState(pos).getBlock();
+				if (transformableBlocksIn.contains(block.getRegistryName().toString())) {
+					Block newBlock = Block.getBlockFromName(
+							transformableBlocksOut.get(
+									transformableBlocksIn.indexOf(block.getRegistryName().toString())));
+					player.world.setBlockState(pos, newBlock.getDefaultState());
+				}	
 			}
 		}
 	}
