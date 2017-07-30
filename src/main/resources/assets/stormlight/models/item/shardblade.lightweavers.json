@@ -1,6 +1,6 @@
 {
     "parent": "stormlight:item/shardblade",
     "textures": {
-        "layer0": "stormlight:items/lightweavers"
+        "layer0": "stormlight:items/lightweaver"
     }
 }

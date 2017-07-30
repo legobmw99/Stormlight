@@ -43,7 +43,7 @@ public class ItemShardblade extends ItemSword {
 	}
 
 	@Override
-	public boolean hasEffect(ItemStack par1ItemStack) {
+	public boolean hasEffect(ItemStack stack) {
 		// Add enchantment glint
 		return true;
 	}
