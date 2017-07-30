@@ -1,7 +1,8 @@
 package common.legobmw99.stormlight.util;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
@@ -26,32 +27,20 @@ import net.minecraft.world.World;
 
 public class Surges {
 
-	private static List<String> transformableBlocksIn = buildBlocksInList();
-	private static List<String> transformableBlocksOut = buildBlocksOutList();
+	private static final Map<Block,Block> transformableBlocks = buildBlockMap();
 
-	private static List<String> buildBlocksInList() {
-		List<String> list = new ArrayList<String>();
-		list.add(Blocks.COBBLESTONE.getRegistryName().toString());
-		list.add(Blocks.SANDSTONE.getRegistryName().toString());
-		list.add(Blocks.GRASS.getRegistryName().toString());
-		list.add(Blocks.OBSIDIAN.getRegistryName().toString());
-		list.add(Blocks.STONE.getRegistryName().toString());
-		list.add(Blocks.MELON_BLOCK.getRegistryName().toString());
-		list.add(Blocks.PUMPKIN.getRegistryName().toString());
-
-		return list;
-	}
-
-	private static List<String> buildBlocksOutList() {
-		List<String> list = new ArrayList<String>();
-		list.add(Blocks.STONE.getRegistryName().toString());
-		list.add(Blocks.RED_SANDSTONE.getRegistryName().toString());
-		list.add(Blocks.MYCELIUM.getRegistryName().toString());
-		list.add(Blocks.LAVA.getRegistryName().toString());
-		list.add(Blocks.HAY_BLOCK.getRegistryName().toString());
-		list.add(Blocks.PUMPKIN.getRegistryName().toString());
-		list.add(Blocks.MELON_BLOCK.getRegistryName().toString());
-		return list;
+	private static Map<Block,Block>  buildBlockMap() {
+		Map<Block,Block> map = new HashMap<Block,Block>();
+		map.put(Blocks.COBBLESTONE, Blocks.STONE);
+		map.put(Blocks.SANDSTONE,Blocks.RED_SANDSTONE);
+		map.put(Blocks.GRASS, Blocks.MYCELIUM);
+		map.put(Blocks.OBSIDIAN, Blocks.LAVA);
+		map.put(Blocks.STONE, Blocks.HAY_BLOCK);
+		map.put(Blocks.MELON_BLOCK, Blocks.PUMPKIN);
+		map.put(Blocks.PUMPKIN, Blocks.MELON_BLOCK);
+		map.put(Blocks.WOOL, Blocks.WEB);
+		
+		return map;
 	}
 
 	public static void abrasion(EntityPlayerMP player, boolean shiftHeld) {
@@ -205,10 +194,8 @@ public class Surges {
 		} else {
 			if (isBlockSafe(player.world, pos)) {
 				Block block = player.world.getBlockState(pos).getBlock();
-				if (transformableBlocksIn.contains(block.getRegistryName().toString())) {
-					Block newBlock = Block.getBlockFromName(
-							transformableBlocksOut.get(
-									transformableBlocksIn.indexOf(block.getRegistryName().toString())));
+				if (transformableBlocks.containsKey(block)) {
+					Block newBlock = transformableBlocks.get(block);
 					player.world.setBlockState(pos, newBlock.getDefaultState());
 				}	
 			}

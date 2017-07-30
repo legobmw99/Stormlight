@@ -20,7 +20,7 @@ public class CreativeTabStormlight extends CreativeTabs {
 	public ItemStack getIconItemStack() {
 		//Make the icon a different honorblade every minute
 		int type = (int)(System.currentTimeMillis()/(1000*60)) % 10;
-		return new ItemStack(Item.getByNameOrId("stormlight:shardblade." + Registry.BLADE_TYPES[type]));
+		return new ItemStack(Registry.itemBlade, 1, type);
 	}
 	@Override
 	public ItemStack getTabIconItem() {
