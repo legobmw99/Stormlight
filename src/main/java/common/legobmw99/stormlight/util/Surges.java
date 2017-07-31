@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
+import common.legobmw99.stormlight.entity.EntitySpren;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
@@ -28,6 +31,7 @@ import net.minecraft.world.World;
 public class Surges {
 
 	private static final Map<Block,Block> transformableBlocks = buildBlockMap();
+	private static final Map<Item,Item> transformableItems = buildItemMap();
 
 	private static Map<Block,Block>  buildBlockMap() {
 		Map<Block,Block> map = new HashMap<Block,Block>();
@@ -40,6 +44,13 @@ public class Surges {
 		map.put(Blocks.PUMPKIN, Blocks.MELON_BLOCK);
 		map.put(Blocks.WOOL, Blocks.WEB);
 		
+		return map;
+		
+	}
+
+	private static Map<Item,Item> buildItemMap() {
+		Map<Item,Item> map = new HashMap<Item,Item>();
+		map.put(ItemBlock.getItemFromBlock(Blocks.GRAVEL), Items.FLINT);
 		return map;
 	}
 
@@ -135,7 +146,7 @@ public class Surges {
 						pos = pos.up();
 					}
 					EntityFallingBlock entity = new EntityFallingBlock(player.getEntityWorld(), pos.getX() + .5,
-							pos.getY(), pos.getZ() + .5,
+							pos.getY() - 0.010, pos.getZ() + .5,
 							((ItemBlock) player.getHeldItemMainhand().getItem()).getBlock().getDefaultState());
 					entity.setNoGravity(true);
 					entity.setEntityInvulnerable(true);
@@ -182,16 +193,6 @@ public class Surges {
 
 	public static void transformation(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
 		if(shiftHeld){
-			if(player.getHeldItemMainhand().getItem() == Items.STICK){
-				if(player.world.rand.nextInt(100) == 0) {
-					switchItemInMainhand(player, Items.FIRE_CHARGE);
-					player.sendMessage(new TextComponentString("<Stick> I am.... fire"));
-				} else {
-					player.sendMessage(new TextComponentString("<Stick> I am a stick"));
-				}
-			}
-			
-		} else {
 			if (isBlockSafe(player.world, pos)) {
 				Block block = player.world.getBlockState(pos).getBlock();
 				if (transformableBlocks.containsKey(block)) {
@@ -199,10 +200,22 @@ public class Surges {
 					player.world.setBlockState(pos, newBlock.getDefaultState());
 				}	
 			}
+		} else {
+			Item item = player.getHeldItemMainhand().getItem();
+			if(transformableItems.containsKey(item)){
+				
+			}else if(item == Items.STICK){
+				if(player.world.rand.nextInt(100) == 0) {
+					switchItemInMainhand(player, Items.FIRE_CHARGE);
+					player.sendMessage(new TextComponentString("<Stick> I am.... fire"));
+				} else {
+					player.sendMessage(new TextComponentString("<Stick> I am a stick"));
+				}
+			}
 		}
 	}
 
-	public static void transportation(EntityPlayerMP player, boolean shiftHeld) {
+	public static void transportation(EntityPlayerMP player, @Nullable EntitySpren spren, boolean shiftHeld) {
 		if (shiftHeld) {
 			if (player.dimension != 0) {
 				player.changeDimension(0);

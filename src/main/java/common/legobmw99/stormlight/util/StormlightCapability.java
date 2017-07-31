@@ -21,8 +21,9 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
     private int surgebindingType = -1;
 	private int progression = -1;
     private boolean bladeStored = true;
+    private UUID sprenID;
     
-    public static StormlightCapability forPlayer(Entity e) {
+	public static StormlightCapability forPlayer(Entity e) {
         return e.getCapability(Stormlight.PLAYER_CAP, null);
         
     }
@@ -51,6 +52,14 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
 		this.bladeStored = bladeStored;
 	}
 	
+    public UUID getSprenID() {
+		return sprenID;
+	}
+
+	public void setSprenID(UUID sprenID) {
+		this.sprenID = sprenID;
+	}
+	
     
     public static void register() {
         CapabilityManager.INSTANCE.register(StormlightCapability.class, new StormlightCapability.Storage(), new StormlightCapability.Factory());
@@ -63,6 +72,7 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
         nbt.setInteger("surgebindingType", this.getType());
         nbt.setInteger("progression", this.getProgression());
         nbt.setBoolean("bladeStored", this.isBladeStored());
+        nbt.setUniqueId("sprenID", this.getSprenID());
 		return nbt;
 	}
 
@@ -71,6 +81,7 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
 		this.surgebindingType = nbt.getInteger("surgebindingType");
 		this.progression = nbt.getInteger("progression");
 		this.bladeStored = nbt.getBoolean("bladeStored");
+		this.sprenID = nbt.getUniqueId("sprenID");
 	}
     
     @Override

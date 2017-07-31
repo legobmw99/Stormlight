@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.util.Registry;
+import common.legobmw99.stormlight.util.StormlightCapability;
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
 import net.minecraft.block.state.IBlockState;
@@ -224,6 +225,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 				if (!net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
 					this.setTamedBy(player);
 					player.getCapability(Stormlight.PLAYER_CAP, null).setType(this.getType());
+					player.getCapability(Stormlight.PLAYER_CAP, null).setSprenID(this.getPersistentID());
 					Registry.network.sendTo(new StormlightCapabilityPacket(player.getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) player);
 					this.navigator.clearPathEntity();
 					this.setAttackTarget((EntityLivingBase) null);
@@ -246,9 +248,10 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	public void onDeath(DamageSource cause) {
 		// No longer Stormbound
 		if (!this.world.isRemote && this.getOwner() instanceof EntityPlayerMP) {
-			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setType(-1);
-			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setProgression(-1);
-			this.getOwner().getCapability(Stormlight.PLAYER_CAP, null).setBladeStored(true);
+			StormlightCapability cap = StormlightCapability.forPlayer(this.getOwner());
+			cap.setType(-1);
+			cap.setProgression(-1);
+			cap.setBladeStored(true);
 			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
 		}
 		super.onDeath(cause);

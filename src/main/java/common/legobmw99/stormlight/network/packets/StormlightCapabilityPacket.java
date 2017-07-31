@@ -1,11 +1,10 @@
 package common.legobmw99.stormlight.network.packets;
 
-import java.util.UUID;
-
 import common.legobmw99.stormlight.util.StormlightCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -17,28 +16,20 @@ public class StormlightCapabilityPacket implements IMessage {
 	public StormlightCapabilityPacket() {
 	}
 
-	private int type;
-	private int progression;
-	private int bladeStored;
+	private NBTTagCompound data;
 
 	public StormlightCapabilityPacket(StormlightCapability c) {
-		this.type = c.getType();
-		this.progression = c.getProgression();
-		this.bladeStored = c.isBladeStored() ? 1 : 0;
+		this.data = c.serializeNBT();
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		type = ByteBufUtils.readVarInt(buf, 5);
-		progression = ByteBufUtils.readVarInt(buf, 5);
-		bladeStored = ByteBufUtils.readVarInt(buf, 5);
+		data = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		ByteBufUtils.writeVarInt(buf, type, 5);
-		ByteBufUtils.writeVarInt(buf, progression, 5);
-		ByteBufUtils.writeVarInt(buf, bladeStored, 5);
+		ByteBufUtils.writeTag(buf, data);
 	}
 
 	public static class Handler implements IMessageHandler<StormlightCapabilityPacket, IMessage> {
@@ -51,11 +42,7 @@ public class StormlightCapabilityPacket implements IMessage {
 				public void run() {
 					EntityPlayer player = Minecraft.getMinecraft().player;
 					StormlightCapability cap = StormlightCapability.forPlayer(player);
-					if (cap != null) {
-						cap.setType(message.type);
-						cap.setProgression(message.progression);
-						cap.setBladeStored(message.bladeStored == 1);
-					}
+					cap.deserializeNBT(message.data);
 
 				}
 			});

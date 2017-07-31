@@ -1,5 +1,6 @@
 package common.legobmw99.stormlight.network.packets;
 
+import common.legobmw99.stormlight.entity.EntitySpren;
 import common.legobmw99.stormlight.util.StormlightCapability;
 import common.legobmw99.stormlight.util.Surges;
 import io.netty.buffer.ByteBuf;
@@ -58,6 +59,7 @@ public class SurgeFiredPacket implements IMessage {
 					StormlightCapability cap = StormlightCapability.forPlayer(player);
 					boolean shiftHeld = message.shiftHeld == 1;
 					BlockPos pos = BlockPos.fromLong(message.blockPos);
+					EntitySpren spren = (EntitySpren) ((WorldServer) player.world).getEntityFromUuid(cap.getSprenID());
 
 					if (cap != null && /*Dummy check for now*/ cap.getProgression() > -2) {
 						switch (cap.getType()) {
@@ -111,7 +113,7 @@ public class SurgeFiredPacket implements IMessage {
 							break;
 						case StormlightCapability.ELSECALLERS:
 							if (message.surgeUsed == FIRST) {
-								Surges.transportation(player, shiftHeld);
+								Surges.transportation(player, spren, shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
 								Surges.transformation(player, pos, shiftHeld);
 							}
@@ -121,7 +123,7 @@ public class SurgeFiredPacket implements IMessage {
 							if (message.surgeUsed == FIRST) {
 								Surges.cohesion(player,pos,shiftHeld);
 							} else if (message.surgeUsed == SECOND) {
-								Surges.transportation(player, shiftHeld);
+								Surges.transportation(player, spren, shiftHeld);
 							}
 							
 							break;
