@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "stormlight:shardblade",
+            "data": 1
+        },
+        "title": {
+            "translate": "advancements.surgebinding.becomeSkybreaker.title"
+        },
+        "description": {
+            "translate": "advancements.surgebinding.becomeSkybreaker.desc"
+        },
+                "hidden": true
+
+    },
+    "parent": "stormlight:surgebinding/bondSpren",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "impossible": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

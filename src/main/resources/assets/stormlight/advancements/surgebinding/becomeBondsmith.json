@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "stormlight:shardblade",
+            "data": 9
+        },
+        "title": {
+            "translate": "advancements.surgebinding.becomeBondsmith.title"
+        },
+        "description": {
+            "translate": "advancements.surgebinding.becomeBondsmith.desc"
+        },
+                "hidden": true
+
+    },
+    "parent": "stormlight:surgebinding/bondSpren",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "impossible": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

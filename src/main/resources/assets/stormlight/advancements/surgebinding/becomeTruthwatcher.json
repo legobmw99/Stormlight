@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "stormlight:shardblade",
+            "data": 4
+        },
+        "title": {
+            "translate": "advancements.surgebinding.becomeTruthwatcher.title"
+        },
+        "description": {
+            "translate": "advancements.surgebinding.becomeTruthwatcher.desc"
+        },
+                "hidden": true
+
+    },
+    "parent": "stormlight:surgebinding/bondSpren",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "impossible": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "stormlight:sphere",
+            "data": 1
+        },
+        "title": {
+            "translate": "advancements.surgebinding.root.title"
+        },
+        "description": {
+            "translate": "advancements.surgebinding.root.description"
+        },
+        "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
+        "show_toast": false,
+        "announce_to_chat": false
+    },
+    "criteria": {
+        "consume_item": {
+            "trigger": "consume_item",
+            "conditions": {
+                "item": {
+                    "item": "stormlight:sphere",
+                    "data":1
+                }
+            }
+        }
+    }
+}

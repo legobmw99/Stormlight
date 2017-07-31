@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "stormlight:shardblade",
+            "data": 8
+        },
+        "title": {
+            "translate": "advancements.surgebinding.becomeStoneward.title"
+        },
+        "description": {
+            "translate": "advancements.surgebinding.becomeStoneward.desc"
+        },
+                "hidden": true
+
+    },
+    "parent": "stormlight:surgebinding/bondSpren",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "impossible": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

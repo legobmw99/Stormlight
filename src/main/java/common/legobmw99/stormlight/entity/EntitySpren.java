@@ -8,6 +8,9 @@ import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
+import net.minecraft.advancements.AdvancementList;
+import net.minecraft.advancements.AdvancementManager;
+import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -224,9 +227,19 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			if (!this.world.isRemote) {
 				if (!net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
 					this.setTamedBy(player);
+					
+					//Add capability stuff
 					player.getCapability(Stormlight.PLAYER_CAP, null).setType(this.getType());
 					player.getCapability(Stormlight.PLAYER_CAP, null).setSprenID(this.getPersistentID());
 					Registry.network.sendTo(new StormlightCapabilityPacket(player.getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) player);
+					
+					//Advancement stuff
+					AdvancementManager manager = player.getServer().getAdvancementManager();
+					((EntityPlayerMP)player).getAdvancements().grantCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/bondSpren")), "impossible");
+					((EntityPlayerMP)player).getAdvancements().grantCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/become" + this.getCustomNameTag().substring(0, getCustomNameTag().length() - 1))), "impossible");
+
+					
+					//Normal taming stuff
 					this.navigator.clearPathEntity();
 					this.setAttackTarget((EntityLivingBase) null);
 					this.aiSit.setSitting(true);
@@ -248,11 +261,16 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	public void onDeath(DamageSource cause) {
 		// No longer Stormbound
 		if (!this.world.isRemote && this.getOwner() instanceof EntityPlayerMP) {
-			StormlightCapability cap = StormlightCapability.forPlayer(this.getOwner());
+			EntityPlayerMP player = (EntityPlayerMP) this.getOwner();
+			StormlightCapability cap = StormlightCapability.forPlayer(player);
 			cap.setType(-1);
 			cap.setProgression(-1);
 			cap.setBladeStored(true);
 			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
+			
+			AdvancementManager manager = player.getServer().getAdvancementManager();
+			player.getAdvancements().revokeCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/become" + this.getCustomNameTag().substring(0, getCustomNameTag().length() - 1))), "impossible");
+
 		}
 		super.onDeath(cause);
 	}
