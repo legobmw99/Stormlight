@@ -72,7 +72,9 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
         nbt.setInteger("surgebindingType", this.getType());
         nbt.setInteger("progression", this.getProgression());
         nbt.setBoolean("bladeStored", this.isBladeStored());
-        nbt.setUniqueId("sprenID", this.getSprenID());
+        if(getSprenID() != null){
+        	nbt.setUniqueId("sprenID", this.getSprenID());
+        }
 		return nbt;
 	}
 
@@ -81,7 +83,9 @@ public class StormlightCapability implements ICapabilitySerializable<NBTTagCompo
 		this.surgebindingType = nbt.getInteger("surgebindingType");
 		this.progression = nbt.getInteger("progression");
 		this.bladeStored = nbt.getBoolean("bladeStored");
-		this.sprenID = nbt.getUniqueId("sprenID");
+		if(nbt.hasKey("sprenID")){
+			this.sprenID = nbt.getUniqueId("sprenID");
+		}
 	}
     
     @Override
