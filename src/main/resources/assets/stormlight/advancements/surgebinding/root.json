@@ -8,7 +8,7 @@
             "translate": "advancements.surgebinding.root.title"
         },
         "description": {
-            "translate": "advancements.surgebinding.root.description"
+            "translate": "advancements.surgebinding.root.desc"
         },
         "background": "minecraft:textures/blocks/stonebrick.png",
         "show_toast": false,
