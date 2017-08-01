@@ -132,7 +132,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			type = 9; // Bondsmiths
 			break;
 		default: //Mushroom biome, and any other if using spawn egg
-			type = this.rand.nextInt(9);
+			type = this.rand.nextInt(10);
 		}
 		this.setType(type);
 		String name = SPREN_TYPES[getType()] + "s";
