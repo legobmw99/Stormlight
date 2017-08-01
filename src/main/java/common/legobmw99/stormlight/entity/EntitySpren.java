@@ -67,6 +67,19 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			{0.03F, 0.98F, 0.70F},
 			{0.38F, 0.38F, 0.38F },
 			{0.74F, 0.70F, 0.37F}};
+	
+	private static final String[] SPREN_TYPES = {
+			"Windrunner",
+			"Skybreaker",
+			"Dustbringer",
+			"Edgedancer",
+			"Truthwatcher",
+			"Lightweaver",
+			"Elsecaller",
+			"Willshaper",
+			"Stoneward",
+			"Bondsmith"
+	};
 
 	public EntitySpren(World worldIn) {
 		super(worldIn);
@@ -122,8 +135,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			type = this.rand.nextInt(9);
 		}
 		this.setType(type);
-		String name = Registry.BLADE_TYPES[getType()];
-		name = name.substring(0, 1).toUpperCase() + name.substring(1);
+		String name = SPREN_TYPES[getType()] + "s";
 		this.setCustomNameTag(name);
 		return super.onInitialSpawn(difficulty, livingdata);
 	}
@@ -229,14 +241,17 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 					this.setTamedBy(player);
 					
 					//Add capability stuff
-					player.getCapability(Stormlight.PLAYER_CAP, null).setType(this.getType());
-					player.getCapability(Stormlight.PLAYER_CAP, null).setSprenID(this.getPersistentID());
+					StormlightCapability cap = StormlightCapability.forPlayer(player);
+					cap.setType(this.getType());
+					cap.setProgression(0);
+					cap.setSprenID(this.getPersistentID());
+					
 					Registry.network.sendTo(new StormlightCapabilityPacket(player.getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) player);
 					
 					//Advancement stuff
 					AdvancementManager manager = player.getServer().getAdvancementManager();
 					((EntityPlayerMP)player).getAdvancements().grantCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/bondSpren")), "impossible");
-					((EntityPlayerMP)player).getAdvancements().grantCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/become" + this.getCustomNameTag().substring(0, getCustomNameTag().length() - 1))), "impossible");
+					((EntityPlayerMP)player).getAdvancements().grantCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/become" + SPREN_TYPES[getType()])), "impossible");
 
 					
 					//Normal taming stuff
@@ -269,7 +284,8 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 			Registry.network.sendTo(new StormlightCapabilityPacket(this.getOwner().getCapability(Stormlight.PLAYER_CAP, null)), (EntityPlayerMP) this.getOwner());
 			
 			AdvancementManager manager = player.getServer().getAdvancementManager();
-			player.getAdvancements().revokeCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/become" + this.getCustomNameTag().substring(0, getCustomNameTag().length() - 1))), "impossible");
+			player.getAdvancements().revokeCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/bondSpren")), "impossible");
+			player.getAdvancements().revokeCriterion(manager.getAdvancement(new ResourceLocation(Stormlight.MODID,"surgebinding/become" + SPREN_TYPES[getType()])), "impossible");
 
 		}
 		super.onDeath(cause);
@@ -329,16 +345,16 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public float getRed(int Type){
-		return colors[Type][0];
+	public float getRed(){
+		return colors[getType()][0];
 	}
 	@SideOnly(Side.CLIENT)
-	public float getGreen(int Type){
-		return colors[Type][1];
+	public float getGreen(){
+		return colors[getType()][1];
 	}	
 	@SideOnly(Side.CLIENT)
-	public float getBlue(int Type){
-		return colors[Type][2];
+	public float getBlue(){
+		return colors[getType()][2];
 	}
 
 	@Override
@@ -357,6 +373,6 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	@Override
 	public Light provideLight() {
 		return Light.builder()
-				.color(getRed(getType()), getGreen(getType()), getBlue(getType())).radius(4).pos(posX, posY + this.height / 2, posZ).build();
+				.color(getRed(), getGreen(), getBlue()).radius(4).pos(posX, posY + this.height / 2, posZ).build();
 	}
 }

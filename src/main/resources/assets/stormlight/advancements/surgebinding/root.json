@@ -10,18 +10,21 @@
         "description": {
             "translate": "advancements.surgebinding.root.description"
         },
-        "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
+        "background": "minecraft:textures/blocks/stonebrick.png",
         "show_toast": false,
         "announce_to_chat": false
     },
     "criteria": {
-        "consume_item": {
-            "trigger": "consume_item",
+        "inventor_changed": {
+            "trigger": "minecraft:inventory_changed",
             "conditions": {
-                "item": {
-                    "item": "stormlight:sphere",
-                    "data":1
-                }
+                "items": [
+                    {
+                        "item": "stormlight:sphere",
+                        "data":1
+                        
+                    }
+                ]
             }
         }
     }

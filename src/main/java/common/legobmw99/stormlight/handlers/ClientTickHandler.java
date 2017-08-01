@@ -43,7 +43,7 @@ public class ClientTickHandler {
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
 					GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GlStateManager.color(e.getRed(e.getType()), e.getGreen(e.getType()), e.getBlue(e.getType()), 0.5F);
+			GlStateManager.color(e.getRed(), e.getGreen(), e.getBlue(), 0.5F);
 		}
 	}
 
@@ -97,16 +97,16 @@ public class ClientTickHandler {
     		player = Minecraft.getMinecraft().player;
     		if (player != null) {
     			StormlightCapability cap = StormlightCapability.forPlayer(player);
-    			if (cap != null && cap.getType() >= 0) {
+    			if (cap != null) {
 
-    				if (cap.getProgression() > -2 /* Dummy check, for now */) {
+    				if (cap.getProgression() > -1 /* Dummy check, for now */) {
     					// Shardblade recall
     					if (Registry.Recall.isPressed()) {
     						Registry.network.sendToServer(new BoundBladePacket());
     					}
     				}
     				
-    				if (cap.getProgression() > -2 /* Dummy check, for now */) {
+    				if (cap.getProgression() > -1 /* Dummy check, for now */) {
     					// Surges
     					if (player.isPotionActive(Registry.effectStormlight)) {
     						if (Registry.BindingOne.isKeyDown()) {
