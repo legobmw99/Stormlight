@@ -2,15 +2,14 @@ package common.legobmw99.stormlight.entity;
 
 import javax.annotation.Nullable;
 
+import com.elytradev.mirage.lighting.IColoredLight;
+import com.elytradev.mirage.lighting.Light;
+
 import common.legobmw99.stormlight.Stormlight;
 import common.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
-import elucent.albedo.lighting.ILightProvider;
-import elucent.albedo.lighting.Light;
-import net.minecraft.advancements.AdvancementList;
 import net.minecraft.advancements.AdvancementManager;
-import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,7 +17,6 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIFollow;
 import net.minecraft.entity.ai.EntityAIFollowOwnerFlying;
-import net.minecraft.entity.ai.EntityAILandOnOwnersShoulder;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.EntityAISwimming;
@@ -50,8 +48,8 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
-public class EntitySpren extends EntityTameable implements EntityFlying, ILightProvider {
+@Optional.Interface(iface="com.elytradev.mirage.lighting.IColoredLight", modid="mirage")
+public class EntitySpren extends EntityTameable implements EntityFlying, IColoredLight {
 
 	private static final DataParameter<Integer> SPREN_TYPE = EntityDataManager.createKey(EntitySpren.class,
 			DataSerializers.VARINT);
@@ -371,7 +369,7 @@ public class EntitySpren extends EntityTameable implements EntityFlying, ILightP
 	@SideOnly(Side.CLIENT)
 	@Optional.Method(modid = "albedo")
 	@Override
-	public Light provideLight() {
+	public Light getColoredLight() {
 		return Light.builder()
 				.color(getRed(), getGreen(), getBlue()).radius(4).pos(posX, posY + this.height / 2, posZ).build();
 	}

@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import com.elytradev.mirage.event.GatherLightsEvent;
+import com.elytradev.mirage.lighting.Light;
+
 import common.legobmw99.stormlight.entity.EntitySpren;
 import common.legobmw99.stormlight.network.packets.BoundBladePacket;
 import common.legobmw99.stormlight.network.packets.SurgeFiredPacket;
 import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
-import elucent.albedo.event.GatherLightsEvent;
-import elucent.albedo.lighting.Light;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -58,7 +59,7 @@ public class ClientTickHandler {
 	}
 
 	@SideOnly(Side.CLIENT)
-	@Optional.Method(modid = "albedo")
+	@Optional.Method(modid = "mirage")
 	@SubscribeEvent
 	public void onLightGather(GatherLightsEvent event) {
 		List<EntityPlayer> pList = Minecraft.getMinecraft().player.world.playerEntities;

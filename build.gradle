@@ -22,7 +22,7 @@ compileJava {
 
 minecraft {
     
-    version = "1.12.1-14.22.0.2446"
+    version = "1.12.2-14.23.0.2495"
     runDir = "run"  
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -35,13 +35,13 @@ minecraft {
 
 repositories {
     maven {
-        url 'https://repo.elytradev.com/'
+        url = 'https://repo.elytradev.com/'
     }
 }
 
 dependencies {
 
-    provided 'elucent:albedo:2.0-SNAPSHOT'
+   provided 'com.elytradev:mirage:2.0.3-rc1-SNAPSHOT'
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
