@@ -24,8 +24,6 @@ public class Stormlight {
 	public static final String MODID = "stormlight";
 	public static final String VERSION = "@VERSION@";
 	
-	//TODO find a way to not have this be a thing
-
 	@SidedProxy
 	public static CommonProxy proxy;
 

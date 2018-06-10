@@ -2,7 +2,8 @@ package common.legobmw99.stormlight.entity;
 
 import javax.annotation.Nullable;
 
-import com.elytradev.mirage.lighting.IColoredLight;
+import com.elytradev.mirage.event.GatherLightsEvent;
+import com.elytradev.mirage.lighting.IEntityLightEventConsumer;
 import com.elytradev.mirage.lighting.Light;
 
 import common.legobmw99.stormlight.Stormlight;
@@ -11,6 +12,7 @@ import common.legobmw99.stormlight.util.Registry;
 import common.legobmw99.stormlight.util.StormlightCapability;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
@@ -48,8 +50,8 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Optional.Interface(iface="com.elytradev.mirage.lighting.IColoredLight", modid="mirage")
-public class EntitySpren extends EntityTameable implements EntityFlying, IColoredLight {
+@Optional.Interface(iface="com.elytradev.mirage.lighting.IEntityLightEventConsumer", modid="mirage")
+public class EntitySpren extends EntityTameable implements EntityFlying, IEntityLightEventConsumer  {
 
 	private static final DataParameter<Integer> SPREN_TYPE = EntityDataManager.createKey(EntitySpren.class,
 			DataSerializers.VARINT);
@@ -365,12 +367,11 @@ public class EntitySpren extends EntityTameable implements EntityFlying, IColore
 	protected ResourceLocation getLootTable() {
 		return null;
 	}
-
-	@SideOnly(Side.CLIENT)
-	@Optional.Method(modid = "albedo")
+	
+	@Optional.Method(modid="mirage")
 	@Override
-	public Light getColoredLight() {
-		return Light.builder()
-				.color(getRed(), getGreen(), getBlue()).radius(4).pos(posX, posY + this.height / 2, posZ).build();
+	public void gatherLights(GatherLightsEvent evt, Entity e) {
+		evt.add( Light.builder().color(getRed(), getGreen(), getBlue()).radius(4).pos(posX, posY + this.height / 2, posZ).build());
 	}
+
 }
