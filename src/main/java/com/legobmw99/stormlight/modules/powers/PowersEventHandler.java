@@ -2,6 +2,7 @@ package com.legobmw99.stormlight.modules.powers;
 
 import com.legobmw99.stormlight.modules.combat.item.ShardbladeItem;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
+import com.legobmw99.stormlight.network.Network;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +15,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -28,7 +30,46 @@ public class PowersEventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
+    public static void onJoinWorld(final PlayerEvent.PlayerLoggedInEvent event) {
+        if (!event.getPlayer().level.isClientSide) {
+            Network.sync(event.getPlayer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(final PlayerEvent.Clone event) {
+        if (!event.getPlayer().level.isClientSide()) {
+
+            PlayerEntity player = event.getPlayer();
+            StormlightCapability cap = StormlightCapability.forPlayer(player); // the clone's cap
+
+            PlayerEntity old = event.getOriginal();
+
+            old.getCapability(StormlightCapability.PLAYER_CAP).ifPresent(oldCap -> {
+                cap.deserializeNBT(oldCap.serializeNBT());
+            });
+
+            Network.sync(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event) {
+        if (!event.getPlayer().getCommandSenderWorld().isClientSide()) {
+            Network.sync(event.getPlayer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChangeDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!event.getPlayer().getCommandSenderWorld().isClientSide()) {
+            Network.sync(event.getPlayer());
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
         if (event.getEntityLiving().hasEffect(PowersSetup.STORMLIGHT.get())) {
             event.getEntityLiving().setGlowing(!event.getEntityLiving().hasEffect(Effects.INVISIBILITY));
             event.getEntityLiving().fallDistance = 0;
@@ -38,20 +79,19 @@ public class PowersEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onItemToss(ItemTossEvent event) {
+    public static void onItemToss(ItemTossEvent event) {
         ItemEntity entity = event.getEntityItem();
         if (entity != null) {
             // Store dropped shardblades
             Item item = event.getEntityItem().getItem().getItem();
-
             if (item instanceof ShardbladeItem) {
                 if (event.getPlayer() != null) {
                     StormlightCapability cap = StormlightCapability.forPlayer(event.getPlayer());
-                    if (cap != null && cap.getOrder() != null && !cap.isBladeStored()) {
+                    if (cap.isKnight() && !cap.isBladeStored()) {
                         //Only store correct type of blade
                         if (((ShardbladeItem) item).getOrder() == cap.getOrder()) {
+                            cap.storeBlade(event.getEntityItem().getItem());
                             event.getEntity().kill();
-                            cap.setBladeStored(true);
                             event.setCanceled(true);
                         }
                     }
@@ -79,7 +119,7 @@ public class PowersEventHandler {
 
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
         IWorldInfo data = event.world.getLevelData();
         if (data instanceof IServerWorldInfo) {
             IServerWorldInfo info = (IServerWorldInfo) data;

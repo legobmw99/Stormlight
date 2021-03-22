@@ -3,6 +3,8 @@ package com.legobmw99.stormlight.modules.powers;
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -32,12 +34,16 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
     private final LazyOptional<StormlightCapability> handler;
 
     private Order order = null;
-    private int ideal = 0;
-    private boolean bladeStored = true;
+    private int ideal;
+    private ItemStack blade;
     private UUID sprenID;
 
     public StormlightCapability() {
         this.handler = LazyOptional.of(() -> this);
+        this.order = null;
+        this.ideal = 0;
+        this.blade = null;
+        this.sprenID = null;
     }
 
     public static StormlightCapability forPlayer(Entity player) {
@@ -57,6 +63,8 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
         this.order = order;
     }
 
+    public boolean isKnight() { return order != null && ideal > 0; }
+
     public int getIdeal() {
         return ideal;
     }
@@ -72,13 +80,22 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
         return 0;
     }
 
-    public boolean isBladeStored() {
-        return bladeStored;
+    public void storeBlade(ItemStack blade) {
+        this.blade = blade.copy();
     }
 
-    public void setBladeStored(boolean bladeStored) {
-        this.bladeStored = bladeStored;
+    public boolean isBladeStored() {
+        return blade != null;
     }
+
+    public boolean addBladeToInventory(PlayerEntity player) {
+        if (player.inventory.add(this.blade)) {
+            this.blade = null;
+            return true;
+        }
+        return false;
+    }
+
 
     public UUID getSprenID() {
         return sprenID;
@@ -94,7 +111,9 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
 
         nbt.putInt("order", this.getOrder() != null ? this.getOrder().getIndex() : -1);
         nbt.putInt("ideal", this.getIdeal());
-        nbt.putBoolean("bladeStored", this.isBladeStored());
+        if (this.blade != null) {
+            nbt.put("blade", this.blade.serializeNBT());
+        }
         if (getSprenID() != null) {
             nbt.putUUID("sprenID", this.getSprenID());
         }
@@ -105,10 +124,17 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
     public void deserializeNBT(CompoundNBT nbt) {
         this.order = Order.getOrNull(nbt.getInt("order"));
         this.ideal = nbt.getInt("ideal");
-        this.bladeStored = nbt.getBoolean("bladeStored");
+        if (nbt.contains("blade")) {
+            this.blade = ItemStack.of(nbt.getCompound("blade"));
+        }
         if (nbt.contains("sprenID")) {
             this.sprenID = nbt.getUUID("sprenID");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Order: " + order + ", Ideal: " + ideal + ", Blade: " + blade + ", Spren: " + sprenID;
     }
 
     @Nonnull

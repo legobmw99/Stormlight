@@ -6,15 +6,17 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
 
 public class StormlightEffect extends Effect {
+
+    private static final int BASE_TIME = 1200; // 1 minute
+
     protected StormlightEffect() {
         super(EffectType.BENEFICIAL, 0);
     }
 
-    public static void addOrUpdateEffect(PlayerEntity player, int modifier){
-        int toAdd = 4800 * modifier;
+    public static void addOrUpdateEffect(PlayerEntity player, int modifier) {
+        int toAdd = BASE_TIME * modifier;
         if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
-            player.addEffect(
-                    new EffectInstance(PowersSetup.STORMLIGHT.get(), Math.min(toAdd + player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration(), 19200)));
+            player.addEffect(new EffectInstance(PowersSetup.STORMLIGHT.get(), Math.min(toAdd + player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration(), 24 * BASE_TIME)));
         } else {
             player.addEffect(new EffectInstance(PowersSetup.STORMLIGHT.get(), toAdd));
         }

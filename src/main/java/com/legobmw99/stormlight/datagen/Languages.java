@@ -41,6 +41,10 @@ public class Languages extends LanguageProvider {
         add("effect.stormlight.stormlight", "Stormlight");
 
         add("key.categories.stormlight", "Stormlight");
+        add("key.blade", "Summon Shardblade");
+        add("key.firstSurge", "First Surge");
+        add("key.secondSurge", "Second Surge");
+
 
     }
 

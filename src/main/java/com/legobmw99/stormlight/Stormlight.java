@@ -2,6 +2,7 @@ package com.legobmw99.stormlight;
 
 import com.legobmw99.stormlight.modules.combat.CombatSetup;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
+import com.legobmw99.stormlight.modules.powers.client.PowersClientSetup;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
 import net.minecraft.item.Item;
@@ -44,7 +45,7 @@ public class Stormlight {
     }
 
     public static void clientInit(final FMLClientSetupEvent e) {
-        PowersSetup.clientInit(e);
+        PowersClientSetup.clientInit(e);
         WorldSetup.clientInit(e);
     }
 

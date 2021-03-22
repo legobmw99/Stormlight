@@ -2,6 +2,8 @@ package com.legobmw99.stormlight.network;
 
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.powers.StormlightCapability;
+import com.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
+import com.legobmw99.stormlight.network.packets.SummonBladePacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -23,7 +25,9 @@ public class Network {
 
     public static void registerPackets() {
 
-        //INSTANCE.registerMessage(nextIndex(), UpdateBurnPacket.class, UpdateBurnPacket::encode, UpdateBurnPacket::decode, UpdateBurnPacket::handle);
+        INSTANCE.registerMessage(nextIndex(), StormlightCapabilityPacket.class, StormlightCapabilityPacket::encode, StormlightCapabilityPacket::decode,
+                                 StormlightCapabilityPacket::handle);
+        INSTANCE.registerMessage(nextIndex(), SummonBladePacket.class, (self, buf) -> {}, buf -> new SummonBladePacket(), SummonBladePacket::handle);
 
     }
 
@@ -47,7 +51,7 @@ public class Network {
     }
 
     public static void sync(StormlightCapability cap, PlayerEntity player) {
-        //todo sync(new AllomancyCapabilityPacket(cap, player.getId()), player);
+        sync(new StormlightCapabilityPacket(cap, player.getUUID()), player);
     }
 
     public static void sync(Object msg, PlayerEntity player) {

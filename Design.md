@@ -6,12 +6,13 @@ Stormlight
 Create a mod which implements Surgebinding from Brandon Sanderson's *The Stormlight Archives* to Minecraft
 
 ### Items
- * Crystal Spheres. Made with glass, and a diamond or emerald. Used to store Stormlight, and Charged variant is created in Thunderstorms. Used item is known as Dun Crystal, and can be recharged. Can be placed as a light source 
- * Shardblade. OP lightsaber, but super rare. Possibly similar to elytra, worldgen castles which are super rare.
+ * Crystal Spheres. Made with glass, and a diamond or emerald. Used to store Stormlight, and Charged variant is created in Thunderstorms. Used item is known as Dun Crystal, and can be recharged. Can be placed as a light source. Should have a quality modifier. Consider other Lights 
+ * Shardblade. OP lightsaber, requires spren and 'good behavior'?.
  * Shardplate. The OP armor equivalent of the above.
+   * Dead versions of both if behavior violated
  * Honorblade. A possible alternative to the above shardblade which grants Surgebinding ability. 
  ### Mechanics
-* Each surgebinder can be granted two surges
+* Each surgebinder can be granted two surges. May need to make them different per-order, so more like 20
 * Surges
   1. Gravitation - Can control gravity. Use nogravity or levitation effect.
   2. Adhesion - Binds stuff together. Stick entities to blocks?

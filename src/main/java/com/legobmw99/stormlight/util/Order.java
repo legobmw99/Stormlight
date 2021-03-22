@@ -2,18 +2,36 @@ package com.legobmw99.stormlight.util;
 
 import java.util.Locale;
 
-public enum Order {
-    WINDRUNNERS,
-    SKYBREAKERS,
-    DUSTBRINGERS,
-    EDGEDANCERS,
-    TRUTHWATCHERS,
-    LIGHTWEAVERS,
-    ELSECALLERS,
-    WILLSHAPERS,
-    STONEWARDS,
-    BONDSMITHS;
+import static com.legobmw99.stormlight.util.Surge.*;
 
+public enum Order {
+    WINDRUNNERS(ADHESION, GRAVITATION),
+    SKYBREAKERS(GRAVITATION, DIVISION),
+    DUSTBRINGERS(DIVISION, ABRASION),
+    EDGEDANCERS(ABRASION, PROGRESSION),
+    TRUTHWATCHERS(PROGRESSION, ILLUMINATION),
+    LIGHTWEAVERS(ILLUMINATION, TRANSFORMATION),
+    ELSECALLERS(TRANSFORMATION, TRANSPORTATION),
+    WILLSHAPERS(TRANSPORTATION, COHESION),
+    STONEWARDS(COHESION, TENSION),
+    BONDSMITHS(TENSION, ADHESION);
+
+    private final Surge first;
+    private final Surge second;
+
+    Order(Surge fst, Surge snd) {
+        this.first = fst;
+        this.second = snd;
+
+    }
+
+    public Surge getFirst() {
+        return first;
+    }
+
+    public Surge getSecond() {
+        return second;
+    }
 
     public static Order getOrNull(int index) {
         for (Order order : values()) {
