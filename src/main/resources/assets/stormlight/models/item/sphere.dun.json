@@ -1,6 +1,0 @@
-{
-  "parent": "stormlight:item/sphere",
-  "textures": {
-    "layer0": "stormlight:items/dun"
-  }
-}
