@@ -1,14 +1,23 @@
 package com.legobmw99.stormlight.modules.world;
 
 import com.legobmw99.stormlight.Stormlight;
-import com.legobmw99.stormlight.modules.powers.StormlightCapability;
+import com.legobmw99.stormlight.modules.world.entity.SprenEntity;
+import com.legobmw99.stormlight.modules.world.entity.SprenModel;
+import com.legobmw99.stormlight.modules.world.entity.SprenRenderer;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.util.Gemstone;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -19,26 +28,54 @@ import java.util.List;
 public class WorldSetup {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Stormlight.MODID);
 
-
     public static final List<RegistryObject<SphereItem>> DUN_SPHERES = new ArrayList<>();
     public static final List<RegistryObject<SphereItem>> INFUSED_SPHERES = new ArrayList<>();
 
-    static{
+    public static final EntityType<SprenEntity> SPREN_ENTITY = EntityType.Builder.<SprenEntity>of(SprenEntity::new, EntityClassification.AMBIENT)
+            .setShouldReceiveVelocityUpdates(true)
+            .setUpdateInterval(5)
+            .setCustomClientFactory((spawnEntity, world) -> new SprenEntity(world, spawnEntity.getEntity()))
+            .sized(0.6F, 1F)
+            .canSpawnFarFromPlayer()
+            .build("spren");
+
+    public static final RegistryObject<SpawnEggItem> SPREN_SPAWN_EGG = ITEMS.register("spren_spawn_egg", () -> new SpawnEggItem(SPREN_ENTITY, 16382457, 10123246,
+                                                                                                                                Stormlight.createStandardItemProperties()));
+
+    static {
         for (Gemstone gem : Gemstone.values()) {
             String name = gem.getName();
-            DUN_SPHERES.add(ITEMS.register("dun_"+name+"_sphere",  () -> new SphereItem(false, gem)));
-            INFUSED_SPHERES.add(ITEMS.register("infused_"+name+"_sphere",  () -> new SphereItem(true, gem)));
+            DUN_SPHERES.add(ITEMS.register("dun_" + name + "_sphere", () -> new SphereItem(false, gem)));
+            INFUSED_SPHERES.add(ITEMS.register("infused_" + name + "_sphere", () -> new SphereItem(true, gem)));
         }
     }
 
-    public static void register(){
+    public static void register() {
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void clientInit(final FMLClientSetupEvent e) {
-        //WorldClientSetup.registerEntityRenders();
+        registerEntityRenders();
     }
 
+
+    public static void onEntityAttribute(final net.minecraftforge.event.entity.EntityAttributeCreationEvent e) {
+        Stormlight.LOGGER.info("Registering Spren entity attributes");
+        e.put(SPREN_ENTITY, SprenEntity.createAttributes());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void registerEntityRenders() {
+        RenderingRegistry.registerEntityRenderingHandler(SPREN_ENTITY, manager -> new SprenRenderer(manager, new SprenModel()));
+    }
+
+    public static void onEntityRegister(RegistryEvent.Register<EntityType<?>> event) {
+        event.getRegistry().register(SPREN_ENTITY.setRegistryName(Stormlight.MODID, "spren"));
+        EntitySpawnPlacementRegistry.register(SPREN_ENTITY, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING,
+                                              SprenEntity::checkSprenSpawnRules);
+    }
 
     /*public static void registerEntities() {
         int id = 1;

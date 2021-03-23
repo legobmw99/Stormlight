@@ -27,6 +27,9 @@ public class ItemModels extends ItemModelProvider {
 
         }
 
+        getBuilder(WorldSetup.SPREN_SPAWN_EGG.get().getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/template_spawn_egg")));
+
+
     }
 
     public void itemGenerated(Item item, String texture) {

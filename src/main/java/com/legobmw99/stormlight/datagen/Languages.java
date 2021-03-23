@@ -36,6 +36,9 @@ public class Languages extends LanguageProvider {
 
         }
 
+        add(WorldSetup.SPREN_SPAWN_EGG.get(), "Spren Spawn Egg");
+        add("entity.stormlight.spren", "Spren");
+
         add("item.stormlight.shardblade.lore", "This sword seems to glow with strange light");
 
         add("effect.stormlight.stormlight", "Stormlight");

@@ -5,6 +5,7 @@ import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import com.legobmw99.stormlight.modules.powers.client.PowersClientSetup;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -35,6 +36,9 @@ public class Stormlight {
         instance = this;
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::clientInit);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(EntityType.class, WorldSetup::onEntityRegister);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::onEntityAttribute);
+
         PowersSetup.register();
         WorldSetup.register();
         CombatSetup.register();

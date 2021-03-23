@@ -11,10 +11,6 @@ import java.util.function.Supplier;
 
 public class SummonBladePacket {
 
-    public SummonBladePacket() {
-
-    }
-
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
