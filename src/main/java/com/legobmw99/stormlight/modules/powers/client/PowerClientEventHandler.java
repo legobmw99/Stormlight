@@ -1,5 +1,6 @@
 package com.legobmw99.stormlight.modules.powers.client;
 
+import com.legobmw99.stormlight.modules.combat.item.ShardbladeItem;
 import com.legobmw99.stormlight.modules.powers.StormlightCapability;
 import com.legobmw99.stormlight.network.Network;
 import com.legobmw99.stormlight.network.packets.SummonBladePacket;
@@ -40,9 +41,9 @@ public class PowerClientEventHandler {
                     return;
                 }
                 cap = StormlightCapability.forPlayer(player);
-                if (PowersClientSetup.blade.isDown() && cap.isBladeStored()) {
-                    System.out.println("blade");
+                if (PowersClientSetup.blade.isDown() && (cap.isBladeStored() || player.getMainHandItem().getItem() instanceof ShardbladeItem)) {
                     Network.sendToServer(new SummonBladePacket());
+                    PowersClientSetup.blade.setDown(false);
                 }
             }
         }

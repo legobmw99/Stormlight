@@ -20,7 +20,6 @@ public class SummonBladePacket {
                     cap.addBladeToInventory(player);
                     // TODO when spren, hide them
                 } else {
-                    player.getMainHandItem();
                     if (player.getMainHandItem().getItem() instanceof ShardbladeItem && ((ShardbladeItem) player.getMainHandItem().getItem()).getOrder() == cap.getOrder()) {
                         cap.storeBlade(player.getMainHandItem());
                         player.inventory.setItem(player.inventory.selected, ItemStack.EMPTY);

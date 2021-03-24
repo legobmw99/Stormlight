@@ -33,7 +33,7 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
 
     private final LazyOptional<StormlightCapability> handler;
 
-    private Order order = null;
+    private Order order ;
     private int ideal;
     private ItemStack blade;
     private UUID sprenID;
@@ -42,7 +42,7 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
         this.handler = LazyOptional.of(() -> this);
         this.order = null;
         this.ideal = 0;
-        this.blade = null;
+        this.blade = ItemStack.EMPTY;
         this.sprenID = null;
     }
 
@@ -85,12 +85,12 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
     }
 
     public boolean isBladeStored() {
-        return blade != null;
+        return !blade.isEmpty();
     }
 
     public boolean addBladeToInventory(PlayerEntity player) {
         if (player.inventory.add(this.blade)) {
-            this.blade = null;
+            this.blade = ItemStack.EMPTY;
             return true;
         }
         return false;
@@ -111,9 +111,8 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
 
         nbt.putInt("order", this.getOrder() != null ? this.getOrder().getIndex() : -1);
         nbt.putInt("ideal", this.getIdeal());
-        if (this.blade != null) {
-            nbt.put("blade", this.blade.serializeNBT());
-        }
+        nbt.put("blade", this.blade.serializeNBT());
+
         if (getSprenID() != null) {
             nbt.putUUID("sprenID", this.getSprenID());
         }
@@ -124,9 +123,8 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
     public void deserializeNBT(CompoundNBT nbt) {
         this.order = Order.getOrNull(nbt.getInt("order"));
         this.ideal = nbt.getInt("ideal");
-        if (nbt.contains("blade")) {
-            this.blade = ItemStack.of(nbt.getCompound("blade"));
-        }
+        this.blade = ItemStack.of(nbt.getCompound("blade"));
+
         if (nbt.contains("sprenID")) {
             this.sprenID = nbt.getUUID("sprenID");
         }

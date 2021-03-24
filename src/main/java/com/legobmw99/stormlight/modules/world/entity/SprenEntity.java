@@ -20,13 +20,18 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.IDataSerializer;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.PathNavigator;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -49,12 +54,13 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     };
 
-    static{
+    private static final DataParameter<Enum<Order>> SPREN_TYPE = EntityDataManager.defineId(SprenEntity.class, ORDER);
+    private static final float[][] colors = {{0.55F, 0.70F, 0.38F}, {0.02F, 0.40F, 0.13F}, {0.98F, 0.58F, 0.09F}, {0.33F, 0.48F, 0.04F}, {0.04F, 0.40F, 0.35F},
+                                             {1.00F, 1.00F, 1.00F}, {0.85F, 0.27F, 0.08F}, {0.03F, 0.98F, 0.70F}, {0.38F, 0.38F, 0.38F}, {0.74F, 0.70F, 0.37F}};
+
+    static {
         DataSerializers.registerSerializer(ORDER);
     }
-
-
-    private static final DataParameter<Enum<Order>> SPREN_TYPE = EntityDataManager.defineId(SprenEntity.class, ORDER);
 
     public SprenEntity(World world, Entity other) {
         this(null, world);
@@ -69,6 +75,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         this.setTame(false);
         this.moveControl = new FlyingMovementController(this, 20, true);
     }
+
 
     public static AttributeModifierMap createAttributes() {
 
@@ -100,6 +107,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         return super.finalizeSpawn(world, difficulty, reason, data, nbt);
     }
 
+
     @Override
     public void setTame(boolean tamed) {
         super.setTame(tamed);
@@ -107,6 +115,24 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(180.0D);
         }
     }
+
+    private int delay = 0;
+    @Override
+    public void aiStep() {
+        if (this.level.isClientSide && delay==0) {
+            AxisAlignedBB aabb = getBoundingBox();
+            double x = aabb.minX + Math.random() * (aabb.maxX - aabb.minX);
+            double y = aabb.minY + Math.random() * (aabb.maxY - aabb.minY);
+            double z = aabb.minZ + Math.random() * (aabb.maxZ - aabb.minZ);
+            // TODO custom particle
+            this.level.addParticle(ParticleTypes.SMOKE, x, y, z, 0, 0, 0);
+        }
+        delay++;
+        delay = delay % 10;
+        super.aiStep();
+
+    }
+
 
     @Override
     public int getMaxSpawnClusterSize() {
@@ -118,12 +144,22 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         return 0;
     }
 
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource in) {
+        if ((isTame() && !in.equals(DamageSource.playerAttack((PlayerEntity) getOwner()))) || in.equals(DamageSource.OUT_OF_WORLD)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected PathNavigator createNavigation(World world) {
         FlyingPathNavigator flying = new FlyingPathNavigator(this, world);
         flying.setCanOpenDoors(true);
         flying.setCanFloat(true);
         flying.setCanPassDoors(true);
+        flying.canFloat();
         return flying;
     }
 
@@ -142,16 +178,29 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         this.goalSelector.addGoal(0, new PanicGoal(this, 1.25D));
         this.goalSelector.addGoal(0, new SwimGoal(this));
         this.goalSelector.addGoal(1, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.addGoal(2, new SitGoal(this));
         this.goalSelector.addGoal(2, new FollowOwnerGoal(this, 1.0D, 5.0F, 1.0F, true));
         this.goalSelector.addGoal(2, new WaterAvoidingRandomFlyingGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new FollowMobGoal(this, 1.0D, 3.0F, 7.0F));
+        this.goalSelector.addGoal(4, new SitGoal(this));
+
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(SPREN_TYPE, Order.WINDRUNNERS);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundNBT compoundNBT) {
+        super.addAdditionalSaveData(compoundNBT);
+        compoundNBT.putByte("type", (byte) getSprenType().getIndex());
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundNBT compoundNBT) {
+        super.readAdditionalSaveData(compoundNBT);
+        setSprenType(Order.getOrNull(compoundNBT.getByte("type")));
     }
 
     @Override
@@ -201,5 +250,20 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     @Override
     public AgeableEntity getBreedOffspring(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
         return null;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public float getRed() {
+        return colors[getSprenType().getIndex()][0];
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public float getGreen() {
+        return colors[getSprenType().getIndex()][1];
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public float getBlue() {
+        return colors[getSprenType().getIndex()][2];
     }
 }

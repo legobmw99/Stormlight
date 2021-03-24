@@ -2,8 +2,7 @@ package com.legobmw99.stormlight.modules.world;
 
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.world.entity.SprenEntity;
-import com.legobmw99.stormlight.modules.world.entity.SprenModel;
-import com.legobmw99.stormlight.modules.world.entity.SprenRenderer;
+import com.legobmw99.stormlight.modules.world.entity.client.SprenRenderer;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.util.Gemstone;
 import net.minecraft.entity.EntityClassification;
@@ -35,7 +34,7 @@ public class WorldSetup {
             .setShouldReceiveVelocityUpdates(true)
             .setUpdateInterval(5)
             .setCustomClientFactory((spawnEntity, world) -> new SprenEntity(world, spawnEntity.getEntity()))
-            .sized(0.6F, 1F)
+            .sized(0.6F, 0.6F)
             .canSpawnFarFromPlayer()
             .build("spren");
 
@@ -68,7 +67,7 @@ public class WorldSetup {
 
     @OnlyIn(Dist.CLIENT)
     public static void registerEntityRenders() {
-        RenderingRegistry.registerEntityRenderingHandler(SPREN_ENTITY, manager -> new SprenRenderer(manager, new SprenModel()));
+        RenderingRegistry.registerEntityRenderingHandler(SPREN_ENTITY, manager -> new SprenRenderer(manager));
     }
 
     public static void onEntityRegister(RegistryEvent.Register<EntityType<?>> event) {

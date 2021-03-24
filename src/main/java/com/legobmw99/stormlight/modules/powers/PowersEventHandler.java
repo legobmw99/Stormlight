@@ -93,6 +93,7 @@ public class PowersEventHandler {
                             cap.storeBlade(event.getEntityItem().getItem());
                             event.getEntity().kill();
                             event.setCanceled(true);
+                            Network.sync(event.getPlayer());
                         }
                     }
                 }
