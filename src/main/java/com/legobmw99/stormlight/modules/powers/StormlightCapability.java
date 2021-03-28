@@ -1,6 +1,7 @@
 package com.legobmw99.stormlight.modules.powers;
 
 import com.legobmw99.stormlight.Stormlight;
+import com.legobmw99.stormlight.util.Ideal;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,21 +28,17 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
 
     public static final ResourceLocation IDENTIFIER = new ResourceLocation(Stormlight.MODID, "surgebinding_data");
 
-
-    public static final int WINDRUNNERS = 0, SKYBREAKERS = 1, DUSTBRINGERS = 2, EDGEDANCERS = 3, TRUTHWATCHERS = 4, LIGHTWEAVERS = 5, ELSECALLERS = 6, WILLSHAPERS = 7, STONEWARDS = 8, BONDSMITHS = 9;
-
-
     private final LazyOptional<StormlightCapability> handler;
 
     private Order order ;
-    private int ideal;
+    private Ideal ideal;
     private ItemStack blade;
     private UUID sprenID;
 
     public StormlightCapability() {
         this.handler = LazyOptional.of(() -> this);
         this.order = null;
-        this.ideal = 0;
+        this.ideal = Ideal.UNINVESTED;
         this.blade = ItemStack.EMPTY;
         this.sprenID = null;
     }
@@ -63,21 +60,20 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
         this.order = order;
     }
 
-    public boolean isKnight() { return order != null && ideal > 0; }
+    public boolean isKnight() { return order != null && ideal != Ideal.UNINVESTED && ideal != Ideal.TRAITOR; }
 
-    public int getIdeal() {
+    public Ideal getIdeal() {
         return ideal;
     }
 
-    public int progressIdeal() {
-        return ++this.ideal;
+    public Ideal progressIdeal() {
+        this.ideal = this.ideal.progressIdeal();
+        return this.ideal;
     }
 
-    public int decrementIdeal() {
-        if (this.ideal > 0) {
-            return --this.ideal;
-        }
-        return 0;
+    public Ideal regressIdeal() {
+        this.ideal = this.ideal.regressIdeal();
+        return this.ideal;
     }
 
     public void storeBlade(ItemStack blade) {
@@ -110,7 +106,7 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
         CompoundNBT nbt = new CompoundNBT();
 
         nbt.putInt("order", this.getOrder() != null ? this.getOrder().getIndex() : -1);
-        nbt.putInt("ideal", this.getIdeal());
+        nbt.putInt("ideal", this.getIdeal().getIndex());
         nbt.put("blade", this.blade.serializeNBT());
 
         if (getSprenID() != null) {
@@ -122,7 +118,7 @@ public class StormlightCapability implements ICapabilitySerializable<CompoundNBT
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         this.order = Order.getOrNull(nbt.getInt("order"));
-        this.ideal = nbt.getInt("ideal");
+        this.ideal = Ideal.get(nbt.getInt("ideal"));
         this.blade = ItemStack.of(nbt.getCompound("blade"));
 
         if (nbt.contains("sprenID")) {

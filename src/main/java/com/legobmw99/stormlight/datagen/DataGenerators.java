@@ -1,6 +1,5 @@
 package com.legobmw99.stormlight.datagen;
 
-import com.legobmw99.stormlight.Stormlight;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -13,7 +12,7 @@ public class DataGenerators {
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         if (event.includeServer()) {
-            //generator.addProvider(new Recipes(generator));
+            generator.addProvider(new Recipes(generator));
             //generator.addProvider(new LootTables(generator));
             //BlockTags blocktags = new BlockTags(generator, Allomancy.MODID, event.getExistingFileHelper());
             //generator.addProvider(blocktags);

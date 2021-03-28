@@ -40,3 +40,6 @@ Difficult. Perhaps requires certain achievements, as a kind of skill-tree (Oaths
 Two options:
 1. Easy. Honorblades only, stormlight is a status effect
 2. Harder. Bonding and some sort of NBT data. A Capability with several fields - a Type field [1-10], power [0-5] and blade stored [0-1] at least.
+
+
+Progression:

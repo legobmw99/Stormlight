@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ggg",
+    "geg",
+    "ggg"
+  ],
+  "key": {
+    "e": {
+      "item": "minecraft:emerald"
+    },
+    "g": {
+      "tag": "forge:glass"
+    }
+  },
+  "result": {
+    "item": "stormlight:dun_emerald_sphere",
+    "count": 4
+  }
+}

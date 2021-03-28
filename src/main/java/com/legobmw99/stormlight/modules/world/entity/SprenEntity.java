@@ -20,10 +20,13 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.IDataSerializer;
+import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.PathNavigator;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
@@ -55,12 +58,16 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     };
 
     private static final DataParameter<Enum<Order>> SPREN_TYPE = EntityDataManager.defineId(SprenEntity.class, ORDER);
-    private static final float[][] colors = {{0.55F, 0.70F, 0.38F}, {0.02F, 0.40F, 0.13F}, {0.98F, 0.58F, 0.09F}, {0.33F, 0.48F, 0.04F}, {0.04F, 0.40F, 0.35F},
-                                             {1.00F, 1.00F, 1.00F}, {0.85F, 0.27F, 0.08F}, {0.03F, 0.98F, 0.70F}, {0.38F, 0.38F, 0.38F}, {0.74F, 0.70F, 0.37F}};
+    private static final float[][] colors = {{0.737F, 0.960F, 0.945F}, {0.356F, 0.333F, 0.407F}, {0.819F, 0.819F, 0.819F}, {0.349F, 0.670F, 0.466F}, {0.913F, 0.945F, 0.945F},
+                                             {0.337F, 0.286F, 0.396F}, {0.188F, 0.145F, 0.129F}, {0.815F, 0.588F, 0.207F}, {0.513F, 0.027F, 0.098F}, {0.380F, 0.352F, 0.886F}};
+    private static final BasicParticleType[] particles = {ParticleTypes.CLOUD, ParticleTypes.PORTAL, ParticleTypes.ASH, ParticleTypes.HAPPY_VILLAGER, ParticleTypes.END_ROD,
+                                                          ParticleTypes.ENCHANT, ParticleTypes.SQUID_INK, ParticleTypes.EFFECT, ParticleTypes.LAVA, ParticleTypes.SOUL};
 
     static {
         DataSerializers.registerSerializer(ORDER);
     }
+
+    private int delay = 0;
 
     public SprenEntity(World world, Entity other) {
         this(null, world);
@@ -69,13 +76,13 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         }
     }
 
+
     public SprenEntity(EntityType<SprenEntity> entityEntityType, World world) {
         super(WorldSetup.SPREN_ENTITY, world);
 
         this.setTame(false);
         this.moveControl = new FlyingMovementController(this, 20, true);
     }
-
 
     public static AttributeModifierMap createAttributes() {
 
@@ -107,6 +114,16 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         return super.finalizeSpawn(world, difficulty, reason, data, nbt);
     }
 
+    @Override
+    public void die(DamageSource p_70645_1_) {
+        // TODO break oaths
+        super.die(p_70645_1_);
+    }
+
+    @Override
+    public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
+        return super.mobInteract(player, hand);
+    }
 
     @Override
     public void setTame(boolean tamed) {
@@ -116,16 +133,14 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         }
     }
 
-    private int delay = 0;
     @Override
     public void aiStep() {
-        if (this.level.isClientSide && delay==0) {
+        if (this.level.isClientSide && delay == 0) {
             AxisAlignedBB aabb = getBoundingBox();
             double x = aabb.minX + Math.random() * (aabb.maxX - aabb.minX);
             double y = aabb.minY + Math.random() * (aabb.maxY - aabb.minY);
             double z = aabb.minZ + Math.random() * (aabb.maxZ - aabb.minZ);
-            // TODO custom particle
-            this.level.addParticle(ParticleTypes.SMOKE, x, y, z, 0, 0, 0);
+            this.level.addParticle(particles[getSprenType().getIndex()], x, y, z, 0, 0, 0);
         }
         delay++;
         delay = delay % 10;
@@ -133,6 +148,13 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.random.nextInt(100) == 0) {
+            this.heal(2.0F);
+        }
+    }
 
     @Override
     public int getMaxSpawnClusterSize() {
@@ -215,7 +237,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     @Override
     public boolean isPushable() {
-        return true;
+        return false;
     }
 
     @Override
