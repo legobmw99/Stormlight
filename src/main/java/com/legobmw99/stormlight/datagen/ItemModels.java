@@ -7,6 +7,7 @@ import com.legobmw99.stormlight.util.Gemstone;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -44,7 +45,7 @@ public class ItemModels extends ItemModelProvider {
 
     public void itemShardblade(Item item, String texture) {
         Stormlight.LOGGER.debug("Creating Large Item Model for " + item.getRegistryName());
-        getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(modLoc("item/shardblade"))).texture("layer0", modLoc(texture));
+        getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(modLoc("item/shardblade"))).texture("layer0", modLoc(texture)).override().predicate(new ResourceLocation(Stormlight.MODID, "shielding"), 1.0F).model(getExistingFile(mcLoc("item/apple")));
     }
 
     @Override

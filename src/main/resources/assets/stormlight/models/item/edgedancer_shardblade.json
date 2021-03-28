@@ -2,5 +2,13 @@
   "parent": "stormlight:item/shardblade",
   "textures": {
     "layer0": "stormlight:item/edgedancer"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "stormlight:shielding": 1.0
+      },
+      "model": "minecraft:item/apple"
+    }
+  ]
 }

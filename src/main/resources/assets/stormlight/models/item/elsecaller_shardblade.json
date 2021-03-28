@@ -2,5 +2,13 @@
   "parent": "stormlight:item/shardblade",
   "textures": {
     "layer0": "stormlight:item/elsecaller"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "stormlight:shielding": 1.0
+      },
+      "model": "minecraft:item/apple"
+    }
+  ]
 }

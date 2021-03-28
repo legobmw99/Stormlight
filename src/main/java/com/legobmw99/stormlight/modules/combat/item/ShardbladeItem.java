@@ -4,11 +4,12 @@ import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.SwordItem;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
@@ -87,4 +88,26 @@ public class ShardbladeItem extends SwordItem {
         return Rarity.RARE;
     }
 
+
+    @Override
+    public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
+        return true;
+    }
+
+    @Override
+    public UseAction getUseAnimation(ItemStack p_77661_1_) {
+        return UseAction.BLOCK;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack p_77626_1_) {
+        return 72000;
+    }
+
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
+        player.startUsingItem(hand);
+        return ActionResult.consume(itemstack);
+    }
 }

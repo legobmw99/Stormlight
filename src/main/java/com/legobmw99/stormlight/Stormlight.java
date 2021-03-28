@@ -51,6 +51,7 @@ public class Stormlight {
     public static void clientInit(final FMLClientSetupEvent e) {
         PowersClientSetup.clientInit(e);
         WorldSetup.clientInit(e);
+        CombatSetup.clientInit(e);
     }
 
     public static void registerCommands(final RegisterCommandsEvent e) {
