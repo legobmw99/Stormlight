@@ -1,0 +1,6 @@
+{
+  "parent": "stormlight:item/shield",
+  "textures": {
+    "layer0": "stormlight:item/bondsmith_shield"
+  }
+}

@@ -1,14 +1,14 @@
 {
   "parent": "stormlight:item/shardblade",
   "textures": {
-    "layer0": "stormlight:item/lightweaver"
+    "layer0": "stormlight:item/lightweaver_shardblade"
   },
   "overrides": [
     {
       "predicate": {
         "stormlight:shielding": 1.0
       },
-      "model": "minecraft:item/apple"
+      "model": "stormlight:item/lightweaver_shield"
     }
   ]
 }

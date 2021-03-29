@@ -18,8 +18,11 @@ public class ItemModels extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
+
+
         for (Order o : Order.values()) {
-            itemShardblade(CombatSetup.SHARDBLADES.get(o.getIndex()).get(), "item/" + o.getSingularName());
+            itemShield(o, "item/" + o.getSingularName() + "_shield");
+            itemShardblade(o, "item/" + o.getSingularName() + "_shardblade");
         }
 
         for (Gemstone g : Gemstone.values()) {
@@ -43,9 +46,19 @@ public class ItemModels extends ItemModelProvider {
         getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/handheld"))).texture("layer0", modLoc(texture));
     }
 
-    public void itemShardblade(Item item, String texture) {
-        Stormlight.LOGGER.debug("Creating Large Item Model for " + item.getRegistryName());
-        getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(modLoc("item/shardblade"))).texture("layer0", modLoc(texture)).override().predicate(new ResourceLocation(Stormlight.MODID, "shielding"), 1.0F).model(getExistingFile(mcLoc("item/apple")));
+    public void itemShardblade(Order order, String texture) {
+        Stormlight.LOGGER.debug("Creating Shardblade Model for " + order.getSingularName());
+        getBuilder(order.getSingularName() + "_shardblade")
+                .parent(getExistingFile(modLoc("item/shardblade")))
+                .texture("layer0", modLoc(texture))
+                .override()
+                .predicate(new ResourceLocation(Stormlight.MODID, "shielding"), 1.0F)
+                .model(getExistingFile(modLoc("item/" + order.getSingularName() + "_shield")));
+    }
+
+    public void itemShield(Order order, String texture) {
+        Stormlight.LOGGER.debug("Creating Shield Model for " + order.getSingularName());
+        getBuilder(order.getSingularName() + "_shield").parent(getExistingFile(modLoc("item/shield"))).texture("layer0", modLoc(texture));
     }
 
     @Override
