@@ -1,13 +1,18 @@
 package com.legobmw99.stormlight.util;
 
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public enum Surge {
     ADHESION(Surges::test),
-    GRAVITATION(Surges::test),
+    GRAVITATION(Surges::gravitation),
     DIVISION(Surges::test),
     ABRASION(Surges::test),
     PROGRESSION(Surges::test),
@@ -23,20 +28,20 @@ public enum Surge {
         this.surge = surge;
     }
 
-    public void fire(ServerPlayerEntity player, @Nullable BlockPos pos, boolean modified) {
-        surge.call(player, pos, modified);
+    public void fire(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
+        surge.call(player, looking, modified);
     }
 
 }
 
 @FunctionalInterface
 interface ISurge {
-    void call(ServerPlayerEntity player, @Nullable BlockPos pos, boolean modified);
+    void call(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified);
 }
 
 class Surges {
 
-    static void test(ServerPlayerEntity player, @Nullable BlockPos pos, boolean modified) {
+    static void test(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
 
     }
 
@@ -92,58 +97,51 @@ class Surges {
 		if (isBlockSafe(player.getEntityWorld(), pos)) {
 			player.getEntityWorld().newExplosion(player, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, true);
 		}
-	}
+	}*/
 
-	public static void gravitation(EntityPlayerMP player, boolean shiftHeld) {
-		if (shiftHeld) {
-			// reverse lashing
-			double range = 10;
-			double x = player.posX;
-			double y = player.posY + 1.5;
-			double z = player.posZ;
-			double factor = 9;
-			List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class,
-					new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
-			for (Entity e : items) {
-				if (e != player) {
-					e.motionX = (x - e.posX) / factor;
-					e.motionY = (y - e.posY) / factor;
-					e.motionZ = (z - e.posZ) / factor;
-					e.velocityChanged = true;
-				}
-			}
+    public static void gravitation(ServerPlayerEntity player, @Nullable BlockPos l, boolean shiftHeld) {
+        if (shiftHeld) {
+            // reverse lashing
+            double range = 10;
+            Vector3d pvec = player.position().add(0D, player.getEyeHeight() / 2.0, 0D);
+            List<ItemEntity> items = player.level.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pvec.subtract(range, range, range), pvec.add(range, range, range)));
+            for (ItemEntity e : items) {
+                Vector3d vec = pvec.subtract(e.position());
+                e.setDeltaMovement(e.getDeltaMovement().add(vec.normalize().scale(vec.lengthSqr() * 0.1D)));
+            }
 
-		} else { // Basic lashing
+        } else { // Basic lashing
 
-			if (player.rotationPitch < -70) {
-				if (player.hasNoGravity()) {
-					player.motionY += 0.5;
-					player.motionY = MathHelper.clamp(player.motionY, 0, 2.0);
-					player.velocityChanged = true;
-				} else {
-					player.setNoGravity(true);
-					player.motionY = 0;
-					player.velocityChanged = true;
-				}
-			} else if (player.rotationPitch > 70) {
-				if (player.hasNoGravity()) {
-					player.setNoGravity(false);
-				}
+            if (player.xRot < -70) {
+                if (player.isNoGravity()) {
+                    player.setDeltaMovement(player.getDeltaMovement().add(0D, 0.5, 0D));
+                    player.hurtMarked = true;
 
-			} else {
-				double facing = Math.toRadians(MathHelper.wrapDegrees(player.rotationYawHead));
-				player.motionZ += 1 * Math.cos(facing);
-				player.motionX += -1 * Math.sin(facing);
+                } else {
+                    player.setNoGravity(true);
+                    player.setDeltaMovement(player.getDeltaMovement().multiply(1D, 0D, 1D));
+                    player.hurtMarked = true;
 
-				player.motionZ = MathHelper.clamp(player.motionZ, -2.5, 2.5);
-				player.motionX = MathHelper.clamp(player.motionX, -2.5, 2.5);
+                }
+            } else if (player.xRot > 70) {
+                if (player.isNoGravity()) {
+                    if (player.getDeltaMovement().y > 0) {
+                        player.setDeltaMovement(player.getDeltaMovement().multiply(1D, 0D, 1D));
+                        player.hurtMarked = true;
+                    } else {
+                        player.setNoGravity(false);
+                    }
+                }
 
-				player.velocityChanged = true;
+            } else {
+                double facing = Math.toRadians(MathHelper.wrapDegrees(player.yHeadRot));
+                player.setDeltaMovement(player.getDeltaMovement().add(-Math.sin(facing), 0, Math.cos(facing)));
+                player.hurtMarked = true;
+            }
+        }
+    }
 
-			}
-		}
-	}
-
+	/*
 	public static void illumination(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
 		if (player.getEntityWorld().isBlockLoaded(pos)) {
 			if (shiftHeld) {

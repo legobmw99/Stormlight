@@ -68,7 +68,7 @@ public class ShardbladeItem extends SwordItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        IFormattableTextComponent lore = new TranslationTextComponent("item.stormlight.shardblade.lore"); // todo
+        IFormattableTextComponent lore = new TranslationTextComponent("item.stormlight.shardblade.lore");
         lore.setStyle(lore.getStyle().withColor(Color.fromLegacyFormat(TextFormatting.AQUA)));
         tooltip.add(lore);
     }
@@ -80,7 +80,7 @@ public class ShardbladeItem extends SwordItem {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return true;
+        return false;
     }
 
     @Override

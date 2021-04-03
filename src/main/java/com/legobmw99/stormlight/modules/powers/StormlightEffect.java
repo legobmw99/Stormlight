@@ -7,7 +7,7 @@ import net.minecraft.potion.EffectType;
 
 public class StormlightEffect extends Effect {
 
-    private static final int BASE_TIME = 1200; // 1 minute
+    private static final int BASE_TIME = 400; // 20 seconds
 
     protected StormlightEffect() {
         super(EffectType.BENEFICIAL, 0);
