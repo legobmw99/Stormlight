@@ -2,24 +2,20 @@
   "parent": "item/generated",
   "display": {
     "thirdperson_righthand": {
-      "rotation": [ 45, 135, 0 ],
-      "translation": [ 0, 8.0, 0.5 ],
-      "scale": [ 1, 1, 1 ]
+      "rotation": [0, -90, 0],
+      "translation": [2.3, -2, 5]
     },
     "thirdperson_lefthand": {
-      "rotation": [ 45, 135, 0 ],
-      "translation": [ 0, 8.0, 0.5 ],
-      "scale": [ 1, 1, 1 ]
+      "rotation": [0, -90, 0],
+      "translation": [2.3, -2, 5]
     },
     "firstperson_righthand": {
-      "rotation": [ 0, 180, -5 ],
-      "translation": [ 5, 5, -11 ],
-      "scale": [ 1.25, 1.25, 1.25 ]
+      "rotation": [0, -15, 15],
+      "translation": [2, -2.5, 0]
     },
     "firstperson_lefthand": {
-      "rotation": [ 0, 180, -5 ],
-      "translation": [ 5, 5, -11 ],
-      "scale": [ 1.25, 1.25, 1.25 ]
+      "rotation": [0, -15, 15],
+      "translation": [2, -2.5, 0]
     }
   }
 }
