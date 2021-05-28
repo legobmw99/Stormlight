@@ -1,11 +1,14 @@
 package com.legobmw99.stormlight.modules.powers;
 
 import com.legobmw99.stormlight.modules.combat.item.ShardbladeItem;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingDataProvider;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.network.Network;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effects;
@@ -14,6 +17,7 @@ import net.minecraft.world.storage.IWorldInfo;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -25,31 +29,53 @@ public class PowersEventHandler {
     @SubscribeEvent
     public static void onAttachCapability(final AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity) {
-            event.addCapability(StormlightCapability.IDENTIFIER, new StormlightCapability());
+            SurgebindingDataProvider provider = new SurgebindingDataProvider();
+            event.addCapability(SurgebindingCapability.IDENTIFIER, provider);
+            event.addListener(provider::invalidate);
         }
     }
 
     @SubscribeEvent
     public static void onJoinWorld(final PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.getPlayer().level.isClientSide) {
-            Network.sync(event.getPlayer());
+            if (event.getPlayer() instanceof ServerPlayerEntity) {
+                Network.sync(event.getPlayer());
+            }
         }
     }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onDeath(final LivingDeathEvent event) {
+        if (!event.isCanceled() && event.getEntityLiving() instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) event.getEntityLiving();
+            player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+                if (data.isKnight() && !data.isBladeStored()) {
+                    player.inventory.items.stream().filter(is -> is.getItem() instanceof ShardbladeItem).findFirst().ifPresent(blade -> {
+                        data.storeBlade(blade);
+                        blade.setCount(0);
+                    });
+                }
+
+            });
+
+        }
+
+    }
+
 
     @SubscribeEvent
     public static void onPlayerClone(final PlayerEvent.Clone event) {
         if (!event.getPlayer().level.isClientSide()) {
 
             PlayerEntity player = event.getPlayer();
-            StormlightCapability cap = StormlightCapability.forPlayer(player); // the clone's cap
+            player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+                event.getOriginal().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(oldData -> {
+                    SurgebindingCapability.PLAYER_CAP.readNBT(data, null, SurgebindingCapability.PLAYER_CAP.writeNBT(oldData, null));
+                });
 
-            PlayerEntity old = event.getOriginal();
-
-            old.getCapability(StormlightCapability.PLAYER_CAP).ifPresent(oldCap -> {
-                cap.deserializeNBT(oldCap.serializeNBT());
             });
-
             Network.sync(player);
+
         }
     }
 
@@ -75,6 +101,7 @@ public class PowersEventHandler {
             event.getEntityLiving().fallDistance = 0;
         } else {
             event.getEntityLiving().setGlowing(false);
+            event.getEntityLiving().setNoGravity(false);
         }
     }
 
@@ -86,16 +113,17 @@ public class PowersEventHandler {
             Item item = event.getEntityItem().getItem().getItem();
             if (item instanceof ShardbladeItem) {
                 if (event.getPlayer() != null) {
-                    StormlightCapability cap = StormlightCapability.forPlayer(event.getPlayer());
-                    if (cap.isKnight() && !cap.isBladeStored()) {
-                        //Only store correct type of blade
-                        if (((ShardbladeItem) item).getOrder() == cap.getOrder()) {
-                            cap.storeBlade(event.getEntityItem().getItem());
-                            event.getEntity().kill();
-                            event.setCanceled(true);
-                            Network.sync(event.getPlayer());
+                    event.getPlayer().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+                        if (data.isKnight() && !data.isBladeStored()) {
+                            //Only store correct type of blade
+                            if (((ShardbladeItem) item).getOrder() == data.getOrder()) {
+                                data.storeBlade(event.getEntityItem().getItem());
+                                event.getEntity().kill();
+                                event.setCanceled(true);
+                                Network.sync(event.getPlayer());
+                            }
                         }
-                    }
+                    });
                 }
             }
             // Transform dropped spheres
@@ -121,15 +149,17 @@ public class PowersEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onWorldTick(TickEvent.WorldTickEvent event) {
-        IWorldInfo data = event.world.getLevelData();
-        if (data instanceof IServerWorldInfo) {
-            IServerWorldInfo info = (IServerWorldInfo) data;
-            if (info.getGameTime() % 96000 == 0) {
-                info.setClearWeatherTime(0);
-                info.setRainTime(2400);
-                info.setThunderTime(2400);
-                info.setRaining(true);
-                info.setThundering(true);
+        if (event.phase == TickEvent.Phase.END) {
+            IWorldInfo data = event.world.getLevelData();
+            if (data instanceof IServerWorldInfo) {
+                IServerWorldInfo info = (IServerWorldInfo) data;
+                if (info.getGameTime() % 96000 == 0) {
+                    info.setClearWeatherTime(0);
+                    info.setRainTime(2400);
+                    info.setThunderTime(2400);
+                    info.setRaining(true);
+                    info.setThundering(true);
+                }
             }
         }
     }

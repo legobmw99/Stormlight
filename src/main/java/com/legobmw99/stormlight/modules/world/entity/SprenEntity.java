@@ -1,6 +1,8 @@
 package com.legobmw99.stormlight.modules.world.entity;
 
-import com.legobmw99.stormlight.modules.powers.StormlightCapability;
+import com.legobmw99.stormlight.api.ISurgebindingData;
+import com.legobmw99.stormlight.modules.powers.data.DefaultSurgebindingData;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.block.BlockState;
@@ -251,7 +253,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     public boolean isAlliedTo(Entity e) {
         if (e instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) e;
-            Order order = StormlightCapability.forPlayer(e).getOrder();
+            Order order = e.getCapability(SurgebindingCapability.PLAYER_CAP).map(ISurgebindingData::getOrder).orElse(null);
             return order != null && order == this.entityData.get(SPREN_TYPE);
         }
 

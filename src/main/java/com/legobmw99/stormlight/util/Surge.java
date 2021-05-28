@@ -125,7 +125,7 @@ class Surges {
                 }
             } else if (player.xRot > 70) {
                 if (player.isNoGravity()) {
-                    if (player.getDeltaMovement().y > 0) {
+                    if (player.getDeltaMovement().y > 0.1) {
                         player.setDeltaMovement(player.getDeltaMovement().multiply(1D, 0D, 1D));
                         player.hurtMarked = true;
                     } else {

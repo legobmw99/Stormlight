@@ -1,10 +1,12 @@
 package com.legobmw99.stormlight.network;
 
 import com.legobmw99.stormlight.Stormlight;
-import com.legobmw99.stormlight.modules.powers.StormlightCapability;
-import com.legobmw99.stormlight.network.packets.StormlightCapabilityPacket;
+import com.legobmw99.stormlight.api.ISurgebindingData;
+import com.legobmw99.stormlight.modules.powers.data.DefaultSurgebindingData;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.network.packets.SummonBladePacket;
 import com.legobmw99.stormlight.network.packets.SurgePacket;
+import com.legobmw99.stormlight.network.packets.SurgebindingDataPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +18,9 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class Network {
 
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(Stormlight.MODID, "networking"), () -> "1.0", s -> true, s -> true);
+    private static final String VERSION = "1.1";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(Stormlight.MODID, "networking"), () -> VERSION, VERSION::equals,
+                                                                                  VERSION::equals);
 
     private static int index = 0;
 
@@ -26,8 +30,7 @@ public class Network {
 
     public static void registerPackets() {
 
-        INSTANCE.registerMessage(nextIndex(), StormlightCapabilityPacket.class, StormlightCapabilityPacket::encode, StormlightCapabilityPacket::decode,
-                                 StormlightCapabilityPacket::handle);
+        INSTANCE.registerMessage(nextIndex(), SurgebindingDataPacket.class, SurgebindingDataPacket::encode, SurgebindingDataPacket::decode, SurgebindingDataPacket::handle);
         INSTANCE.registerMessage(nextIndex(), SummonBladePacket.class, (self, buf) -> {}, buf -> new SummonBladePacket(), SummonBladePacket::handle);
         INSTANCE.registerMessage(nextIndex(), SurgePacket.class, SurgePacket::encode, SurgePacket::decode, SurgePacket::handle);
 
@@ -48,12 +51,11 @@ public class Network {
     }
 
     public static void sync(PlayerEntity player) {
-        StormlightCapability cap = StormlightCapability.forPlayer(player);
-        sync(cap, player);
+        player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> sync(data, player));
     }
 
-    public static void sync(StormlightCapability cap, PlayerEntity player) {
-        sync(new StormlightCapabilityPacket(cap, player.getUUID()), player);
+    public static void sync(ISurgebindingData cap, PlayerEntity player) {
+        sync(new SurgebindingDataPacket(cap, player), player);
     }
 
     public static void sync(Object msg, PlayerEntity player) {

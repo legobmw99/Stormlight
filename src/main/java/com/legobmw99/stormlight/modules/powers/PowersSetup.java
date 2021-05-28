@@ -1,6 +1,8 @@
 package com.legobmw99.stormlight.modules.powers;
 
 import com.legobmw99.stormlight.Stormlight;
+import com.legobmw99.stormlight.modules.powers.data.DefaultSurgebindingData;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import net.minecraft.potion.Effect;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.RegistryObject;
@@ -21,7 +23,7 @@ public class PowersSetup {
 
 
     public static void init(final FMLCommonSetupEvent e) {
-        StormlightCapability.register();
+        SurgebindingCapability.register();
         MinecraftForge.EVENT_BUS.register(PowersEventHandler.class);
     }
 }

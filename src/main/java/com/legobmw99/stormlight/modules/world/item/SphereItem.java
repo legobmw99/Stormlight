@@ -1,8 +1,9 @@
 package com.legobmw99.stormlight.modules.world.item;
 
 import com.legobmw99.stormlight.Stormlight;
-import com.legobmw99.stormlight.modules.powers.StormlightCapability;
+import com.legobmw99.stormlight.api.ISurgebindingData;
 import com.legobmw99.stormlight.modules.powers.StormlightEffect;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Gemstone;
 import net.minecraft.entity.LivingEntity;
@@ -39,12 +40,12 @@ public class SphereItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
-        if (infused && StormlightCapability.forPlayer(playerIn).isKnight()) {
-            playerIn.startUsingItem(hand);
-            return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getItemInHand(hand));
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand hand) {
+        if (infused && player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(ISurgebindingData::isKnight).isPresent()) {
+            player.startUsingItem(hand);
+            return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
         } else {
-            return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(hand));
+            return new ActionResult<>(ActionResultType.FAIL, player.getItemInHand(hand));
         }
     }
 

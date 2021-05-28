@@ -1,7 +1,8 @@
 package com.legobmw99.stormlight.network.packets;
 
+import com.legobmw99.stormlight.api.ISurgebindingData;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import com.legobmw99.stormlight.modules.powers.StormlightCapability;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.util.Surge;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -23,7 +24,6 @@ public class SurgePacket {
     }
 
     public static SurgePacket decode(PacketBuffer buf) {
-
         return new SurgePacket(buf.readEnum(Surge.class), buf.readBoolean() ? buf.readBlockPos() : null, buf.readBoolean());
     }
 
@@ -42,8 +42,7 @@ public class SurgePacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null) {
-                StormlightCapability cap = StormlightCapability.forPlayer(player);
-                if (cap.isKnight() && player.hasEffect(PowersSetup.STORMLIGHT.get())) {
+                if (player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(ISurgebindingData::isKnight).isPresent() && player.hasEffect(PowersSetup.STORMLIGHT.get())) {
                     surge.fire(player, looking, shiftHeld);
                 }
             }
