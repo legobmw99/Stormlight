@@ -1,7 +1,13 @@
 package com.legobmw99.stormlight.util;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -16,7 +22,7 @@ public enum Surge {
     DIVISION(Surges::test),
     ABRASION(Surges::test),
     PROGRESSION(Surges::test),
-    ILLUMINATION(Surges::test),
+    ILLUMINATION(Surges::illumination),
     TRANSFORMATION(Surges::test),
     TRANSPORTATION(Surges::test),
     COHESION(Surges::test),
@@ -141,30 +147,49 @@ class Surges {
         }
     }
 
-	/*
-	public static void illumination(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
-		if (player.getEntityWorld().isBlockLoaded(pos)) {
-			if (shiftHeld) {
-				player.addPotionEffect(new PotionEffect(Potion.getPotionById(14), 600, 0, true, false));
-			} else { // Spawn ghost blocks
-				if (player.getHeldItemMainhand().getItem() instanceof ItemBlock) {
-					// Allow rudimentary 'building'
-					while (!player.world.getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(pos))
-							.isEmpty()) {
-						pos = pos.up();
-					}
-					EntityFallingBlock entity = new EntityFallingBlock(player.getEntityWorld(), pos.getX() + .5,
-							pos.getY() - 0.010, pos.getZ() + .5,
-							((ItemBlock) player.getHeldItemMainhand().getItem()).getBlock().getDefaultState());
-					entity.setNoGravity(true);
-					entity.setEntityInvulnerable(true);
-					entity.fallTime = -500;
-					player.getEntityWorld().spawnEntity(entity);
-				}
-			}
-		}
-	}
 
+    public static void illumination(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
+        if (player.level.isLoaded(pos)) {
+            if (shiftHeld) {
+                player.addEffect(new EffectInstance(Effects.INVISIBILITY, 600, 0, true, true));
+            } else { // Spawn ghost blocks
+                if (player.getMainHandItem().getItem() instanceof BlockItem) {
+
+
+                    // Allow rudimentary 'building'
+                    if (!player.level.getBlockState(pos).isAir()) {
+                        pos = pos.relative(Direction.orderedByNearest(player)[0].getOpposite());
+                    }
+
+                    while (!player.level.getEntitiesOfClass(FallingBlockEntity.class, new AxisAlignedBB(pos)).isEmpty()) {
+                        pos = pos.relative(Direction.orderedByNearest(player)[0].getOpposite());
+                    }
+
+                    if (!player.level.getBlockState(pos).isAir()) {
+                        return;
+                    }
+
+
+                    FallingBlockEntity entity = new FallingBlockEntity(player.getLevel(), pos.getX() + .5, pos.getY() - 0.009, pos.getZ() + .5,
+                                                                       ((BlockItem) player.getMainHandItem().getItem()).getBlock().defaultBlockState());
+                    entity.dropItem = false;
+                    entity.setNoGravity(true);
+                    entity.noPhysics = true;
+                    entity.time = -1200;
+                    player.getLevel().addFreshEntity(entity);
+
+                } else if (player.getMainHandItem().isEmpty()) {
+                    // remove entity if there
+                    List<FallingBlockEntity> fallings = player.level.getEntitiesOfClass(FallingBlockEntity.class, new AxisAlignedBB(pos));
+                    if (!fallings.isEmpty()) {
+                        fallings.forEach(Entity::kill);
+                    }
+                }
+            }
+        }
+    }
+
+	/*
 	private static boolean isBlockSafe(World world, BlockPos pos) {
 		return world.isBlockLoaded(pos) && world.getBlockState(pos).getBlock() != Blocks.AIR;
 	}

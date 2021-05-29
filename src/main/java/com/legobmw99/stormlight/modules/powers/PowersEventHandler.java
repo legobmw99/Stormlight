@@ -50,12 +50,15 @@ public class PowersEventHandler {
             PlayerEntity player = (PlayerEntity) event.getEntityLiving();
             player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
                 if (data.isKnight() && !data.isBladeStored()) {
-                    player.inventory.items.stream().filter(is -> is.getItem() instanceof ShardbladeItem).findFirst().ifPresent(blade -> {
-                        data.storeBlade(blade);
-                        blade.setCount(0);
-                    });
+                    player.inventory.items
+                            .stream()
+                            .filter(is -> is.getItem() instanceof ShardbladeItem && ((ShardbladeItem) is.getItem()).getOrder() == data.getOrder())
+                            .findFirst()
+                            .ifPresent(blade -> {
+                                data.storeBlade(blade);
+                                blade.setCount(0);
+                            });
                 }
-
             });
 
         }
