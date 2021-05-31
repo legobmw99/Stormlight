@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "com.legobmw99.stormlight.modules.powers.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "stormlight.refmap.json",
+  "mixins": ["LivingEntityMixin", "BlockStateMixin"],
+  "client": [],
+  "server": [],
+  "minVersion": "0.8"
+}

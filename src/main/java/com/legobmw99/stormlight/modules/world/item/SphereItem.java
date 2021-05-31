@@ -2,7 +2,7 @@ package com.legobmw99.stormlight.modules.world.item;
 
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.api.ISurgebindingData;
-import com.legobmw99.stormlight.modules.powers.StormlightEffect;
+import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Gemstone;
@@ -60,7 +60,7 @@ public class SphereItem extends Item {
             }
 
             if (!worldIn.isClientSide) {
-                StormlightEffect.addOrUpdateEffect(player, this.setting.getModifier());
+                EffectHelper.addOrUpdateEffect(player, this.setting.getModifier());
             }
         }
         return stack;

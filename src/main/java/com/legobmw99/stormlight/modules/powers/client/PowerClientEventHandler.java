@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 
 public class PowerClientEventHandler {
 
-    private static final Minecraft mc = Minecraft.getInstance();
+    private final Minecraft mc = Minecraft.getInstance();
 
     /**
      * Adapted from vanilla, allows getting mouseover at given distances
@@ -34,7 +34,7 @@ public class PowerClientEventHandler {
      * @return a RayTraceResult for the requested raytrace
      */
     @Nullable
-    public static BlockPos getMouseOverExtended(float dist) {
+    public BlockPos getMouseOverExtended(float dist) {
         float partialTicks = mc.getFrameTime();
         RayTraceResult objectMouseOver = null;
         Entity entity = mc.getCameraEntity();
@@ -102,7 +102,6 @@ public class PowerClientEventHandler {
 
                         if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
                             if (PowersClientSetup.firstSurge.isDown()) {
-
                                 Network.sendToServer(new SurgePacket(data.getOrder().getFirst(), getMouseOverExtended(30f), Minecraft.getInstance().options.keyShift.isDown()));
                             }
 

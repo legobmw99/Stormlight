@@ -6,6 +6,7 @@ import com.legobmw99.stormlight.modules.powers.data.SurgebindingDataProvider;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.network.Network;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -20,8 +21,10 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.spongepowered.asm.mixin.Mixin;
 
 public class PowersEventHandler {
 
@@ -43,6 +46,8 @@ public class PowersEventHandler {
             }
         }
     }
+
+
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onDeath(final LivingDeathEvent event) {
@@ -95,6 +100,18 @@ public class PowersEventHandler {
             Network.sync(event.getPlayer());
         }
     }
+
+//    @SubscribeEvent
+//    public static void onPostPlayer(final TickEvent.PlayerTickEvent event){
+//        if (event.phase == TickEvent.Phase.END){
+//            if (event.player.hasEffect(PowersSetup.STORMLIGHT.get())){
+//                event.player.noPhysics = true;
+//                event.player.abilities.flying = true;
+//                event.player.setOnGround(false);
+//            }
+//        }
+//    }
+
 
 
     @SubscribeEvent

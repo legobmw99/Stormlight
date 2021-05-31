@@ -1,9 +1,10 @@
 package com.legobmw99.stormlight.modules.powers;
 
 import com.legobmw99.stormlight.Stormlight;
-import com.legobmw99.stormlight.modules.powers.data.DefaultSurgebindingData;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
+import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -15,7 +16,10 @@ public class PowersSetup {
 
     public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, Stormlight.MODID);
 
-    public static final RegistryObject<Effect> STORMLIGHT = EFFECTS.register("stormlight", StormlightEffect::new);
+    public static final RegistryObject<Effect> STORMLIGHT = EFFECTS.register("stormlight", () -> new EffectHelper.GenericEffect(EffectType.BENEFICIAL, 0));
+    public static final RegistryObject<Effect> SLICKING = EFFECTS.register("slicking", () -> new EffectHelper.StormlightEffect(16737535));
+    public static final RegistryObject<Effect> STICKING = EFFECTS.register("sticking", () -> new EffectHelper.StormlightEffect(6579455));
+
 
     public static void register() {
         EFFECTS.register(FMLJavaModLoadingContext.get().getModEventBus());
