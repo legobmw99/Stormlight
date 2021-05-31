@@ -1,4 +1,12 @@
 {
+  "commands.stormlight.getideal": "%s has ideal %s",
+  "commands.stormlight.getorder": "%s has order %s",
+  "commands.stormlight.setideal": "%s set to ideal %s",
+  "commands.stormlight.setorder": "%s set to order %s",
+  "commands.stormlight.unrecognized_ideal": "Unrecognized ideal %s",
+  "commands.stormlight.unrecognized_order": "Unrecognized order %s",
+  "effect.stormlight.slicking": "Slicking",
+  "effect.stormlight.sticking": "Sticking",
   "effect.stormlight.stormlight": "Stormlight",
   "entity.stormlight.spren": "Spren",
   "gemstone.diamond": "Diamond",
@@ -36,5 +44,6 @@
   "orders.stonewards": "Stonewards",
   "orders.truthwatchers": "Truthwatchers",
   "orders.willshapers": "Willshapers",
-  "orders.windrunners": "Windrunners"
+  "orders.windrunners": "Windrunners",
+  "surge.cohesion.stoneshaping": "Stoneshaping"
 }

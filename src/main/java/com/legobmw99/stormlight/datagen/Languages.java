@@ -42,6 +42,18 @@ public class Languages extends LanguageProvider {
         add("item.stormlight.shardblade.lore", "This sword seems to glow with strange light");
 
         add("effect.stormlight.stormlight", "Stormlight");
+        add("effect.stormlight.sticking", "Sticking");
+        add("effect.stormlight.slicking", "Slicking");
+
+        add("surge.cohesion.stoneshaping", "Stoneshaping");
+
+        add("commands.stormlight.getorder", "%s has order %s");
+        add("commands.stormlight.setorder", "%s set to order %s");
+        add("commands.stormlight.getideal", "%s has ideal %s");
+        add("commands.stormlight.setideal", "%s set to ideal %s");
+        add("commands.stormlight.unrecognized_order", "Unrecognized order %s");
+        add("commands.stormlight.unrecognized_ideal", "Unrecognized ideal %s");
+
 
         add("key.categories.stormlight", "Stormlight");
         add("key.blade", "Summon Shardblade");

@@ -1,6 +1,6 @@
 package com.legobmw99.stormlight.modules.powers;
 
-import com.legobmw99.stormlight.modules.powers.client.PortableStonecutterContainer;
+import com.legobmw99.stormlight.modules.powers.container.PortableStonecutterContainer;
 import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
@@ -12,6 +12,7 @@ import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.BlockItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -62,7 +63,7 @@ public class Surges {
     }
 	*/
 
-    public static void abrasion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
+    public static void abrasion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {// Allow climbing
             EffectHelper.toggleEffect(player, PowersSetup.STICKING.get());
             player.removeEffect(PowersSetup.SLICKING.get());
@@ -73,7 +74,7 @@ public class Surges {
     }
 
 
-    public static void cohesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
+    public static void cohesion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         //		player.addPotionEffect(new PotionEffect(Potion.getPotionById(3), 600, 1, false, true));
         if (shiftHeld) {
             player.openMenu(new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableStonecutterContainer(i, inv, IWorldPosCallable.create(player.getLevel(), pos)),
@@ -82,10 +83,10 @@ public class Surges {
 
     }
 
-    public static void division(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
-        // TODO config to disable this
-        if (player.level.isLoaded(pos) && !player.level.getBlockState(pos).isAir()) {
-            player.getLevel().explode(player, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, shiftHeld ? Explosion.Mode.BREAK : Explosion.Mode.NONE);
+    public static void division(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
+        // TODO config to disable breaking
+        if (pos != null && player.level.isLoaded(pos)) {
+            player.getLevel().explode(player, DamageSource.MAGIC, null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, shiftHeld ? Explosion.Mode.BREAK : Explosion.Mode.NONE);
         }
     }
 
@@ -103,7 +104,8 @@ public class Surges {
         } else { // Basic lashing
 
             if (player.xRot < -70) {
-                if (player.isNoGravity()) {
+                if (player.isNoGravity() || player.isOnGround()) {
+                    player.setNoGravity(true);
                     player.setDeltaMovement(player.getDeltaMovement().add(0D, 0.5, 0D));
                     player.hurtMarked = true;
 
@@ -132,8 +134,8 @@ public class Surges {
     }
 
 
-    public static void illumination(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
-        if (player.level.isLoaded(pos)) {
+    public static void illumination(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
+        if (pos != null && player.level.isLoaded(pos)) {
             if (shiftHeld) {
                 player.addEffect(new EffectInstance(Effects.INVISIBILITY, 600, 0, true, true));
             } else { // Spawn ghost blocks
@@ -174,13 +176,11 @@ public class Surges {
     }
 
 
-    public static void progression(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
+    public static void progression(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) { // Regen
             player.addEffect(new EffectInstance(Effects.REGENERATION, 100, 4, true, true));
         } else { // Growth
-            System.out.println(player.level.getBlockState(pos).getBlock());
-
-            if (player.level.isLoaded(pos) && !player.level.getBlockState(pos).isAir()) {
+            if (pos != null && player.level.isLoaded(pos) && !player.level.getBlockState(pos).isAir()) {
                 BlockState state = player.level.getBlockState(pos);
                 if (state.getBlock() instanceof IGrowable) {
                     IGrowable igrowable = (IGrowable) state.getBlock();
@@ -188,7 +188,7 @@ public class Surges {
                         if (igrowable.isBonemealSuccess(player.level, player.level.random, pos, state)) {
                             igrowable.performBonemeal(player.getLevel(), player.level.random, pos, state);
                             // Should spawn bonemeal particles
-                            player.getLevel().levelEvent(player, 2005, pos, 15);
+                            player.getLevel().levelEvent(player, 2005, pos, 0);
                         }
                     }
                 }
@@ -208,7 +208,7 @@ public class Surges {
 
 	}
 
-	public static void transformation(EntityPlayerMP player, BlockPos pos, boolean shiftHeld) {
+	public static void transformation(EntityPlayerMP player, @Nullable BlockPos pos, boolean shiftHeld) {
 		if(shiftHeld){
 			if (isBlockSafe(player.world, pos)) {
 				Block block = player.world.getBlockState(pos).getBlock();

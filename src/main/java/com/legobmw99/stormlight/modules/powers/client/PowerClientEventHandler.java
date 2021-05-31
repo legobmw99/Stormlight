@@ -10,10 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -34,7 +31,7 @@ public class PowerClientEventHandler {
      * @return a RayTraceResult for the requested raytrace
      */
     @Nullable
-    public BlockPos getMouseOverExtended(float dist) {
+    public RayTraceResult getMouseOverExtended(float dist) {
         float partialTicks = mc.getFrameTime();
         RayTraceResult objectMouseOver = null;
         Entity entity = mc.getCameraEntity();
@@ -54,7 +51,6 @@ public class PowerClientEventHandler {
                 AxisAlignedBB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(dist)).inflate(1.0D, 1.0D, 1.0D);
                 EntityRayTraceResult entityraytraceresult = ProjectileHelper.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (e) -> true, d1);
                 if (entityraytraceresult != null) {
-                    Entity entity1 = entityraytraceresult.getEntity();
                     Vector3d vec3d3 = entityraytraceresult.getLocation();
                     double d2 = vec3d.distanceToSqr(vec3d3);
                     if (d2 < d1) {
@@ -64,8 +60,20 @@ public class PowerClientEventHandler {
 
             }
         }
-        return new BlockPos(objectMouseOver.getLocation());
+        return objectMouseOver;
+    }
 
+    private BlockPos getMouseBlockPos(float dist) {
+        RayTraceResult trace = getMouseOverExtended(dist);
+        if (trace != null) {
+            if (trace.getType() == RayTraceResult.Type.BLOCK) {
+                return ((BlockRayTraceResult) trace).getBlockPos();
+            }
+            if (trace.getType() == RayTraceResult.Type.ENTITY) {
+                return ((EntityRayTraceResult) trace).getEntity().blockPosition();
+            }
+        }
+        return null;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -85,7 +93,7 @@ public class PowerClientEventHandler {
      * Handles either mouse or button presses for the mod's keybinds
      */
     private void acceptInput(int action) {
-        if (action == GLFW.GLFW_PRESS) {// || action == GLFW.GLFW_REPEAT){
+        if (action == GLFW.GLFW_PRESS) {// todo more sensible repeat behavior, disallow key 'crossover'
             PlayerEntity player = mc.player;
             if (mc.screen == null) {
                 if (player == null || !mc.isWindowActive()) {
@@ -102,11 +110,11 @@ public class PowerClientEventHandler {
 
                         if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
                             if (PowersClientSetup.firstSurge.isDown()) {
-                                Network.sendToServer(new SurgePacket(data.getOrder().getFirst(), getMouseOverExtended(30f), Minecraft.getInstance().options.keyShift.isDown()));
+                                Network.sendToServer(new SurgePacket(true, getMouseBlockPos(30f), Minecraft.getInstance().options.keyShift.isDown()));
                             }
 
                             if (PowersClientSetup.secondSurge.isDown()) {
-                                Network.sendToServer(new SurgePacket(data.getOrder().getSecond(), getMouseOverExtended(30f), Minecraft.getInstance().options.keyShift.isDown()));
+                                Network.sendToServer(new SurgePacket(false, getMouseBlockPos(30f), Minecraft.getInstance().options.keyShift.isDown()));
                             }
                         }
                     }

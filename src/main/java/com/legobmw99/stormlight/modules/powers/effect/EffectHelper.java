@@ -9,7 +9,7 @@ import net.minecraft.potion.EffectType;
 
 public class EffectHelper {
 
-    private static final int BASE_TIME = 400; // 20 seconds
+    private static final int BASE_TIME = 600; // 20 seconds
     private static final int MAX_TIME = Integer.MAX_VALUE;
 
     public static boolean toggleEffect(PlayerEntity player, Effect effect) {
@@ -34,7 +34,7 @@ public class EffectHelper {
     public static void addOrUpdateEffect(PlayerEntity player, int modifier, int baseTime) {
         int toAdd = baseTime * modifier;
         if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
-            player.addEffect(new EffectInstance(PowersSetup.STORMLIGHT.get(), Math.min(toAdd + player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration(), 24 * baseTime)));
+            player.addEffect(new EffectInstance(PowersSetup.STORMLIGHT.get(), Math.min(toAdd + player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration(), 36 * baseTime)));
         } else {
             player.addEffect(new EffectInstance(PowersSetup.STORMLIGHT.get(), toAdd));
         }

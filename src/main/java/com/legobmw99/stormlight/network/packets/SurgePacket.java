@@ -1,6 +1,5 @@
 package com.legobmw99.stormlight.network.packets;
 
-import com.legobmw99.stormlight.api.ISurgebindingData;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.util.Surge;
@@ -13,22 +12,22 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class SurgePacket {
-    private final Surge surge;
+    private final boolean first;
     private final BlockPos looking;
     private final boolean shiftHeld;
 
-    public SurgePacket(Surge surge, @Nullable BlockPos looking, boolean shiftHeld) {
-        this.surge = surge;
+    public SurgePacket(boolean first, @Nullable BlockPos looking, boolean shiftHeld) {
+        this.first = first;
         this.looking = looking;
         this.shiftHeld = shiftHeld;
     }
 
     public static SurgePacket decode(PacketBuffer buf) {
-        return new SurgePacket(buf.readEnum(Surge.class), buf.readBoolean() ? buf.readBlockPos() : null, buf.readBoolean());
+        return new SurgePacket(buf.readBoolean(), buf.readBoolean() ? buf.readBlockPos() : null, buf.readBoolean());
     }
 
     public void encode(PacketBuffer buf) {
-        buf.writeEnum(surge);
+        buf.writeBoolean(first);
         boolean hasBlock = looking != null;
         buf.writeBoolean(hasBlock);
         if (hasBlock) {
@@ -42,8 +41,13 @@ public class SurgePacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null) {
-                if (player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(ISurgebindingData::isKnight).isPresent() && player.hasEffect(PowersSetup.STORMLIGHT.get())) {
-                    surge.fire(player, looking, shiftHeld);
+                if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
+                    player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+                        if (data.isKnight()) {
+                            Surge surge = this.first ? data.getOrder().getFirst() : data.getOrder().getSecond();
+                            surge.fire(player, looking, shiftHeld);
+                        }
+                    });
                 }
             }
         });

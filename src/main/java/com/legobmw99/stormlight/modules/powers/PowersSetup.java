@@ -1,8 +1,11 @@
 package com.legobmw99.stormlight.modules.powers;
 
 import com.legobmw99.stormlight.Stormlight;
+import com.legobmw99.stormlight.modules.powers.command.StormlightArgType;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
+import net.minecraft.command.arguments.ArgumentSerializer;
+import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,6 +30,9 @@ public class PowersSetup {
 
 
     public static void init(final FMLCommonSetupEvent e) {
+        ArgumentTypes.register("stormlight_ideal", StormlightArgType.IdealType.class, new ArgumentSerializer<>(() -> StormlightArgType.IdealType.INSTANCE));
+        ArgumentTypes.register("stormlight_order", StormlightArgType.OrderType.class, new ArgumentSerializer<>(() -> StormlightArgType.OrderType.INSTANCE));
+
         SurgebindingCapability.register();
         MinecraftForge.EVENT_BUS.register(PowersEventHandler.class);
     }

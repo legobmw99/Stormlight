@@ -6,25 +6,25 @@ import com.legobmw99.stormlight.modules.powers.data.SurgebindingDataProvider;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.network.Network;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.spongepowered.asm.mixin.Mixin;
 
 public class PowersEventHandler {
 
@@ -46,7 +46,6 @@ public class PowersEventHandler {
             }
         }
     }
-
 
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -101,18 +100,12 @@ public class PowersEventHandler {
         }
     }
 
-//    @SubscribeEvent
-//    public static void onPostPlayer(final TickEvent.PlayerTickEvent event){
-//        if (event.phase == TickEvent.Phase.END){
-//            if (event.player.hasEffect(PowersSetup.STORMLIGHT.get())){
-//                event.player.noPhysics = true;
-//                event.player.abilities.flying = true;
-//                event.player.setOnGround(false);
-//            }
-//        }
-//    }
-
-
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onLivingDamage(final LivingAttackEvent event) {
+        if (event.getEntityLiving().hasEffect(PowersSetup.STORMLIGHT.get()) && (event.getSource() == DamageSource.IN_WALL || event.getSource() == DamageSource.DROWN)) {
+            event.setCanceled(true);
+        }
+    }
 
     @SubscribeEvent
     public static void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
@@ -149,15 +142,17 @@ public class PowersEventHandler {
             // Transform dropped spheres
             if (event.getEntity().level.isThundering() && item instanceof SphereItem) {
                 double x, y, z;
-                int a;
                 x = entity.getX();
                 y = entity.getY();
                 z = entity.getZ();
-                a = event.getEntityItem().getItem().getCount();
-                ItemEntity newEntity = new ItemEntity(event.getEntity().level, x, y, z, new ItemStack(((SphereItem) item).swap(), a, event.getEntityItem().getItem().getTag()));
                 if (event.getEntity().isAlive()) {
-                    event.getEntity().level.addFreshEntity(newEntity);
                     event.getEntity().kill();
+
+                    for (int i = 0; i < event.getEntityItem().getItem().getCount(); i++) {
+                        ItemEntity newEntity = new ItemEntity(event.getEntity().level, x, y, z,
+                                                              new ItemStack(((SphereItem) item).swap(), 1, event.getEntityItem().getItem().getTag()));
+                        event.getEntity().level.addFreshEntity(newEntity);
+                    }
 
                     event.setCanceled(true);
                 }

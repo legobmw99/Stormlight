@@ -3,12 +3,17 @@ package com.legobmw99.stormlight;
 import com.legobmw99.stormlight.modules.combat.CombatSetup;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import com.legobmw99.stormlight.modules.powers.client.PowersClientSetup;
+import com.legobmw99.stormlight.modules.powers.command.StormlightArgType;
+import com.legobmw99.stormlight.modules.powers.command.StormlightCommand;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
+import net.minecraft.command.arguments.ArgumentSerializer;
+import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -38,6 +43,7 @@ public class Stormlight {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::clientInit);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(EntityType.class, WorldSetup::onEntityRegister);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::onEntityAttribute);
+        MinecraftForge.EVENT_BUS.addListener(Stormlight::registerCommands);
 
         PowersSetup.register();
         WorldSetup.register();
@@ -55,6 +61,7 @@ public class Stormlight {
     }
 
     public static void registerCommands(final RegisterCommandsEvent e) {
+        StormlightCommand.register(e.getDispatcher());
     }
 
     public static void init(final FMLCommonSetupEvent e) {

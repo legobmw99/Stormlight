@@ -1,4 +1,4 @@
-package com.legobmw99.stormlight.modules.powers.client;
+package com.legobmw99.stormlight.modules.powers.container;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import net.minecraft.entity.player.PlayerEntity;
