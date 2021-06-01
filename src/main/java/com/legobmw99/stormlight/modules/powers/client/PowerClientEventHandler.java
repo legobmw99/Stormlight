@@ -1,125 +1,75 @@
 package com.legobmw99.stormlight.modules.powers.client;
 
-import com.legobmw99.stormlight.modules.combat.item.ShardbladeItem;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
-import com.legobmw99.stormlight.network.Network;
-import com.legobmw99.stormlight.network.packets.SummonBladePacket;
-import com.legobmw99.stormlight.network.packets.SurgePacket;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+@OnlyIn(Dist.CLIENT)
 public class PowerClientEventHandler {
 
-    private final Minecraft mc = Minecraft.getInstance();
+    private static final Minecraft mc = Minecraft.getInstance();
+    private static final Map<BlockPos, BlockState> savedStates = new HashMap<>();
 
-    /**
-     * Adapted from vanilla, allows getting mouseover at given distances
-     *
-     * @param dist the distance requested
-     * @return a RayTraceResult for the requested raytrace
-     */
-    @Nullable
-    public RayTraceResult getMouseOverExtended(float dist) {
-        float partialTicks = mc.getFrameTime();
-        RayTraceResult objectMouseOver = null;
-        Entity entity = mc.getCameraEntity();
-        if (entity != null) {
-            if (mc.level != null) {
-                objectMouseOver = entity.pick(dist, partialTicks, false);
-                Vector3d vec3d = entity.getEyePosition(partialTicks);
-                boolean flag = false;
-                int i = 3;
-                double d1;
-
-                d1 = objectMouseOver.getLocation().distanceToSqr(vec3d);
-
-                Vector3d vec3d1 = entity.getViewVector(1.0F);
-                Vector3d vec3d2 = vec3d.add(vec3d1.x * dist, vec3d1.y * dist, vec3d1.z * dist);
-                float f = 1.0F;
-                AxisAlignedBB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(dist)).inflate(1.0D, 1.0D, 1.0D);
-                EntityRayTraceResult entityraytraceresult = ProjectileHelper.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (e) -> true, d1);
-                if (entityraytraceresult != null) {
-                    Vector3d vec3d3 = entityraytraceresult.getLocation();
-                    double d2 = vec3d.distanceToSqr(vec3d3);
-                    if (d2 < d1) {
-                        objectMouseOver = entityraytraceresult;
-                    }
-                }
-
-            }
-        }
-        return objectMouseOver;
-    }
-
-    private BlockPos getMouseBlockPos(float dist) {
-        RayTraceResult trace = getMouseOverExtended(dist);
-        if (trace != null) {
-            if (trace.getType() == RayTraceResult.Type.BLOCK) {
-                return ((BlockRayTraceResult) trace).getBlockPos();
-            }
-            if (trace.getType() == RayTraceResult.Type.ENTITY) {
-                return ((EntityRayTraceResult) trace).getEntity().blockPosition();
-            }
-        }
-        return null;
-    }
-
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public void onKeyInput(final InputEvent.KeyInputEvent event) {
-        acceptInput(event.getAction());
+    public static void onKeyInput(final InputEvent.KeyInputEvent event) {
+        ClientPowerUtils.acceptInput(event.getAction());
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public void onMouseInput(final InputEvent.MouseInputEvent event) {
-        acceptInput(event.getAction());
+    public static void onMouseInput(final InputEvent.MouseInputEvent event) {
+        ClientPowerUtils.acceptInput(event.getAction());
 
     }
 
-    /**
-     * Handles either mouse or button presses for the mod's keybinds
-     */
-    private void acceptInput(int action) {
-        if (action == GLFW.GLFW_PRESS) {// todo more sensible repeat behavior, disallow key 'crossover'
-            PlayerEntity player = mc.player;
-            if (mc.screen == null) {
-                if (player == null || !mc.isWindowActive()) {
-                    return;
+    // Heavily inspired by Origins, but not a mixin
+    @SubscribeEvent
+    public static void renderLast(final RenderWorldLastEvent event) {
+
+        if (mc.player != null && mc.player.hasEffect(PowersSetup.COHESION.get())) {
+            Set<BlockPos> eyePositions = ClientPowerUtils.getEyePos(mc.player, 0.25F, 0.05F, 0.25F);
+            Set<BlockPos> noLongerEyePositions = savedStates.keySet().stream().filter((p -> !eyePositions.contains(p))).collect(Collectors.toSet());
+
+            // restore states
+            noLongerEyePositions.forEach(eyePosition -> {
+                BlockState state = savedStates.get(eyePosition);
+                mc.level.setBlock(eyePosition, state, 0);
+                savedStates.remove(eyePosition);
+            });
+
+
+            // set to air (on client only)
+            eyePositions.forEach(p -> {
+                BlockState stateAtP = mc.level.getBlockState(p);
+                if (!savedStates.containsKey(p) && !stateAtP.isAir() && !(stateAtP.getBlock() instanceof FlowingFluidBlock)) {
+                    savedStates.put(p, stateAtP);
+                    // TODO: 1.17 - make it a light block instead
+                    mc.level.setBlock(p, Blocks.AIR.defaultBlockState(), 0);
                 }
-                player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+            });
 
-                    if (data.isKnight()) {
 
-                        if (PowersClientSetup.blade.isDown() && (data.isBladeStored() || player.getMainHandItem().getItem() instanceof ShardbladeItem)) {
-                            Network.sendToServer(new SummonBladePacket());
-                            PowersClientSetup.blade.setDown(false);
-                        }
-
-                        if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
-                            if (PowersClientSetup.firstSurge.isDown()) {
-                                Network.sendToServer(new SurgePacket(true, getMouseBlockPos(30f), Minecraft.getInstance().options.keyShift.isDown()));
-                            }
-
-                            if (PowersClientSetup.secondSurge.isDown()) {
-                                Network.sendToServer(new SurgePacket(false, getMouseBlockPos(30f), Minecraft.getInstance().options.keyShift.isDown()));
-                            }
-                        }
-                    }
-                });
-            }
+        } else if (savedStates.size() > 0) {
+            // restore all if power is not had
+            Set<BlockPos> noLongerEyePositions = new HashSet<>(savedStates.keySet());
+            noLongerEyePositions.forEach(eyePosition -> {
+                BlockState state = savedStates.get(eyePosition);
+                mc.level.setBlock(eyePosition, state, 0);
+                savedStates.remove(eyePosition);
+            });
         }
     }
 }

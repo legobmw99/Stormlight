@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import javax.annotation.Nullable;
 
 @Mixin(IForgeBlockState.class)
-public interface BlockStateMixin {
+public interface IForgeBlockStateMixin {
 
     @Shadow(remap = false)
     default BlockState getBlockState() {

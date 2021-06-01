@@ -5,6 +5,7 @@
   "commands.stormlight.setorder": "%s set to order %s",
   "commands.stormlight.unrecognized_ideal": "Unrecognized ideal %s",
   "commands.stormlight.unrecognized_order": "Unrecognized order %s",
+  "effect.stormlight.cohesion": "Cohesion",
   "effect.stormlight.slicking": "Slicking",
   "effect.stormlight.sticking": "Sticking",
   "effect.stormlight.stormlight": "Stormlight",

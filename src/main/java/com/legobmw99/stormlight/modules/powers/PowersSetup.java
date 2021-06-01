@@ -22,6 +22,7 @@ public class PowersSetup {
     public static final RegistryObject<Effect> STORMLIGHT = EFFECTS.register("stormlight", () -> new EffectHelper.GenericEffect(EffectType.BENEFICIAL, 0));
     public static final RegistryObject<Effect> SLICKING = EFFECTS.register("slicking", () -> new EffectHelper.StormlightEffect(16737535));
     public static final RegistryObject<Effect> STICKING = EFFECTS.register("sticking", () -> new EffectHelper.StormlightEffect(6579455));
+    public static final RegistryObject<Effect> COHESION = EFFECTS.register("cohesion", () -> new EffectHelper.StormlightEffect(16777010));
 
 
     public static void register() {

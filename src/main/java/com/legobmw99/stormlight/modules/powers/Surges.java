@@ -75,12 +75,12 @@ public class Surges {
 
 
     public static void cohesion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
-        //		player.addPotionEffect(new PotionEffect(Potion.getPotionById(3), 600, 1, false, true));
         if (shiftHeld) {
             player.openMenu(new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableStonecutterContainer(i, inv, IWorldPosCallable.create(player.getLevel(), pos)),
                                                              new TranslationTextComponent("surge.cohesion.stoneshaping")));
+        } else {
+            EffectHelper.toggleEffect(player, PowersSetup.COHESION.get());
         }
-
     }
 
     public static void division(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
