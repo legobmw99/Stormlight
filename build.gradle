@@ -16,8 +16,8 @@ apply plugin: 'org.spongepowered.mixin'
 
 
 version = "2.0"
-group= "com.legobmw99.stormlight" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "stormlight"
+group= "com.legobmw99.${mod_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "${mod_id}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
@@ -34,7 +34,7 @@ minecraft {
     //
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'official', version: '1.16.5'
+    mappings channel: 'official', version: "${minecraft_version}"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -58,10 +58,21 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             property 'mixin.debug.export', 'true'
 
-            args '-mixin.config=stormlight.mixins.json'
+            if (project.hasProperty('mc_uuid')) {
+                args '--uuid', project.getProperty('mc_uuid')
+            }
+            if (project.hasProperty('mc_username')) {
+                args '--username', project.getProperty('mc_username')
+            }
+            if (project.hasProperty('mc_accessToken')) {
+                args '--accessToken', project.getProperty('mc_accessToken')
+            }
+
+            // runtime mixin config
+            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
 
             mods {
-                stormlight {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -83,9 +94,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             property 'mixin.debug.export', 'true'
 
-            args '-mixin.config=stormlight.mixins.json'
+            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
             mods {
-                stormlight {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -107,10 +118,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'stormlight', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                stormlight {
+                "${mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -123,15 +134,16 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 mixin {
-    add sourceSets.main, "stormlight.refmap.json"
+    add sourceSets.main, "${mod_id}.refmap.json"
+    defaultObfuscationEnv "notch"
 }
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.1.0'
-    annotationProcessor "org.spongepowered:mixin:0.8.2:processor"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
@@ -156,14 +168,14 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "stormlight",
-            "Specification-Vendor": "legobmw99",
+            "Specification-Title": "${mod_id}",
+            "Specification-Vendor": "${mod_authors}",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"legobmw99",
+            "Implementation-Vendor" :"${mod_authors}",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "stormlight.mixins.json"
+            "MixinConfigs": "${mod_id}.mixins.json"
         ])
     }
 }
