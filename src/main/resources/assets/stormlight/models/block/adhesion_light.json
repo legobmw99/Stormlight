@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/snow_height2",
+  "textures": {
+    "particle": "minecraft:block/sea_lantern",
+    "texture": "minecraft:block/light_blue_stained_glass"
+  }
+}

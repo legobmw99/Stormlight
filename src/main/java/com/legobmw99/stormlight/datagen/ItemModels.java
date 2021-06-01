@@ -1,14 +1,15 @@
 package com.legobmw99.stormlight.datagen;
 
 import com.legobmw99.stormlight.Stormlight;
-import com.legobmw99.stormlight.modules.combat.CombatSetup;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Gemstone;
 import com.legobmw99.stormlight.util.Order;
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class ItemModels extends ItemModelProvider {
@@ -19,6 +20,7 @@ public class ItemModels extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
+        parentedBlock(WorldSetup.ADHESION_BLOCK.get(), "block/adhesion_light");
 
         for (Order o : Order.values()) {
             itemShield(o, "item/" + o.getSingularName() + "_shield");
@@ -41,6 +43,11 @@ public class ItemModels extends ItemModelProvider {
         getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", modLoc(texture));
     }
 
+    public void parentedBlock(Block block, String model) {
+        Stormlight.LOGGER.debug("Creating Item Model for " + block.getRegistryName());
+        getBuilder(block.getRegistryName().getPath()).parent(new ModelFile.UncheckedModelFile(modLoc(model)));
+    }
+
     public void itemHandheld(Item item, String texture) {
         Stormlight.LOGGER.debug("Creating Item Model for " + item.getRegistryName());
         getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/handheld"))).texture("layer0", modLoc(texture));
@@ -48,8 +55,7 @@ public class ItemModels extends ItemModelProvider {
 
     public void itemShardblade(Order order, String texture) {
         Stormlight.LOGGER.debug("Creating Shardblade Model for " + order.getSingularName());
-        getBuilder(order.getSingularName() + "_shardblade")
-                .parent(getExistingFile(modLoc("item/shardblade")))
+        getBuilder(order.getSingularName() + "_shardblade").parent(getExistingFile(modLoc("item/shardblade")))
                 .texture("layer0", modLoc(texture))
                 .override()
                 .predicate(new ResourceLocation(Stormlight.MODID, "shielding"), 1.0F)

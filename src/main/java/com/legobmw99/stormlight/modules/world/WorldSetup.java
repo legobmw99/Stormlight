@@ -1,13 +1,18 @@
 package com.legobmw99.stormlight.modules.world;
 
 import com.legobmw99.stormlight.Stormlight;
+import com.legobmw99.stormlight.modules.world.block.AdhesionBlock;
 import com.legobmw99.stormlight.modules.world.entity.SprenEntity;
 import com.legobmw99.stormlight.modules.world.entity.client.SprenRenderer;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.util.Gemstone;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.world.gen.Heightmap;
@@ -26,6 +31,8 @@ import java.util.List;
 
 public class WorldSetup {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Stormlight.MODID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Stormlight.MODID);
+
 
     public static final List<RegistryObject<SphereItem>> DUN_SPHERES = new ArrayList<>();
     public static final List<RegistryObject<SphereItem>> INFUSED_SPHERES = new ArrayList<>();
@@ -40,6 +47,9 @@ public class WorldSetup {
 
     public static final RegistryObject<SpawnEggItem> SPREN_SPAWN_EGG = ITEMS.register("spren_spawn_egg", () -> new SpawnEggItem(SPREN_ENTITY, 16382457, 10123246,
                                                                                                                                 Stormlight.createStandardItemProperties()));
+    public static final RegistryObject<Block> ADHESION_BLOCK = BLOCKS.register("adhesion_light", AdhesionBlock::new);
+    public static final RegistryObject<BlockItem> ADHESION_BLOCK_ITEM = ITEMS.register("adhesion_light",
+                                                                                       () -> new BlockItem(ADHESION_BLOCK.get(), Stormlight.createStandardItemProperties()));
 
     static {
         for (Gemstone gem : Gemstone.values()) {
@@ -51,11 +61,12 @@ public class WorldSetup {
 
     public static void register() {
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
-
+        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     @OnlyIn(Dist.CLIENT)
     public static void clientInit(final FMLClientSetupEvent e) {
+        RenderTypeLookup.setRenderLayer(ADHESION_BLOCK.get(), RenderType.translucent());
         registerEntityRenders();
     }
 

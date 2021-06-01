@@ -26,10 +26,11 @@ public class EffectHelper {
         }
     }
 
+    //TODO some concept of 'draining' stormlight
+
     public static void addOrUpdateEffect(PlayerEntity player, int modifier) {
         addOrUpdateEffect(player, modifier, BASE_TIME);
     }
-
 
     public static void addOrUpdateEffect(PlayerEntity player, int modifier, int baseTime) {
         int toAdd = baseTime * modifier;

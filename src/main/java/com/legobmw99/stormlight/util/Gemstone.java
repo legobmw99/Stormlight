@@ -7,7 +7,7 @@ public enum Gemstone {
     EMERALD(3),
     QUARTZ(1);
 
-    private int modifier;
+    private final int modifier;
 
     Gemstone(int mod) {
         this.modifier = mod;

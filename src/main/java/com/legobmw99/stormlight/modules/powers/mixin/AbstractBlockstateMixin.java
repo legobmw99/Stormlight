@@ -35,7 +35,7 @@ public abstract class AbstractBlockstateMixin {
     protected abstract BlockState asState();
 
     @Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/IBlockReader;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/shapes/ISelectionContext;)Lnet/minecraft/util/math/shapes/VoxelShape;", cancellable = true)
-    private void phaseThroughBlocks(IBlockReader world, BlockPos pos, ISelectionContext context, CallbackInfoReturnable<VoxelShape> info) {
+    private void noClip(IBlockReader world, BlockPos pos, ISelectionContext context, CallbackInfoReturnable<VoxelShape> info) {
         Entity entity = context.getEntity();
         if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
             boolean isAbove = isAbove(entity, getBlock().getCollisionShape(asState(), world, pos, context), pos);
@@ -52,7 +52,7 @@ public abstract class AbstractBlockstateMixin {
     }
 
     @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true)
-    private void preventCollisionWhenPhasing(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+    private void preventPushOut(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
             ci.cancel();
         }
