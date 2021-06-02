@@ -1,7 +1,10 @@
 package com.legobmw99.stormlight.modules.powers;
 
+import com.legobmw99.stormlight.modules.powers.container.PortableCraftingContainer;
 import com.legobmw99.stormlight.modules.powers.container.PortableStonecutterContainer;
 import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
+import com.legobmw99.stormlight.modules.world.WorldSetup;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -14,54 +17,61 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
-import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class Surges {
 
+    private static boolean isBlockSafe(BlockPos pos, World level) {
+        return pos != null && level.isLoaded(pos) && !level.getBlockState(pos).isAir();
+    }
+
     public static void test(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
 
     }
 
-	/* private static final Map<Block,Block> transformableBlocks = buildBlockMap();
-	private static final Map<Item,Item> transformableItems = buildItemMap();
+    /* private static final Map<Block,Block> transformableBlocks = buildBlockMap();
+    private static final Map<Item,Item> transformableItems = buildItemMap();
 
-	private static Map<Block,Block>  buildBlockMap() {
-		Map<Block,Block> map = new HashMap<Block,Block>();
-		map.put(Blocks.COBBLESTONE, Blocks.STONE);
-		map.put(Blocks.SANDSTONE,Blocks.RED_SANDSTONE);
-		map.put(Blocks.GRASS, Blocks.MYCELIUM);
-		map.put(Blocks.OBSIDIAN, Blocks.LAVA);
-		map.put(Blocks.STONE, Blocks.HAY_BLOCK);
-		map.put(Blocks.MELON, Blocks.PUMPKIN);
-		map.put(Blocks.PUMPKIN, Blocks.MELON);
-		map.put(Blocks.WHITE_WOOL, Blocks.COBWEB);
+    private static Map<Block,Block>  buildBlockMap() {
+        Map<Block,Block> map = new HashMap<Block,Block>();
+        map.put(Blocks.COBBLESTONE, Blocks.STONE);
+        map.put(Blocks.SANDSTONE,Blocks.RED_SANDSTONE);
+        map.put(Blocks.GRASS, Blocks.MYCELIUM);
+        map.put(Blocks.OBSIDIAN, Blocks.LAVA);
+        map.put(Blocks.STONE, Blocks.HAY_BLOCK);
+        map.put(Blocks.MELON, Blocks.PUMPKIN);
+        map.put(Blocks.PUMPKIN, Blocks.MELON);
+        map.put(Blocks.WHITE_WOOL, Blocks.COBWEB);
 
-		return map;
-
-	}
-
-	private static Map<Item,Item> buildItemMap() {
-		Map<Item,Item> map = new HashMap<Item,Item>();
-		map.put(Items.GRAVEL, Items.FLINT);
-		return map;
-	}
-
-
-    public static void adhesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
-
-        // shift: crafting table?
+        return map;
 
     }
-	*/
+
+    private static Map<Item,Item> buildItemMap() {
+        Map<Item,Item> map = new HashMap<Item,Item>();
+        map.put(Items.GRAVEL, Items.FLINT);
+        return map;
+    }
+
+
+
+*/
+    public static void adhesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
+        // todo shift held option?
+        if (isBlockSafe(pos, player.level)) {
+            WorldSetup.ADHESION_BLOCK.get().coat(player.getLevel(), pos);
+        }
+    }
+
 
     public static void abrasion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {// Allow climbing
@@ -76,8 +86,8 @@ public class Surges {
 
     public static void cohesion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
-            player.openMenu(new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableStonecutterContainer(i, inv, IWorldPosCallable.create(player.getLevel(), pos)),
-                                                             new TranslationTextComponent("surge.cohesion.stoneshaping")));
+            player.openMenu(
+                    new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableStonecutterContainer(i, inv), new TranslationTextComponent("surge.cohesion.stoneshaping")));
         } else {
             EffectHelper.toggleEffect(player, PowersSetup.COHESION.get());
         }
@@ -85,7 +95,7 @@ public class Surges {
 
     public static void division(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         // TODO config to disable breaking
-        if (pos != null && player.level.isLoaded(pos)) {
+        if (isBlockSafe(pos, player.level)) {
             player.getLevel().explode(player, DamageSource.MAGIC, null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, shiftHeld ? Explosion.Mode.BREAK : Explosion.Mode.NONE);
         }
     }
@@ -140,8 +150,6 @@ public class Surges {
                 player.addEffect(new EffectInstance(Effects.INVISIBILITY, 600, 0, true, true));
             } else { // Spawn ghost blocks
                 if (player.getMainHandItem().getItem() instanceof BlockItem) {
-
-
                     // Allow rudimentary 'building'
                     if (!player.level.getBlockState(pos).isAir()) {
                         pos = pos.relative(Direction.orderedByNearest(player)[0].getOpposite());
@@ -180,7 +188,7 @@ public class Surges {
         if (shiftHeld) { // Regen
             player.addEffect(new EffectInstance(Effects.REGENERATION, 100, 4, true, true));
         } else { // Growth
-            if (pos != null && player.level.isLoaded(pos) && !player.level.getBlockState(pos).isAir()) {
+            if (isBlockSafe(pos, player.level)) {
                 BlockState state = player.level.getBlockState(pos);
                 if (state.getBlock() instanceof IGrowable) {
                     IGrowable igrowable = (IGrowable) state.getBlock();
@@ -196,42 +204,35 @@ public class Surges {
         }
     }
 
+    /*
+
+    private static void switchItemInMainhand(EntityPlayerMP player, Item toItem){
+        ItemStack toItemStack = new ItemStack(toItem,player.getHeldItemMainhand().getCount());
+        player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR, 0));
+        player.inventory.setInventorySlotContents(player.inventory.currentItem, toItemStack);
+    }
+
+    public static void tension(World entityWorld, BlockPos pos, boolean shiftHeld) {
+
+    }
+
+*/
+    public static void transformation(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
+        if (shiftHeld) {
+            player.openMenu(
+                    new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableCraftingContainer(i, inv), new TranslationTextComponent("surge.cohesion.soulcasting")));
+        } else {
+            if (isBlockSafe(pos, player.level)) {
+                // Block block = player.level.getBlockState(pos).getBlock();
+                //                if (transformableBlocks.containsKey(block)) {
+                //                    Block newBlock = transformableBlocks.get(block);
+                //                    player.world.setBlockState(pos, newBlock.getDefaultState());
+                //                }
+            }
+        }
+    }
+
 	/*
-
-	private static void switchItemInMainhand(EntityPlayerMP player, Item toItem){
-		ItemStack toItemStack = new ItemStack(toItem,player.getHeldItemMainhand().getCount());
-		player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR, 0));
-		player.inventory.setInventorySlotContents(player.inventory.currentItem, toItemStack);
-	}
-
-	public static void tension(World entityWorld, BlockPos pos, boolean shiftHeld) {
-
-	}
-
-	public static void transformation(EntityPlayerMP player, @Nullable BlockPos pos, boolean shiftHeld) {
-		if(shiftHeld){
-			if (isBlockSafe(player.world, pos)) {
-				Block block = player.world.getBlockState(pos).getBlock();
-				if (transformableBlocks.containsKey(block)) {
-					Block newBlock = transformableBlocks.get(block);
-					player.world.setBlockState(pos, newBlock.getDefaultState());
-				}
-			}
-		} else {
-			Item item = player.getHeldItemMainhand().getItem();
-			if(transformableItems.containsKey(item)){
-
-			}else if(item == Items.STICK){
-				if(player.world.rand.nextInt(100) == 0) {
-					switchItemInMainhand(player, Items.FIRE_CHARGE);
-					player.sendMessage(new TextComponentString("<Stick> I am.... fire"));
-				} else {
-					player.sendMessage(new TextComponentString("<Stick> I am a stick"));
-				}
-			}
-		}
-	}
-
 	public static void transportation(EntityPlayerMP player, @Nullable EntitySpren spren, boolean shiftHeld) {
 		if (shiftHeld) {
 			if (player.dimension != 0) {

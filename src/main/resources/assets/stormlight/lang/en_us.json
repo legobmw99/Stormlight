@@ -1,4 +1,5 @@
 {
+  "block.stormlight.adhesion_light": "Adhesion",
   "commands.stormlight.getideal": "%s has ideal %s",
   "commands.stormlight.getorder": "%s has order %s",
   "commands.stormlight.setideal": "%s set to ideal %s",
@@ -46,5 +47,6 @@
   "orders.truthwatchers": "Truthwatchers",
   "orders.willshapers": "Willshapers",
   "orders.windrunners": "Windrunners",
+  "surge.cohesion.soulcasting": "Soulcasting",
   "surge.cohesion.stoneshaping": "Stoneshaping"
 }

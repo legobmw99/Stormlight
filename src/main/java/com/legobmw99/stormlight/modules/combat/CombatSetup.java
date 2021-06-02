@@ -28,16 +28,15 @@ public class CombatSetup {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void register() {
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void clientInit(final FMLClientSetupEvent e){
         e.enqueueWork(() -> {
             for (RegistryObject<ShardbladeItem> shardblade : CombatSetup.SHARDBLADES)
-                ItemModelsProperties.register(shardblade.get(), new ResourceLocation(Stormlight.MODID, "shielding"),
-                                              (itemStack, clientWorld, player) -> player != null && player.isUsingItem() && player.getUseItem() == itemStack ? 1.1F : 0.0F);
+                ItemModelsProperties.register(shardblade.get(), new ResourceLocation(Stormlight.MODID, "shielding"), (itemStack, clientWorld, player) -> player != null && player.isUsingItem() && player.getUseItem() == itemStack ? 1.1F : 0.0F);
         });
     }
 }

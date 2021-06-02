@@ -25,7 +25,10 @@ public class BlockStates extends BlockStateProvider {
     }
 
     private void createAdhesionLayer() {
-        ModelFile layer = models().withExistingParent("stormlight:adhesion_light", mcLoc("block/carpet")).texture("wool", blockTexture(Blocks.LIGHT_BLUE_STAINED_GLASS));
+        ModelFile layer = models()
+                .withExistingParent("stormlight:adhesion_light", modLoc("block/light"))
+                .texture("texture", modLoc("block/adhesion_light"))
+                .texture("particle", blockTexture(Blocks.SEA_LANTERN));
 
         VariantBlockStateBuilder builder = getVariantBuilder(WorldSetup.ADHESION_BLOCK.get());
 

@@ -38,15 +38,10 @@ public class ClientPowerUtils {
             if (mc.level != null) {
                 objectMouseOver = entity.pick(dist, partialTicks, false);
                 Vector3d vec3d = entity.getEyePosition(partialTicks);
-                boolean flag = false;
-                int i = 3;
-                double d1;
-
-                d1 = objectMouseOver.getLocation().distanceToSqr(vec3d);
+                double d1 = objectMouseOver.getLocation().distanceToSqr(vec3d);
 
                 Vector3d vec3d1 = entity.getViewVector(1.0F);
                 Vector3d vec3d2 = vec3d.add(vec3d1.x * dist, vec3d1.y * dist, vec3d1.z * dist);
-                float f = 1.0F;
                 AxisAlignedBB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(dist)).inflate(1.0D, 1.0D, 1.0D);
                 EntityRayTraceResult entityraytraceresult = ProjectileHelper.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (e) -> true, d1);
                 if (entityraytraceresult != null) {
@@ -104,11 +99,21 @@ public class ClientPowerUtils {
 
                         if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
                             if (PowersClientSetup.firstSurge.isDown()) {
-                                Network.sendToServer(new SurgePacket(true, getMouseBlockPos(30f), Minecraft.getInstance().options.keyShift.isDown()));
+                                boolean shiftDown = Minecraft.getInstance().options.keyShift.isDown();
+                                BlockPos pos = getMouseBlockPos(30f);
+                                if (pos != null) {
+                                    data.getOrder().getFirst().displayEffect(pos, shiftDown);
+                                }
+                                Network.sendToServer(new SurgePacket(true, pos, shiftDown));
                             }
 
                             if (PowersClientSetup.secondSurge.isDown()) {
-                                Network.sendToServer(new SurgePacket(false, getMouseBlockPos(30f), Minecraft.getInstance().options.keyShift.isDown()));
+                                boolean shiftDown = Minecraft.getInstance().options.keyShift.isDown();
+                                BlockPos pos = getMouseBlockPos(30f);
+                                if (pos != null) {
+                                    data.getOrder().getSecond().displayEffect(pos, shiftDown);
+                                }
+                                Network.sendToServer(new SurgePacket(false, pos, shiftDown));
                             }
                         }
                     }

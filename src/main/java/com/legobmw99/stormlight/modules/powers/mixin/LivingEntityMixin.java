@@ -25,7 +25,6 @@ public abstract class LivingEntityMixin extends Entity {
         super(type, world);
     }
 
-
     // todo actually mixin to IForgeBlockState
     @Inject(at = @At("RETURN"), method = "onClimbable", cancellable = true)
     public void doCohesionClimb(CallbackInfoReturnable<Boolean> info) {

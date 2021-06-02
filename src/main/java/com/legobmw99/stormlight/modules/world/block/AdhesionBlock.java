@@ -21,12 +21,12 @@ import java.util.Random;
 
 public class AdhesionBlock extends HorizontalFaceBlock {
 
-    private static final VoxelShape TOP = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D);
-    private static final VoxelShape BOTTOM = Block.box(0.0D, 15.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-    private static final VoxelShape NORTH = Block.box(0.0D, 0.0D, 15.0D, 16.0D, 16.0D, 16.0D);
-    private static final VoxelShape SOUTH = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 1.0D);
-    private static final VoxelShape EAST = Block.box(0.0D, 0.0D, 0.0D, 1.0D, 16.0D, 16.0D);
-    private static final VoxelShape WEST = Block.box(15.0D, .0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape TOP = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 0.5D, 16.0D);
+    private static final VoxelShape BOTTOM = Block.box(0.0D, 15.5D, 0.0D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape NORTH = Block.box(0.0D, 0.0D, 15.5D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape SOUTH = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 0.5D);
+    private static final VoxelShape EAST = Block.box(0.0D, 0.0D, 0.0D, 0.5D, 16.0D, 16.0D);
+    private static final VoxelShape WEST = Block.box(15.5D, .0D, 0.0D, 16.0D, 16.0D, 16.0D);
 
 
     public AdhesionBlock() {
@@ -48,6 +48,33 @@ public class AdhesionBlock extends HorizontalFaceBlock {
 
     }
 
+    public static AttachFace fromDirection(Direction dir) {
+        switch (dir) {
+            case UP:
+                return AttachFace.CEILING;
+            case DOWN:
+                return AttachFace.FLOOR;
+            default:
+                return AttachFace.WALL;
+        }
+    }
+
+    public void coat(World world, BlockPos pos) {
+        for (Direction d : Direction.values()) {
+            if (canAttachFrom(world, pos, d) && world.getBlockState(pos.relative(d)).isAir()) {
+                AttachFace face = fromDirection(d.getOpposite());
+                BlockState newBlock = defaultBlockState().setValue(FACE, face);
+                if (face == AttachFace.WALL) {
+                    newBlock = newBlock.setValue(FACING, d);
+                }
+                world.setBlockAndUpdate(pos.relative(d), newBlock);
+            }
+        }
+    }
+
+    public boolean canAttachFrom(World world, BlockPos pos, Direction d) {
+        return canAttach(world, pos.relative(d), d.getOpposite());
+    }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {

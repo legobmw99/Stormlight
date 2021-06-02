@@ -2,7 +2,6 @@ package com.legobmw99.stormlight.network;
 
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.api.ISurgebindingData;
-import com.legobmw99.stormlight.modules.powers.data.DefaultSurgebindingData;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.network.packets.SummonBladePacket;
 import com.legobmw99.stormlight.network.packets.SurgePacket;

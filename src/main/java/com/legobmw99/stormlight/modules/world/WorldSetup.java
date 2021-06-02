@@ -47,7 +47,7 @@ public class WorldSetup {
 
     public static final RegistryObject<SpawnEggItem> SPREN_SPAWN_EGG = ITEMS.register("spren_spawn_egg", () -> new SpawnEggItem(SPREN_ENTITY, 16382457, 10123246,
                                                                                                                                 Stormlight.createStandardItemProperties()));
-    public static final RegistryObject<Block> ADHESION_BLOCK = BLOCKS.register("adhesion_light", AdhesionBlock::new);
+    public static final RegistryObject<AdhesionBlock> ADHESION_BLOCK = BLOCKS.register("adhesion_light", AdhesionBlock::new);
     public static final RegistryObject<BlockItem> ADHESION_BLOCK_ITEM = ITEMS.register("adhesion_light",
                                                                                        () -> new BlockItem(ADHESION_BLOCK.get(), Stormlight.createStandardItemProperties()));
 

@@ -21,7 +21,6 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -133,7 +132,9 @@ public class PowersEventHandler {
                                 data.storeBlade(event.getEntityItem().getItem());
                                 event.getEntity().kill();
                                 event.setCanceled(true);
-                                Network.sync(event.getPlayer());
+                                if (!entity.level.isClientSide()) {
+                                    Network.sync(event.getPlayer());
+                                }
                             }
                         }
                     });

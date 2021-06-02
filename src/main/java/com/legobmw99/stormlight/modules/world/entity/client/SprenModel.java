@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 
 public class SprenModel extends EntityModel<SprenEntity> {
 
-    private ModelRenderer renderer;
+    private final ModelRenderer renderer;
     private SprenEntity spren;
 
     public SprenModel() {

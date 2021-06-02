@@ -1,7 +1,6 @@
 package com.legobmw99.stormlight.modules.world.entity;
 
 import com.legobmw99.stormlight.api.ISurgebindingData;
-import com.legobmw99.stormlight.modules.powers.data.DefaultSurgebindingData;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
@@ -171,10 +170,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     @Override
     public boolean isInvulnerableTo(DamageSource in) {
-        if ((isTame() && !in.equals(DamageSource.playerAttack((PlayerEntity) getOwner()))) || in.equals(DamageSource.OUT_OF_WORLD)) {
-            return false;
-        }
-        return true;
+        return (!isTame() || in.equals(DamageSource.playerAttack((PlayerEntity) getOwner()))) && !in.equals(DamageSource.OUT_OF_WORLD);
     }
 
     @Override
@@ -185,11 +181,6 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
         flying.setCanPassDoors(true);
         flying.canFloat();
         return flying;
-    }
-
-    @Override
-    protected void tickEffects() {
-        super.tickEffects();
     }
 
     @Override
@@ -252,7 +243,6 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     @Override
     public boolean isAlliedTo(Entity e) {
         if (e instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) e;
             Order order = e.getCapability(SurgebindingCapability.PLAYER_CAP).map(ISurgebindingData::getOrder).orElse(null);
             return order != null && order == this.entityData.get(SPREN_TYPE);
         }

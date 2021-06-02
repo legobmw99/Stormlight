@@ -36,6 +36,8 @@ public class Languages extends LanguageProvider {
 
         }
 
+        add(WorldSetup.ADHESION_BLOCK.get(), "Adhesion");
+
         add(WorldSetup.SPREN_SPAWN_EGG.get(), "Spren Spawn Egg");
         add("entity.stormlight.spren", "Spren");
 
@@ -47,6 +49,8 @@ public class Languages extends LanguageProvider {
         add("effect.stormlight.cohesion", "Cohesion");
 
         add("surge.cohesion.stoneshaping", "Stoneshaping");
+        add("surge.cohesion.soulcasting", "Soulcasting");
+
 
         add("commands.stormlight.getorder", "%s has order %s");
         add("commands.stormlight.setorder", "%s set to order %s");

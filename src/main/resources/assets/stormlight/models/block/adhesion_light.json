@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/carpet",
+  "parent": "stormlight:block/light",
   "textures": {
-    "wool": "minecraft:block/light_blue_stained_glass"
+    "texture": "stormlight:block/adhesion_light",
+    "particle": "minecraft:block/sea_lantern"
   }
 }
