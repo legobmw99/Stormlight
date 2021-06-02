@@ -4,7 +4,6 @@ import com.legobmw99.stormlight.modules.powers.container.PortableCraftingContain
 import com.legobmw99.stormlight.modules.powers.container.PortableStonecutterContainer;
 import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -19,7 +18,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
@@ -68,10 +66,13 @@ public class Surges {
     public static void adhesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
         // todo shift held option?
         if (isBlockSafe(pos, player.level)) {
-            WorldSetup.ADHESION_BLOCK.get().coat(player.getLevel(), pos);
+            if (player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration() > 200) {
+                if (WorldSetup.ADHESION_BLOCK.get().coat(player.getLevel(), pos) > 0) {
+                    EffectHelper.drainStormlight(player, 200);
+                }
+            }
         }
     }
-
 
     public static void abrasion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {// Allow climbing
@@ -82,7 +83,6 @@ public class Surges {
             player.removeEffect(PowersSetup.STICKING.get());
         }
     }
-
 
     public static void cohesion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
@@ -96,12 +96,14 @@ public class Surges {
     public static void division(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         // TODO config to disable breaking
         if (isBlockSafe(pos, player.level)) {
-            player.getLevel().explode(player, DamageSource.MAGIC, null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, shiftHeld ? Explosion.Mode.BREAK : Explosion.Mode.NONE);
+            if (EffectHelper.drainStormlight(player, 400)) {
+                player.getLevel().explode(player, DamageSource.MAGIC, null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, shiftHeld ? Explosion.Mode.BREAK : Explosion.Mode.NONE);
+            }
         }
     }
 
     public static void gravitation(ServerPlayerEntity player, @Nullable BlockPos l, boolean shiftHeld) {
-        if (shiftHeld) {
+        if (player.isOnGround() && shiftHeld) {
             // reverse lashing
             double range = 10;
             Vector3d pvec = player.position().add(0D, player.getEyeHeight() / 2.0, 0D);
@@ -112,8 +114,13 @@ public class Surges {
             }
 
         } else { // Basic lashing
-
-            if (player.xRot < -70) {
+            // TODO look into ENTITY_GRAVITY
+            if (!shiftHeld) {
+                EffectHelper.increasePermanentEffect(player, PowersSetup.GRAVITATION.get(), 6);
+            } else {
+                EffectHelper.decreasePermanentEffect(player, PowersSetup.GRAVITATION.get());
+            }
+            /*if (player.xRot < -70) {
                 if (player.isNoGravity() || player.isOnGround()) {
                     player.setNoGravity(true);
                     player.setDeltaMovement(player.getDeltaMovement().add(0D, 0.5, 0D));
@@ -139,7 +146,7 @@ public class Surges {
                 double facing = Math.toRadians(MathHelper.wrapDegrees(player.yHeadRot));
                 player.setDeltaMovement(player.getDeltaMovement().add(-Math.sin(facing), 0, Math.cos(facing)));
                 player.hurtMarked = true;
-            }
+            }*/
         }
     }
 
@@ -147,7 +154,9 @@ public class Surges {
     public static void illumination(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (pos != null && player.level.isLoaded(pos)) {
             if (shiftHeld) {
-                player.addEffect(new EffectInstance(Effects.INVISIBILITY, 600, 0, true, true));
+                if (EffectHelper.drainStormlight(player, 300)) {
+                    player.addEffect(new EffectInstance(Effects.INVISIBILITY, 600, 0, true, false, true));
+                }
             } else { // Spawn ghost blocks
                 if (player.getMainHandItem().getItem() instanceof BlockItem) {
                     // Allow rudimentary 'building'
@@ -163,15 +172,15 @@ public class Surges {
                         return;
                     }
 
-
-                    FallingBlockEntity entity = new FallingBlockEntity(player.getLevel(), pos.getX() + .5, pos.getY() - 0.009, pos.getZ() + .5,
-                                                                       ((BlockItem) player.getMainHandItem().getItem()).getBlock().defaultBlockState());
-                    entity.dropItem = false;
-                    entity.setNoGravity(true);
-                    entity.noPhysics = true;
-                    entity.time = -1200;
-                    player.getLevel().addFreshEntity(entity);
-
+                    if (EffectHelper.drainStormlight(player, 20)) {
+                        FallingBlockEntity entity = new FallingBlockEntity(player.getLevel(), pos.getX() + .5, pos.getY() - 0.009, pos.getZ() + .5,
+                                                                           ((BlockItem) player.getMainHandItem().getItem()).getBlock().defaultBlockState());
+                        entity.dropItem = false;
+                        entity.setNoGravity(true);
+                        entity.noPhysics = true;
+                        entity.time = -1200;
+                        player.getLevel().addFreshEntity(entity);
+                    }
                 } else if (player.getMainHandItem().isEmpty()) {
                     // remove entity if there
                     List<FallingBlockEntity> fallings = player.level.getEntitiesOfClass(FallingBlockEntity.class, new AxisAlignedBB(pos));
@@ -186,7 +195,9 @@ public class Surges {
 
     public static void progression(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) { // Regen
-            player.addEffect(new EffectInstance(Effects.REGENERATION, 100, 4, true, true));
+            if (EffectHelper.drainStormlight(player, 300)) {
+                player.addEffect(new EffectInstance(Effects.REGENERATION, 100, 4, true, false, true));
+            }
         } else { // Growth
             if (isBlockSafe(pos, player.level)) {
                 BlockState state = player.level.getBlockState(pos);
@@ -194,9 +205,10 @@ public class Surges {
                     IGrowable igrowable = (IGrowable) state.getBlock();
                     if (igrowable.isValidBonemealTarget(player.level, pos, state, player.level.isClientSide)) {
                         if (igrowable.isBonemealSuccess(player.level, player.level.random, pos, state)) {
-                            igrowable.performBonemeal(player.getLevel(), player.level.random, pos, state);
-                            // Should spawn bonemeal particles
-                            player.getLevel().levelEvent(player, 2005, pos, 0);
+                            if (EffectHelper.drainStormlight(player, 100)) {
+                                igrowable.performBonemeal(player.getLevel(), player.level.random, pos, state);
+                            }
+
                         }
                     }
                 }

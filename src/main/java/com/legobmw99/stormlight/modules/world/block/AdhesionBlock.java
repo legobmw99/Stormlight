@@ -1,8 +1,10 @@
 package com.legobmw99.stormlight.modules.world.block;
 
+import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.AttachFace;
 import net.minecraft.util.Direction;
@@ -59,7 +61,8 @@ public class AdhesionBlock extends HorizontalFaceBlock {
         }
     }
 
-    public void coat(World world, BlockPos pos) {
+    public int coat(World world, BlockPos pos) {
+        int sides = 0;
         for (Direction d : Direction.values()) {
             if (canAttachFrom(world, pos, d) && world.getBlockState(pos.relative(d)).isAir()) {
                 AttachFace face = fromDirection(d.getOpposite());
@@ -68,8 +71,10 @@ public class AdhesionBlock extends HorizontalFaceBlock {
                     newBlock = newBlock.setValue(FACING, d);
                 }
                 world.setBlockAndUpdate(pos.relative(d), newBlock);
+                sides++;
             }
         }
+        return sides;
     }
 
     public boolean canAttachFrom(World world, BlockPos pos, Direction d) {
@@ -140,7 +145,7 @@ public class AdhesionBlock extends HorizontalFaceBlock {
 
     @Override
     public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!entity.isNoGravity()) {
+        if (!entity.isNoGravity() || (entity instanceof LivingEntity && !((LivingEntity) entity).hasEffect(PowersSetup.GRAVITATION.get()))) {
             Vector3d target;
 
             switch (state.getValue(FACE)) {

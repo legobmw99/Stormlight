@@ -23,6 +23,7 @@ public enum Surge {
 
     private final ISurgePower surge;
     private final ISurgeEffect effect;
+    // todo cost, range, repeating
 
     Surge(ISurgePower surge) {
         this.surge = surge;

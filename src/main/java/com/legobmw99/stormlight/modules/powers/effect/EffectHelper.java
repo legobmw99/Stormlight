@@ -1,11 +1,9 @@
 package com.legobmw99.stormlight.modules.powers.effect;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
 
 public class EffectHelper {
 
@@ -16,17 +14,49 @@ public class EffectHelper {
         return toggleEffect(player, effect, 0, true, true);
     }
 
-    public static boolean toggleEffect(PlayerEntity player, Effect effect, int level, boolean ambient, boolean visible) {
+    public static boolean toggleEffect(PlayerEntity player, Effect effect, int level, boolean ambient, boolean showicon) {
         if (player.hasEffect(effect)) {
             player.removeEffect(effect);
             return false;
         } else {
-            player.addEffect(new EffectInstance(effect, MAX_TIME, level, ambient, visible));
+            player.addEffect(new EffectInstance(effect, MAX_TIME, level, ambient, false, showicon));
             return true;
         }
     }
 
-    //TODO some concept of 'draining' stormlight
+    public static int increasePermanentEffect(PlayerEntity player, Effect effect, int max) {
+        int level = player.hasEffect(effect) ? player.getEffect(effect).getAmplifier() : -1;
+        level = level < max ? level + 1 : max;
+        player.addEffect(new EffectInstance(effect, MAX_TIME, level, true, false, true));
+        return level;
+    }
+
+    public static int decreasePermanentEffect(PlayerEntity player, Effect effect) {
+        if (!player.hasEffect(effect)) {
+            return -1;
+        }
+        int level = player.getEffect(effect).getAmplifier() - 1;
+        player.removeEffect(effect);
+        if (level >= 0) {
+            player.addEffect(new EffectInstance(effect, MAX_TIME, level, true, false, true));
+        }
+
+        return level;
+    }
+
+    public static boolean drainStormlight(PlayerEntity player, int duration) {
+        Effect stormlight = PowersSetup.STORMLIGHT.get();
+        if (!player.hasEffect(stormlight)) {
+            return false;
+        }
+        EffectInstance effect = player.getEffect(stormlight);
+        if (effect.getDuration() < duration) {
+            return false;
+        }
+        player.removeEffect(stormlight);
+        player.addEffect(new EffectInstance(stormlight, effect.getDuration() - duration));
+        return true;
+    }
 
     public static void addOrUpdateEffect(PlayerEntity player, int modifier) {
         addOrUpdateEffect(player, modifier, BASE_TIME);
@@ -41,28 +71,4 @@ public class EffectHelper {
         }
     }
 
-    public static class GenericEffect extends Effect {
-        public GenericEffect(EffectType type, int color) {
-            super(type, color);
-        }
-
-    }
-
-    public static class StormlightEffect extends GenericEffect {
-        public StormlightEffect(int color) {
-            super(EffectType.BENEFICIAL, color);
-        }
-
-        @Override
-        public void applyEffectTick(LivingEntity entity, int amplifier) {
-            if (!entity.hasEffect(PowersSetup.STORMLIGHT.get())) {
-                entity.removeEffect(this);
-            }
-        }
-
-        @Override
-        public boolean isDurationEffectTick(int duration, int amplifier) {
-            return true;
-        }
-    }
 }

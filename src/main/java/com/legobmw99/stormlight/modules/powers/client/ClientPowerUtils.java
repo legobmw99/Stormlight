@@ -82,7 +82,8 @@ public class ClientPowerUtils {
      * Handles either mouse or button presses for the mod's keybinds
      */
     protected static void acceptInput(int action) {
-        if (action == GLFW.GLFW_PRESS) {// todo more sensible repeat behavior, disallow key 'crossover'
+        // todo repeating and range as part of surge
+        if (action == GLFW.GLFW_PRESS) {
             PlayerEntity player = mc.player;
             if (mc.screen == null) {
                 if (player == null || !mc.isWindowActive()) {

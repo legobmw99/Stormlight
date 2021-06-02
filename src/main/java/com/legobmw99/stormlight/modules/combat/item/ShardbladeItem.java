@@ -3,6 +3,8 @@ package com.legobmw99.stormlight.modules.combat.item;
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,6 +69,19 @@ public class ShardbladeItem extends SwordItem {
     }
 
     @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+        if (state.getMaterial() == Material.STONE) {
+            return 120.0F;
+        }
+        return super.getDestroySpeed(stack, state);
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(BlockState state) {
+        return false;
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         IFormattableTextComponent lore = new TranslationTextComponent("item.stormlight.shardblade.lore");
         lore.setStyle(lore.getStyle().withColor(Color.fromLegacyFormat(TextFormatting.AQUA)));
@@ -79,11 +94,6 @@ public class ShardbladeItem extends SwordItem {
     }
 
     @Override
-    public boolean isFoil(ItemStack stack) {
-        return false;
-    }
-
-    @Override
     public Rarity getRarity(ItemStack stack) {
         return Rarity.RARE;
     }
@@ -91,7 +101,7 @@ public class ShardbladeItem extends SwordItem {
 
     @Override
     public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
-        return true;
+        return entity != null && stack.equals(entity.getUseItem());
     }
 
     @Override
