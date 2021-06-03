@@ -1,6 +1,7 @@
 package com.legobmw99.stormlight.modules.powers.effect;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
@@ -44,17 +45,17 @@ public class EffectHelper {
         return level;
     }
 
-    public static boolean drainStormlight(PlayerEntity player, int duration) {
+    public static boolean drainStormlight(LivingEntity entity, int duration) {
         Effect stormlight = PowersSetup.STORMLIGHT.get();
-        if (!player.hasEffect(stormlight)) {
+        if (!entity.hasEffect(stormlight)) {
             return false;
         }
-        EffectInstance effect = player.getEffect(stormlight);
+        EffectInstance effect = entity.getEffect(stormlight);
         if (effect.getDuration() < duration) {
             return false;
         }
-        player.removeEffect(stormlight);
-        player.addEffect(new EffectInstance(stormlight, effect.getDuration() - duration));
+        entity.removeEffect(stormlight);
+        entity.addEffect(new EffectInstance(stormlight, effect.getDuration() - duration));
         return true;
     }
 

@@ -22,6 +22,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
@@ -36,11 +37,11 @@ import java.util.function.Function;
 
 public class Surges {
 
+    private static Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+
     private static boolean isBlockSafe(BlockPos pos, World level) {
         return pos != null && level.isLoaded(pos) && !level.getBlockState(pos).isAir();
     }
-
-    private static Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
     private static BlockPos findAdjacentBlock(BlockPos pos, ServerPlayerEntity player) {
         for (Direction d : DIRECTIONS) {
@@ -50,10 +51,6 @@ public class Surges {
             }
         }
         return null;
-    }
-
-    public static void test(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
-
     }
 
     /* private static final Map<Block,Block> transformableBlocks = buildBlockMap();
@@ -114,8 +111,13 @@ public class Surges {
         }
     }
 
+    public static void tension(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
+        // todo shift held?
+        EffectHelper.toggleEffect(player, PowersSetup.TENSION.get());
+    }
+
     public static void division(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
-        // TODO config to disable breaking
+        // TODO config to disable breaking, give haste instead
         if (isBlockSafe(pos, player.level)) {
             if (EffectHelper.drainStormlight(player, 400)) {
                 player.getLevel().explode(player, DamageSource.MAGIC, null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true, shiftHeld ? Explosion.Mode.BREAK : Explosion.Mode.NONE);
@@ -136,12 +138,12 @@ public class Surges {
 
         } else { // Basic lashing
             // TODO look into ENTITY_GRAVITY
-            if (!shiftHeld) {
-                EffectHelper.increasePermanentEffect(player, PowersSetup.GRAVITATION.get(), 6);
-            } else {
-                EffectHelper.decreasePermanentEffect(player, PowersSetup.GRAVITATION.get());
-            }
-            /*if (player.xRot < -70) {
+            //            if (!shiftHeld) {
+            //                EffectHelper.increasePermanentEffect(player, PowersSetup.GRAVITATION.get(), 6);
+            //            } else {
+            //                EffectHelper.decreasePermanentEffect(player, PowersSetup.GRAVITATION.get());
+            //            }
+            if (player.xRot < -70) {
                 if (player.isNoGravity() || player.isOnGround()) {
                     player.setNoGravity(true);
                     player.setDeltaMovement(player.getDeltaMovement().add(0D, 0.5, 0D));
@@ -167,7 +169,7 @@ public class Surges {
                 double facing = Math.toRadians(MathHelper.wrapDegrees(player.yHeadRot));
                 player.setDeltaMovement(player.getDeltaMovement().add(-Math.sin(facing), 0, Math.cos(facing)));
                 player.hurtMarked = true;
-            }*/
+            }
         }
     }
 
@@ -247,10 +249,6 @@ public class Surges {
         player.inventory.setInventorySlotContents(player.inventory.currentItem, toItemStack);
     }
 
-    public static void tension(World entityWorld, BlockPos pos, boolean shiftHeld) {
-
-    }
-
 */
     public static void transformation(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
@@ -258,6 +256,7 @@ public class Surges {
                     new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableCraftingContainer(i, inv), new TranslationTextComponent("surge.cohesion.soulcasting")));
         } else {
             if (isBlockSafe(pos, player.level)) {
+                // todo block transformation
                 // Block block = player.level.getBlockState(pos).getBlock();
                 //                if (transformableBlocks.containsKey(block)) {
                 //                    Block newBlock = transformableBlocks.get(block);

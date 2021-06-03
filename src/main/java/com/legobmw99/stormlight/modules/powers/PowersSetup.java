@@ -4,12 +4,13 @@ import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.powers.command.StormlightArgType;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.powers.effect.GenericEffect;
-import com.legobmw99.stormlight.modules.powers.effect.GravitationEffect;
 import com.legobmw99.stormlight.modules.powers.effect.StormlightEffect;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -25,7 +26,11 @@ public class PowersSetup {
     public static final RegistryObject<Effect> SLICKING = EFFECTS.register("slicking", () -> new StormlightEffect(16737535));
     public static final RegistryObject<Effect> STICKING = EFFECTS.register("sticking", () -> new StormlightEffect(6579455));
     public static final RegistryObject<Effect> COHESION = EFFECTS.register("cohesion", () -> new StormlightEffect(16777010));
-    public static final RegistryObject<Effect> GRAVITATION = EFFECTS.register("gravitation", GravitationEffect::new);
+    public static final RegistryObject<Effect> TENSION = EFFECTS.register("tension", () -> new StormlightEffect(16711780));
+    public static final RegistryObject<Effect> GRAVITATION = EFFECTS.register("gravitation", () -> new StormlightEffect(6605055).addAttributeModifier(ForgeMod.ENTITY_GRAVITY.get(),
+                                                                                                                                                      "a81758d2-c355-11eb-8529-0242ac130003",
+                                                                                                                                                      -0.08,
+                                                                                                                                                      AttributeModifier.Operation.ADDITION));
 
 
     public static void register() {

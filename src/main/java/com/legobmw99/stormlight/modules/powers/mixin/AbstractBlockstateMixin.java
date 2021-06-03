@@ -43,7 +43,6 @@ public abstract class AbstractBlockstateMixin {
                 info.setReturnValue(VoxelShapes.empty());
             }
         }
-
     }
 
     @Unique

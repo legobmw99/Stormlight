@@ -3,6 +3,7 @@ package com.legobmw99.stormlight.modules.powers;
 import com.legobmw99.stormlight.modules.combat.item.ShardbladeItem;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingDataProvider;
+import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.network.Network;
 import net.minecraft.entity.Entity;
@@ -72,7 +73,6 @@ public class PowersEventHandler {
     @SubscribeEvent
     public static void onPlayerClone(final PlayerEvent.Clone event) {
         if (!event.getPlayer().level.isClientSide()) {
-
             PlayerEntity player = event.getPlayer();
             player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
                 event.getOriginal().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(oldData -> {
@@ -102,7 +102,9 @@ public class PowersEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingDamage(final LivingAttackEvent event) {
         if (event.getEntityLiving().hasEffect(PowersSetup.STORMLIGHT.get()) && (event.getSource() == DamageSource.IN_WALL || event.getSource() == DamageSource.DROWN)) {
-            event.setCanceled(true);
+            if (EffectHelper.drainStormlight(event.getEntityLiving(), 200)) {
+                event.setCanceled(true);
+            }
         }
     }
 

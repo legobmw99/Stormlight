@@ -47,6 +47,8 @@ public class Languages extends LanguageProvider {
         add("effect.stormlight.sticking", "Sticking");
         add("effect.stormlight.slicking", "Slicking");
         add("effect.stormlight.cohesion", "Cohesion");
+        add("effect.stormlight.tension", "Tension");
+        add("effect.stormlight.gravitation", "Gravitation");
 
         add("surge.cohesion.stoneshaping", "Stoneshaping");
         add("surge.cohesion.soulcasting", "Soulcasting");

@@ -4,7 +4,7 @@ import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,19 +25,24 @@ public abstract class LivingEntityMixin extends Entity {
         super(type, world);
     }
 
-    // todo actually mixin to IForgeBlockState
+    // todo actually mixin to IForgeBlockState?
     @Inject(at = @At("RETURN"), method = "onClimbable", cancellable = true)
     public void doCohesionClimb(CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValue()) {
-            if ((Entity) this instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity) (Entity) this;
-                if (player.hasEffect(PowersSetup.STICKING.get()) &&
-                    (player.level.getBlockCollisions(player, player.getBoundingBox().move(0.15, 0, 0.15)).findFirst().isPresent() ||
-                     player.level.getBlockCollisions(player, player.getBoundingBox().move(-0.15, 0, -0.15)).findFirst().isPresent())) {
-                    this.lastClimbablePos = Optional.of(blockPosition());
-                    info.setReturnValue(true);
-                }
+            LivingEntity entity = (LivingEntity) (Entity) this;
+            if (entity.hasEffect(PowersSetup.STICKING.get()) && entity.level.getBlockCollisions(entity, entity.getBoundingBox().inflate(0.15, 0, 0.15)).findFirst().isPresent()) {
+                this.lastClimbablePos = Optional.of(blockPosition());
+                info.setReturnValue(true);
+            }
+        }
+    }
 
+    @Inject(at = @At("RETURN"), method = "canStandOnFluid(Lnet/minecraft/fluid/Fluid;)Z", cancellable = true)
+    public void doTensionStand(Fluid fluid, CallbackInfoReturnable<Boolean> info) {
+        if (!info.getReturnValue()) {
+            LivingEntity entity = (LivingEntity) (Entity) this;
+            if (entity.hasEffect(PowersSetup.TENSION.get())) {
+                info.setReturnValue(true);
             }
         }
     }

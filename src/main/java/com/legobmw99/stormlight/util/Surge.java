@@ -17,7 +17,7 @@ public enum Surge {
     TRANSFORMATION(Surges::transformation),
     TRANSPORTATION(Surges::transportation, 40F),
     COHESION(Surges::cohesion),
-    TENSION(Surges::test);
+    TENSION(Surges::tension);
 
     private final ISurgePower surge;
     private final ISurgeEffect effect;
