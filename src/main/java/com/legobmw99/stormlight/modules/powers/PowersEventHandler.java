@@ -39,7 +39,7 @@ public class PowersEventHandler {
 
     @SubscribeEvent
     public static void onJoinWorld(final PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.getPlayer().level.isClientSide) {
+        if (!event.getPlayer().level.isClientSide()) {
             if (event.getPlayer() instanceof ServerPlayerEntity) {
                 Network.sync(event.getPlayer());
             }
@@ -87,14 +87,14 @@ public class PowersEventHandler {
 
     @SubscribeEvent
     public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event) {
-        if (!event.getPlayer().getCommandSenderWorld().isClientSide()) {
+        if (!event.getPlayer().level.isClientSide()) {
             Network.sync(event.getPlayer());
         }
     }
 
     @SubscribeEvent
     public static void onChangeDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getPlayer().getCommandSenderWorld().isClientSide()) {
+        if (!event.getPlayer().level.isClientSide()) {
             Network.sync(event.getPlayer());
         }
     }

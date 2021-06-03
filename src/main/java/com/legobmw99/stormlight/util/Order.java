@@ -25,14 +25,6 @@ public enum Order {
 
     }
 
-    public Surge getFirst() {
-        return first;
-    }
-
-    public Surge getSecond() {
-        return second;
-    }
-
     public static Order getOrNull(int index) {
         for (Order order : values()) {
             if (order.getIndex() == index) {
@@ -40,6 +32,14 @@ public enum Order {
             }
         }
         return null;
+    }
+
+    public Surge getFirst() {
+        return first;
+    }
+
+    public Surge getSecond() {
+        return second;
     }
 
     public String getName() {
@@ -53,5 +53,9 @@ public enum Order {
 
     public int getIndex() {
         return ordinal();
+    }
+
+    public boolean hasSurge(Surge surge) {
+        return first == surge || second == surge;
     }
 }

@@ -4,6 +4,9 @@ import com.legobmw99.stormlight.modules.powers.container.PortableCraftingContain
 import com.legobmw99.stormlight.modules.powers.container.PortableStonecutterContainer;
 import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
+import com.legobmw99.stormlight.network.Network;
+import com.legobmw99.stormlight.network.packets.SurgePacket;
+import com.legobmw99.stormlight.util.Surge;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -16,20 +19,37 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.IWorldInfo;
+import net.minecraftforge.common.util.ITeleporter;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
 
 public class Surges {
 
     private static boolean isBlockSafe(BlockPos pos, World level) {
         return pos != null && level.isLoaded(pos) && !level.getBlockState(pos).isAir();
+    }
+
+    private static Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+
+    private static BlockPos findAdjacentBlock(BlockPos pos, ServerPlayerEntity player) {
+        for (Direction d : DIRECTIONS) {
+            BlockPos adj = pos.relative(d);
+            if (!player.level.getBlockState(adj).isSuffocating(player.level, adj)) {
+                return adj;
+            }
+        }
+        return null;
     }
 
     public static void test(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
@@ -64,11 +84,12 @@ public class Surges {
 
 */
     public static void adhesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
-        // todo shift held option?
-        if (isBlockSafe(pos, player.level)) {
+        // todo shift held option? bondsmith 'mending'?
+        if (!shiftHeld && isBlockSafe(pos, player.level)) {
             if (player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration() > 200) {
                 if (WorldSetup.ADHESION_BLOCK.get().coat(player.getLevel(), pos) > 0) {
                     EffectHelper.drainStormlight(player, 200);
+                    Network.sendTo(new SurgePacket(Surge.ADHESION, pos, shiftHeld), player);
                 }
             }
         }
@@ -195,7 +216,7 @@ public class Surges {
 
     public static void progression(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) { // Regen
-            if (EffectHelper.drainStormlight(player, 300)) {
+            if (EffectHelper.drainStormlight(player, 600)) {
                 player.addEffect(new EffectInstance(Effects.REGENERATION, 100, 4, true, false, true));
             }
         } else { // Growth
@@ -207,6 +228,8 @@ public class Surges {
                         if (igrowable.isBonemealSuccess(player.level, player.level.random, pos, state)) {
                             if (EffectHelper.drainStormlight(player, 100)) {
                                 igrowable.performBonemeal(player.getLevel(), player.level.random, pos, state);
+                                Network.sendTo(new SurgePacket(Surge.PROGRESSION, pos, shiftHeld), player);
+
                             }
 
                         }
@@ -244,28 +267,44 @@ public class Surges {
         }
     }
 
-	/*
-	public static void transportation(EntityPlayerMP player, @Nullable EntitySpren spren, boolean shiftHeld) {
-		if (shiftHeld) {
-			if (player.dimension != 0) {
-				player.changeDimension(0);
-			}
-			if (player.getBedLocation() != null
-					&& player.getBedSpawnLocation(player.world, player.getBedLocation(), false) != null) {
-				player.connection.setPlayerLocation(
-						player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getX(),
-						player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getY(),
-						player.getBedSpawnLocation(player.world, player.getBedLocation(), false).getZ(),
-						player.cameraYaw, player.cameraPitch);
-			} else {
-				player.connection.setPlayerLocation(player.world.getSpawnPoint().getX(),
-						player.world.getHeight(player.world.getSpawnPoint()).getY(),
-						player.world.getSpawnPoint().getZ(), player.cameraYaw, player.cameraPitch);
-			}
-		} else {
-			EntityEnderPearl entityenderpearl = new EntityEnderPearl(player.world, player);
-			entityenderpearl.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 3.0F, 0.0F);
-			player.getEntityWorld().spawnEntity(entityenderpearl);
-		}
-	} */
+
+    public static void transportation(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
+        if (shiftHeld) {
+            if (EffectHelper.drainStormlight(player, 1200)) {
+                // similar to allomancy
+                double x, y, z;
+                BlockPos respawnPosition = player.getRespawnPosition();
+                RegistryKey<World> dimension = player.getRespawnDimension();
+                if (respawnPosition == null) {
+                    IWorldInfo info = player.level.getLevelData();
+                    x = info.getXSpawn();
+                    y = info.getYSpawn();
+                    z = info.getZSpawn();
+                    dimension = World.OVERWORLD;
+                } else {
+                    x = respawnPosition.getX() + 0.5;
+                    y = respawnPosition.getY();
+                    z = respawnPosition.getZ() + 0.5;
+                }
+                if (!dimension.equals(player.level.dimension())) {
+                    player.changeDimension(player.getLevel().getServer().getLevel(player.getRespawnDimension()), new ITeleporter() {
+                        @Override
+                        public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+                            Entity repositionedEntity = repositionEntity.apply(false);
+                            repositionedEntity.teleportTo(x, y, z);
+                            return repositionedEntity;
+                        }
+                    });
+                }
+                player.teleportToWithTicket(x, y + 1.5, z);
+            }
+        } else {
+            if (isBlockSafe(pos, player.level)) {
+                pos = findAdjacentBlock(pos, player);
+                if (pos != null && EffectHelper.drainStormlight(player, 100)) {
+                    player.teleportToWithTicket(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                }
+            }
+        }
+    }
 }

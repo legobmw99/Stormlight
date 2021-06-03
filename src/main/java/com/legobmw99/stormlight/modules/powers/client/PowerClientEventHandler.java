@@ -26,12 +26,16 @@ public class PowerClientEventHandler {
 
     @SubscribeEvent
     public static void onKeyInput(final InputEvent.KeyInputEvent event) {
-        ClientPowerUtils.acceptInput(event.getAction());
+        if (event.getKey() == PowersClientSetup.firstSurge.getKey().getValue() || event.getKey() == PowersClientSetup.secondSurge.getKey().getValue() ||
+            event.getKey() == PowersClientSetup.blade.getKey().getValue()) {
+            ClientPowerUtils.acceptInput(event.getAction());
+        }
     }
 
     @SubscribeEvent
     public static void onMouseInput(final InputEvent.MouseInputEvent event) {
-        ClientPowerUtils.acceptInput(event.getAction());
+        // todo investigate
+        // ClientPowerUtils.acceptInput(event.getAction());
 
     }
 

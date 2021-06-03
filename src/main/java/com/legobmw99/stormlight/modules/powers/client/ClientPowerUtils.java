@@ -6,6 +6,7 @@ import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.network.Network;
 import com.legobmw99.stormlight.network.packets.SummonBladePacket;
 import com.legobmw99.stormlight.network.packets.SurgePacket;
+import com.legobmw99.stormlight.util.Surge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -78,48 +79,47 @@ public class ClientPowerUtils {
         return null;
     }
 
+    protected static void fireSurge(Surge surge) {
+        boolean shiftDown = Minecraft.getInstance().options.keyShift.isDown();
+        BlockPos pos = getMouseBlockPos(surge.getRange());
+        //        if (pos != null) {
+        //            surge.displayEffect(pos, shiftDown);
+        //        }
+        Network.sendToServer(new SurgePacket(surge, pos, shiftDown));
+    }
+
     /**
      * Handles either mouse or button presses for the mod's keybinds
      */
-    protected static void acceptInput(int action) {
+    protected static void acceptInput(final int action) {
         // todo repeating and range as part of surge
-        if (action == GLFW.GLFW_PRESS) {
-            PlayerEntity player = mc.player;
-            if (mc.screen == null) {
-                if (player == null || !mc.isWindowActive()) {
-                    return;
-                }
-                player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+        PlayerEntity player = mc.player;
+        if (mc.screen == null) {
+            if (player == null || !mc.isWindowActive()) {
+                return;
+            }
 
-                    if (data.isKnight()) {
 
-                        if (PowersClientSetup.blade.isDown() && (data.isBladeStored() || player.getMainHandItem().getItem() instanceof ShardbladeItem)) {
-                            Network.sendToServer(new SummonBladePacket());
-                            PowersClientSetup.blade.setDown(false);
+            player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
+
+                if (data.isKnight()) {
+
+                    if (PowersClientSetup.blade.isDown() && (data.isBladeStored() || player.getMainHandItem().getItem() instanceof ShardbladeItem)) {
+                        Network.sendToServer(new SummonBladePacket());
+                        PowersClientSetup.blade.setDown(false);
+                    }
+
+                    if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
+                        if (PowersClientSetup.firstSurge.isDown() && (action == GLFW.GLFW_PRESS || data.getOrder().getFirst().isRepeating())) {
+                            fireSurge(data.getOrder().getFirst());
                         }
 
-                        if (player.hasEffect(PowersSetup.STORMLIGHT.get())) {
-                            if (PowersClientSetup.firstSurge.isDown()) {
-                                boolean shiftDown = Minecraft.getInstance().options.keyShift.isDown();
-                                BlockPos pos = getMouseBlockPos(30f);
-                                if (pos != null) {
-                                    data.getOrder().getFirst().displayEffect(pos, shiftDown);
-                                }
-                                Network.sendToServer(new SurgePacket(true, pos, shiftDown));
-                            }
-
-                            if (PowersClientSetup.secondSurge.isDown()) {
-                                boolean shiftDown = Minecraft.getInstance().options.keyShift.isDown();
-                                BlockPos pos = getMouseBlockPos(30f);
-                                if (pos != null) {
-                                    data.getOrder().getSecond().displayEffect(pos, shiftDown);
-                                }
-                                Network.sendToServer(new SurgePacket(false, pos, shiftDown));
-                            }
+                        if (PowersClientSetup.secondSurge.isDown() && (action == GLFW.GLFW_PRESS || data.getOrder().getSecond().isRepeating())) {
+                            fireSurge(data.getOrder().getSecond());
                         }
                     }
-                });
-            }
+                }
+            });
         }
     }
 }

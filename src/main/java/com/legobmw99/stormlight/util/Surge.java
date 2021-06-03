@@ -4,47 +4,64 @@ import com.legobmw99.stormlight.modules.powers.Surges;
 import com.legobmw99.stormlight.modules.powers.client.SurgeEffects;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 public enum Surge {
-    ADHESION(Surges::adhesion, SurgeEffects::adhesionEffect),
+    ADHESION(Surges::adhesion, 25, true, SurgeEffects::adhesionEffect),
     GRAVITATION(Surges::gravitation),
     DIVISION(Surges::division),
     ABRASION(Surges::abrasion),
     PROGRESSION(Surges::progression, SurgeEffects::progressionEffect),
     ILLUMINATION(Surges::illumination),
     TRANSFORMATION(Surges::transformation),
-    TRANSPORTATION(Surges::test),
+    TRANSPORTATION(Surges::transportation, 40F),
     COHESION(Surges::cohesion),
     TENSION(Surges::test);
 
     private final ISurgePower surge;
     private final ISurgeEffect effect;
-    // todo cost, range, repeating
+    private final float range;
+    private final boolean repeating;
 
     Surge(ISurgePower surge) {
-        this.surge = surge;
-        this.effect = null;
+        this(surge, 30F, false, null);
+    }
+
+    Surge(ISurgePower surge, float range) {
+        this(surge, range, false, null);
+    }
+
+    Surge(ISurgePower surge, float range, boolean repeating) {
+        this(surge, range, repeating, null);
     }
 
     Surge(ISurgePower surge, ISurgeEffect effect) {
+        this(surge, 30F, false, effect);
+    }
+
+    Surge(ISurgePower surge, float range, boolean repeating, ISurgeEffect effect) {
         this.surge = surge;
+        this.range = range;
+        this.repeating = repeating;
         this.effect = effect;
     }
+
 
     public boolean hasEffect() {
         return effect != null;
     }
 
+    public boolean isRepeating() {return repeating;}
+
+    public float getRange() {
+        return range;
+    }
 
     public void fire(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
         surge.fire(player, looking, modified);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void displayEffect(BlockPos looking, boolean modified) {
         if (hasEffect()) {
             effect.fire(looking, modified);

@@ -3,6 +3,7 @@ package com.legobmw99.stormlight.modules.world.block;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.state.StateContainer;
@@ -61,10 +62,16 @@ public class AdhesionBlock extends HorizontalFaceBlock {
         }
     }
 
+
+    @Override
+    public PushReaction getPistonPushReaction(BlockState state) {
+        return PushReaction.BLOCK;
+    }
+
     public int coat(World world, BlockPos pos) {
         int sides = 0;
         for (Direction d : Direction.values()) {
-            if (canAttachFrom(world, pos, d) && world.getBlockState(pos.relative(d)).isAir()) {
+            if (canAttachFrom(world, pos, d) && world.getBlockState(pos.relative(d)).isAir()/*.getMaterial().isReplaceable()*/) {
                 AttachFace face = fromDirection(d.getOpposite());
                 BlockState newBlock = defaultBlockState().setValue(FACE, face);
                 if (face == AttachFace.WALL) {
