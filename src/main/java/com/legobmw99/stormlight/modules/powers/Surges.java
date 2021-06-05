@@ -15,6 +15,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
@@ -81,8 +82,19 @@ public class Surges {
 
 */
     public static void adhesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
-        // todo shift held option? bondsmith 'mending'?
-        if (!shiftHeld && isBlockSafe(pos, player.level)) {
+        if (shiftHeld) {
+            if (player.hasEffect(PowersSetup.TENSION.get())) {
+                ItemStack stack = player.getMainHandItem();
+                if (stack.isDamaged()) {
+                    if (EffectHelper.drainStormlight(player, 1000)) {
+                        stack.setDamageValue((int) (stack.getDamageValue() - 20 * stack.getXpRepairRatio()));
+                    } else if (EffectHelper.drainStormlight(player, 200)) {
+                        stack.setDamageValue((int) (stack.getDamageValue() - 2 * stack.getXpRepairRatio()));
+
+                    }
+                }
+            }
+        } else if (isBlockSafe(pos, player.level)) {
             if (player.getEffect(PowersSetup.STORMLIGHT.get()).getDuration() > 200) {
                 if (WorldSetup.ADHESION_BLOCK.get().coat(player.getLevel(), pos) > 0) {
                     EffectHelper.drainStormlight(player, 200);
@@ -112,7 +124,7 @@ public class Surges {
     }
 
     public static void tension(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
-        // todo shift held?
+        // todo shift held - haste?
         EffectHelper.toggleEffect(player, PowersSetup.TENSION.get());
     }
 

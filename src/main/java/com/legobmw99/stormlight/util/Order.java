@@ -16,6 +16,8 @@ public enum Order {
     STONEWARDS(COHESION, TENSION),
     BONDSMITHS(TENSION, ADHESION);
 
+
+    // todo store three ideals - a blade, ideal one, ideal two
     private final Surge first;
     private final Surge second;
 

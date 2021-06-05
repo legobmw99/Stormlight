@@ -6,6 +6,7 @@ import com.legobmw99.stormlight.util.Order;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class DefaultSurgebindingData implements ISurgebindingData {
@@ -51,7 +52,7 @@ public class DefaultSurgebindingData implements ISurgebindingData {
         return this.ideal;
     }
 
-    public void storeBlade(ItemStack blade) {
+    public void storeBlade(@Nonnull ItemStack blade) {
         this.blade = blade.copy();
     }
 

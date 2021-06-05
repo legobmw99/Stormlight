@@ -5,6 +5,7 @@ import com.legobmw99.stormlight.util.Order;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public interface ISurgebindingData {
@@ -17,13 +18,13 @@ public interface ISurgebindingData {
 
     Ideal getIdeal();
 
+    void setIdeal(Ideal ideal);
+
     Ideal progressIdeal();
 
     Ideal regressIdeal();
 
-    void setIdeal(Ideal ideal);
-
-    void storeBlade(ItemStack blade);
+    void storeBlade(@Nonnull ItemStack blade);
 
     ItemStack getBlade();
 
