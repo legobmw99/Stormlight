@@ -1,8 +1,10 @@
 package com.legobmw99.stormlight.util;
 
+import net.minecraft.util.IStringSerializable;
+
 import java.util.Locale;
 
-public enum Gemstone {
+public enum Gemstone implements IStringSerializable {
     DIAMOND(5),
     EMERALD(3),
     QUARTZ(1);
@@ -23,5 +25,10 @@ public enum Gemstone {
 
     public int getIndex() {
         return ordinal();
+    }
+
+    @Override
+    public String getSerializedName() {
+        return this.getName();
     }
 }

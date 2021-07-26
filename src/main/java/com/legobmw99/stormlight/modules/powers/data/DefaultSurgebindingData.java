@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class DefaultSurgebindingData implements ISurgebindingData {
@@ -23,7 +24,7 @@ public class DefaultSurgebindingData implements ISurgebindingData {
         this.sprenID = null;
     }
 
-
+    @Nullable
     public Order getOrder() {
         return order;
     }
@@ -32,24 +33,12 @@ public class DefaultSurgebindingData implements ISurgebindingData {
         this.order = order;
     }
 
-    public boolean isKnight() { return order != null && ideal != Ideal.UNINVESTED && ideal != Ideal.TRAITOR; }
-
     public Ideal getIdeal() {
         return ideal;
     }
 
     public void setIdeal(Ideal ideal) {
         this.ideal = ideal;
-    }
-
-    public Ideal progressIdeal() {
-        this.ideal = this.ideal.progressIdeal();
-        return this.ideal;
-    }
-
-    public Ideal regressIdeal() {
-        this.ideal = this.ideal.regressIdeal();
-        return this.ideal;
     }
 
     public void storeBlade(@Nonnull ItemStack blade) {

@@ -7,7 +7,9 @@ import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
 import com.legobmw99.stormlight.network.packets.SurgePacket;
 import com.legobmw99.stormlight.util.Surge;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.FallingBlockEntity;
@@ -33,7 +35,9 @@ import net.minecraft.world.storage.IWorldInfo;
 import net.minecraftforge.common.util.ITeleporter;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class Surges {
@@ -54,33 +58,21 @@ public class Surges {
         return null;
     }
 
-    /* private static final Map<Block,Block> transformableBlocks = buildBlockMap();
-    private static final Map<Item,Item> transformableItems = buildItemMap();
+    private static final Map<Block, Block> transformableBlocks = buildBlockMap();
 
     private static Map<Block,Block>  buildBlockMap() {
         Map<Block,Block> map = new HashMap<Block,Block>();
         map.put(Blocks.COBBLESTONE, Blocks.STONE);
-        map.put(Blocks.SANDSTONE,Blocks.RED_SANDSTONE);
-        map.put(Blocks.GRASS, Blocks.MYCELIUM);
+        map.put(Blocks.SANDSTONE, Blocks.RED_SANDSTONE);
+        map.put(Blocks.GRASS_BLOCK, Blocks.MYCELIUM);
         map.put(Blocks.OBSIDIAN, Blocks.LAVA);
         map.put(Blocks.STONE, Blocks.HAY_BLOCK);
         map.put(Blocks.MELON, Blocks.PUMPKIN);
         map.put(Blocks.PUMPKIN, Blocks.MELON);
         map.put(Blocks.WHITE_WOOL, Blocks.COBWEB);
-
-        return map;
-
-    }
-
-    private static Map<Item,Item> buildItemMap() {
-        Map<Item,Item> map = new HashMap<Item,Item>();
-        map.put(Items.GRAVEL, Items.FLINT);
         return map;
     }
 
-
-
-*/
     public static void adhesion(ServerPlayerEntity player, BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
             if (player.hasEffect(PowersSetup.TENSION.get())) {
@@ -104,6 +96,7 @@ public class Surges {
         }
     }
 
+
     public static void abrasion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {// Allow climbing
             EffectHelper.toggleEffect(player, PowersSetup.STICKING.get());
@@ -114,6 +107,7 @@ public class Surges {
         }
     }
 
+
     public static void cohesion(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
             player.openMenu(
@@ -123,10 +117,12 @@ public class Surges {
         }
     }
 
+
     public static void tension(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         // todo shift held - haste?
         EffectHelper.toggleEffect(player, PowersSetup.TENSION.get());
     }
+
 
     public static void division(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         // TODO config to disable breaking, give haste instead
@@ -136,6 +132,7 @@ public class Surges {
             }
         }
     }
+
 
     public static void gravitation(ServerPlayerEntity player, @Nullable BlockPos l, boolean shiftHeld) {
         if (player.isOnGround() && shiftHeld) {
@@ -253,27 +250,18 @@ public class Surges {
         }
     }
 
-    /*
 
-    private static void switchItemInMainhand(EntityPlayerMP player, Item toItem){
-        ItemStack toItemStack = new ItemStack(toItem,player.getHeldItemMainhand().getCount());
-        player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(Items.AIR, 0));
-        player.inventory.setInventorySlotContents(player.inventory.currentItem, toItemStack);
-    }
-
-*/
     public static void transformation(ServerPlayerEntity player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
             player.openMenu(
                     new SimpleNamedContainerProvider((i, inv, oplayer) -> new PortableCraftingContainer(i, inv), new TranslationTextComponent("surge.cohesion.soulcasting")));
         } else {
             if (isBlockSafe(pos, player.level)) {
-                // todo block transformation
-                // Block block = player.level.getBlockState(pos).getBlock();
-                //                if (transformableBlocks.containsKey(block)) {
-                //                    Block newBlock = transformableBlocks.get(block);
-                //                    player.world.setBlockState(pos, newBlock.getDefaultState());
-                //                }
+                Block block = player.level.getBlockState(pos).getBlock();
+                if (transformableBlocks.containsKey(block) && EffectHelper.drainStormlight(player, 600)) {
+                    Block newBlock = transformableBlocks.get(block);
+                    player.level.setBlockAndUpdate(pos, newBlock.defaultBlockState());
+                }
             }
         }
     }

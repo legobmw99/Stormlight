@@ -16,14 +16,15 @@ public class SummonBladePacket {
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null) {
                 player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
-                    if (data.isKnight() && data.isBladeStored()) {
-                        data.addBladeToInventory(player);
-                        // TODO when spren, hide them
-                    } else {
-                        if (player.getMainHandItem().getItem() instanceof ShardbladeItem && ((ShardbladeItem) player.getMainHandItem().getItem()).getOrder() == data.getOrder()) {
-                            data.storeBlade(player.getMainHandItem());
-                            player.inventory.setItem(player.inventory.selected, ItemStack.EMPTY);
+                    if (data.isBladeStored()) {
+                        if (data.earnedBlade()) {
+                            data.addBladeToInventory(player);
+                            // TODO when spren, hide them
                         }
+                    } else if (player.getMainHandItem().getItem() instanceof ShardbladeItem &&
+                               ((ShardbladeItem) player.getMainHandItem().getItem()).getOrder() == data.getOrder()) {
+                        data.storeBlade(player.getMainHandItem());
+                        player.inventory.setItem(player.inventory.selected, ItemStack.EMPTY);
                     }
                     Network.sync(data, player);
                 });

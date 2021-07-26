@@ -50,7 +50,7 @@ public class SurgePacket {
             ctx.get().enqueueWork(() -> {
                 ServerPlayerEntity player = ctx.get().getSender();
                 if (player != null) {
-                    if (player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(data -> data.isKnight() && data.getOrder().hasSurge(surge)).isPresent() &&
+                    if (player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(data -> data.isKnight() && data.canUseSurge(surge)).isPresent() &&
                         player.hasEffect(PowersSetup.STORMLIGHT.get())) {
                         surge.fire(player, looking, shiftHeld);
                     }
