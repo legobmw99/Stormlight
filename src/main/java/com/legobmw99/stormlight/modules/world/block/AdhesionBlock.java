@@ -152,7 +152,7 @@ public class AdhesionBlock extends HorizontalFaceBlock {
 
     @Override
     public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!entity.isNoGravity() || (entity instanceof LivingEntity && !((LivingEntity) entity).hasEffect(PowersSetup.GRAVITATION.get()))) {
+        if (!entity.isNoGravity() && (entity instanceof LivingEntity && !((LivingEntity) entity).hasEffect(PowersSetup.GRAVITATION.get()))) {
             Vector3d target;
 
             switch (state.getValue(FACE)) {
