@@ -1,4 +1,4 @@
-package com.legobmw99.stormlight.modules.world.block;
+package com.legobmw99.stormlight.modules.powers.block;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import net.minecraft.block.*;

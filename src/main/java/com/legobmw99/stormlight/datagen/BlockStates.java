@@ -1,8 +1,8 @@
 package com.legobmw99.stormlight.datagen;
 
 import com.legobmw99.stormlight.Stormlight;
+import com.legobmw99.stormlight.modules.powers.block.AdhesionBlock;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
-import com.legobmw99.stormlight.modules.world.block.AdhesionBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.properties.AttachFace;

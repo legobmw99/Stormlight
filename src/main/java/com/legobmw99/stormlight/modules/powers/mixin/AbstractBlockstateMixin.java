@@ -28,13 +28,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractBlock.AbstractBlockState.class)
 public abstract class AbstractBlockstateMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Block getBlock();
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract BlockState asState();
 
-    @Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/IBlockReader;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/shapes/ISelectionContext;)Lnet/minecraft/util/math/shapes/VoxelShape;", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/IBlockReader;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/shapes/ISelectionContext;)Lnet/minecraft/util/math/shapes/VoxelShape;", cancellable = true, remap = false)
     private void noClip(IBlockReader world, BlockPos pos, ISelectionContext context, CallbackInfoReturnable<VoxelShape> info) {
         Entity entity = context.getEntity();
         if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
@@ -50,7 +50,7 @@ public abstract class AbstractBlockstateMixin {
         return entity.getY() > (double) pos.getY() + shape.max(Direction.Axis.Y) - (entity.isOnGround() ? 8.05 / 16.0 : 0.0015);
     }
 
-    @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true, remap = false)
     private void preventPushOut(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
             ci.cancel();

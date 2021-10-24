@@ -18,7 +18,7 @@ import java.util.Optional;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
-    @Shadow
+    @Shadow(remap = false)
     private Optional<BlockPos> lastClimbablePos;
 
     public LivingEntityMixin(EntityType<?> type, World world) {
@@ -26,7 +26,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     // todo actually mixin to IForgeBlockState?
-    @Inject(at = @At("RETURN"), method = "onClimbable", cancellable = true)
+    @Inject(at = @At("RETURN"), method = "onClimbable", cancellable = true, remap = false)
     public void doCohesionClimb(CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValue()) {
             LivingEntity entity = (LivingEntity) (Entity) this;
@@ -37,7 +37,7 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(at = @At("RETURN"), method = "canStandOnFluid(Lnet/minecraft/fluid/Fluid;)Z", cancellable = true)
+    @Inject(at = @At("RETURN"), method = "canStandOnFluid(Lnet/minecraft/fluid/Fluid;)Z", cancellable = true, remap = false)
     public void doTensionStand(Fluid fluid, CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValue()) {
             LivingEntity entity = (LivingEntity) (Entity) this;

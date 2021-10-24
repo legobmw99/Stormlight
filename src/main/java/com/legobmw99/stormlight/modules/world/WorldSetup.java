@@ -1,7 +1,7 @@
 package com.legobmw99.stormlight.modules.world;
 
 import com.legobmw99.stormlight.Stormlight;
-import com.legobmw99.stormlight.modules.world.block.AdhesionBlock;
+import com.legobmw99.stormlight.modules.powers.block.AdhesionBlock;
 import com.legobmw99.stormlight.modules.world.entity.SprenEntity;
 import com.legobmw99.stormlight.modules.world.entity.client.SprenRenderer;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
@@ -37,7 +37,8 @@ public class WorldSetup {
     public static final List<RegistryObject<SphereItem>> DUN_SPHERES = new ArrayList<>();
     public static final List<RegistryObject<SphereItem>> INFUSED_SPHERES = new ArrayList<>();
 
-    public static final EntityType<SprenEntity> SPREN_ENTITY = EntityType.Builder.<SprenEntity>of(SprenEntity::new, EntityClassification.AMBIENT)
+    public static final EntityType<SprenEntity> SPREN_ENTITY = EntityType.Builder
+            .<SprenEntity>of(SprenEntity::new, EntityClassification.AMBIENT)
             .setShouldReceiveVelocityUpdates(true)
             .setUpdateInterval(5)
             .setCustomClientFactory((spawnEntity, world) -> new SprenEntity(world, spawnEntity.getEntity()))
