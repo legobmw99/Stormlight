@@ -110,11 +110,6 @@ public class ShardbladeItem extends SwordItem {
         return super.canPerformAction(stack, toolAction);
     }
 
-    //    @Override
-    //    public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
-    //        return entity != null && stack.equals(entity.getUseItem());
-    //    }
-
     @Override
     public UseAnim getUseAnimation(ItemStack p_77661_1_) {
         return UseAnim.BLOCK;

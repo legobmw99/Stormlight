@@ -42,7 +42,7 @@ import java.util.function.Function;
 
 public class Surges {
 
-    private static Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+    private static final Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
     private static boolean isBlockSafe(BlockPos pos, Level level) {
         return pos != null && level.isLoaded(pos) && !level.getBlockState(pos).isAir();

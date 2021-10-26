@@ -49,8 +49,7 @@ public class PowersEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onDeath(final LivingDeathEvent event) {
-        if (!event.isCanceled() && event.getEntityLiving() instanceof Player) {
-            Player player = (Player) event.getEntityLiving();
+        if (!event.isCanceled() && event.getEntityLiving() instanceof Player player) {
             player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
                 if (data.isKnight() && !data.isBladeStored()) {
                     player.getInventory().items
@@ -74,12 +73,9 @@ public class PowersEventHandler {
         if (!event.getPlayer().level.isClientSide()) {
             event.getOriginal().reviveCaps();
             Player player = event.getPlayer();
-            player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
-                event.getOriginal().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(oldData -> {
-                    data.load(oldData.save());
-                });
-
-            });
+            player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> event.getOriginal().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(oldData -> {
+                data.load(oldData.save());
+            }));
             event.getOriginal().getCapability(SurgebindingCapability.PLAYER_CAP).invalidate();
             event.getOriginal().invalidateCaps();
 
@@ -172,8 +168,7 @@ public class PowersEventHandler {
     public static void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             LevelData data = event.world.getLevelData();
-            if (data instanceof ServerLevelData) {
-                ServerLevelData info = (ServerLevelData) data;
+            if (data instanceof ServerLevelData info) {
                 if (info.getGameTime() % 96000 == 0) {
                     info.setClearWeatherTime(0);
                     info.setRainTime(2400);

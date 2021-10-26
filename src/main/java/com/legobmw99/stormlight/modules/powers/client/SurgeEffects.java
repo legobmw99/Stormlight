@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 
 public class SurgeEffects {
-    private static Minecraft mc = Minecraft.getInstance();
+    private static final Minecraft mc = Minecraft.getInstance();
 
     public static void progressionEffect(@Nonnull BlockPos pos, boolean shiftHeld) {
         if (!shiftHeld) {

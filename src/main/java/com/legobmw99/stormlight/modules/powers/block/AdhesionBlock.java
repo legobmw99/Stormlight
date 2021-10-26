@@ -57,14 +57,11 @@ public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
     }
 
     public static AttachFace fromDirection(Direction dir) {
-        switch (dir) {
-            case UP:
-                return AttachFace.CEILING;
-            case DOWN:
-                return AttachFace.FLOOR;
-            default:
-                return AttachFace.WALL;
-        }
+        return switch (dir) {
+            case UP -> AttachFace.CEILING;
+            case DOWN -> AttachFace.FLOOR;
+            default -> AttachFace.WALL;
+        };
     }
 
 
@@ -95,25 +92,16 @@ public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
-        switch (state.getValue(FACE)) {
-            case FLOOR:
-                return TOP;
-            case CEILING:
-                return BOTTOM;
-            case WALL:
-            default:
-                switch (state.getValue(FACING)) {
-                    case EAST:
-                        return EAST;
-                    case WEST:
-                        return WEST;
-                    case SOUTH:
-                        return SOUTH;
-                    case NORTH:
-                    default:
-                        return NORTH;
-                }
-        }
+        return switch (state.getValue(FACE)) {
+            case FLOOR -> TOP;
+            case CEILING -> BOTTOM;
+            default -> switch (state.getValue(FACING)) {
+                case EAST -> EAST;
+                case WEST -> WEST;
+                case SOUTH -> SOUTH;
+                default -> NORTH;
+            };
+        };
     }
 
     @Override
@@ -158,33 +146,17 @@ public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
     @Override
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         if (!entity.isNoGravity() && (entity instanceof LivingEntity && !((LivingEntity) entity).hasEffect(PowersSetup.GRAVITATION.get()))) {
-            Vec3 target;
+            Vec3 target = switch (state.getValue(FACE)) {
+                case FLOOR -> Vec3.atBottomCenterOf(pos);
+                case CEILING -> Vec3.atBottomCenterOf(pos.above());
+                default -> switch (state.getValue(FACING)) {
+                    case EAST -> Vec3.atCenterOf(pos.below().west());
+                    case WEST -> Vec3.atCenterOf(pos.below().east());
+                    case SOUTH -> Vec3.atCenterOf(pos.below().north());
+                    default -> Vec3.atCenterOf(pos.below().south());
+                };
+            };
 
-            switch (state.getValue(FACE)) {
-                case FLOOR:
-                    target = Vec3.atBottomCenterOf(pos);
-                    break;
-                case CEILING:
-                    target = Vec3.atBottomCenterOf(pos.above());
-                    break;
-                case WALL:
-                default:
-                    switch (state.getValue(FACING)) {
-                        case EAST:
-                            target = Vec3.atCenterOf(pos.below().west());
-                            break;
-                        case WEST:
-                            target = Vec3.atCenterOf(pos.below().east());
-                            break;
-                        case SOUTH:
-                            target = Vec3.atCenterOf(pos.below().north());
-                            break;
-                        case NORTH:
-                        default:
-                            target = Vec3.atCenterOf(pos.below().south());
-                            break;
-                    }
-            }
             entity.setDeltaMovement(target.subtract(entity.position()).normalize());
             entity.makeStuckInBlock(state, new Vec3(0.01, 1, 0.01));
         }

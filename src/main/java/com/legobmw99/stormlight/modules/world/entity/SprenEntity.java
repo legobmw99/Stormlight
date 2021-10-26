@@ -41,7 +41,7 @@ import java.util.Random;
 
 public class SprenEntity extends TamableAnimal implements FlyingAnimal {
 
-    public static final EntityDataSerializer<Enum<Order>> ORDER = new EntityDataSerializer<Enum<Order>>() {
+    public static final EntityDataSerializer<Enum<Order>> ORDER = new EntityDataSerializer<>() {
 
         public void write(FriendlyByteBuf buf, Enum<Order> order) {
             buf.writeEnum(order);
@@ -180,7 +180,7 @@ public class SprenEntity extends TamableAnimal implements FlyingAnimal {
 
     @Override
     protected PathNavigation createNavigation(Level world) {
-        FlyingPathNavigation flying = new FlyingPathNavigation(this, world);
+        var flying = new FlyingPathNavigation(this, world);
         flying.setCanOpenDoors(true);
         flying.setCanFloat(true);
         flying.setCanPassDoors(true);

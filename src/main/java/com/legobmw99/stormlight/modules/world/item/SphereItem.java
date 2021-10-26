@@ -51,8 +51,7 @@ public class SphereItem extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
-        if (entityLiving instanceof Player && this.infused) {
-            Player player = (Player) entityLiving;
+        if (entityLiving instanceof Player player && this.infused) {
             // Don't consume items in creative mode
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
