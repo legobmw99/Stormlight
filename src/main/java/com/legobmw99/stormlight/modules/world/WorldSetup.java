@@ -3,6 +3,7 @@ package com.legobmw99.stormlight.modules.world;
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.powers.block.AdhesionBlock;
 import com.legobmw99.stormlight.modules.world.entity.SprenEntity;
+import com.legobmw99.stormlight.modules.world.entity.client.SprenModel;
 import com.legobmw99.stormlight.modules.world.entity.client.SprenRenderer;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.util.Gemstone;
@@ -71,6 +72,10 @@ public class WorldSetup {
 
     public static void registerEntityRenders(final EntityRenderersEvent.RegisterRenderers e) {
         e.registerEntityRenderer(SPREN_ENTITY, SprenRenderer::new);
+    }
+
+    public static void registerEntityModels(final EntityRenderersEvent.RegisterLayerDefinitions e) {
+        e.registerLayerDefinition(SprenModel.MODEL_LOC, SprenModel::createLayer);
     }
 
     public static void onEntityAttribute(final net.minecraftforge.event.entity.EntityAttributeCreationEvent e) {

@@ -60,8 +60,7 @@ public class PowerClientEventHandler {
                 BlockState stateAtP = mc.level.getBlockState(p);
                 if (!savedStates.containsKey(p) && !stateAtP.isAir() && !(stateAtP.getBlock() instanceof LiquidBlock)) {
                     savedStates.put(p, stateAtP);
-                    // TODO: 1.17 - make it a light block instead
-                    mc.level.setBlock(p, Blocks.AIR.defaultBlockState(), 0);
+                    mc.level.setBlock(p, Blocks.LIGHT.defaultBlockState(), 0);
                 }
             });
 

@@ -42,6 +42,7 @@ public class Stormlight {
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(EntityType.class, WorldSetup::onEntityRegister);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::onEntityAttribute);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(SurgebindingCapability::registerCapability);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::registerEntityModels);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::registerEntityRenders);
         MinecraftForge.EVENT_BUS.addListener(Stormlight::registerCommands);
 

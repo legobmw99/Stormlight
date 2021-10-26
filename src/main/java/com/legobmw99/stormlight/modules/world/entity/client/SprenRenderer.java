@@ -13,7 +13,7 @@ public class SprenRenderer extends MobRenderer<SprenEntity, SprenModel> {
 
 
     public SprenRenderer(EntityRendererProvider.Context manager) {
-        super(manager, new SprenModel(manager.bakeLayer(SprenModel.createLayer())), 0.0f);
+        super(manager, new SprenModel(manager.bakeLayer(SprenModel.MODEL_LOC)), 0.0f);
     }
 
     @Override

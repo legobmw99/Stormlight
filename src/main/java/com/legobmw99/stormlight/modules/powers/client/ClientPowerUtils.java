@@ -92,7 +92,6 @@ public class ClientPowerUtils {
      * Handles either mouse or button presses for the mod's keybinds
      */
     protected static void acceptInput(final int action) {
-        // todo repeating and range as part of surge
         Player player = mc.player;
         if (mc.screen == null) {
             if (player == null || !mc.isWindowActive()) {
