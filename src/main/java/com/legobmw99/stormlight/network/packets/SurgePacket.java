@@ -3,11 +3,11 @@ package com.legobmw99.stormlight.network.packets;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.util.Surge;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -23,11 +23,11 @@ public class SurgePacket {
         this.shiftHeld = shiftHeld;
     }
 
-    public static SurgePacket decode(PacketBuffer buf) {
+    public static SurgePacket decode(FriendlyByteBuf buf) {
         return new SurgePacket(buf.readEnum(Surge.class), buf.readBoolean() ? buf.readBlockPos() : null, buf.readBoolean());
     }
 
-    public void encode(PacketBuffer buf) {
+    public void encode(FriendlyByteBuf buf) {
         buf.writeEnum(surge);
         boolean hasBlock = looking != null;
         buf.writeBoolean(hasBlock);
@@ -48,7 +48,7 @@ public class SurgePacket {
             ctx.get().setPacketHandled(true);
         } else if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             ctx.get().enqueueWork(() -> {
-                ServerPlayerEntity player = ctx.get().getSender();
+                ServerPlayer player = ctx.get().getSender();
                 if (player != null) {
                     if (player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(data -> data.isKnight() && data.canUseSurge(surge)).isPresent() &&
                         player.hasEffect(PowersSetup.STORMLIGHT.get())) {

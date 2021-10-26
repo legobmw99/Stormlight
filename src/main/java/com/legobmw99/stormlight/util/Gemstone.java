@@ -1,10 +1,10 @@
 package com.legobmw99.stormlight.util;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 import java.util.Locale;
 
-public enum Gemstone implements IStringSerializable {
+public enum Gemstone implements StringRepresentable {
     DIAMOND(5),
     EMERALD(3),
     QUARTZ(1);

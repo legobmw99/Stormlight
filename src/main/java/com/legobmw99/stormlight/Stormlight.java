@@ -4,12 +4,13 @@ import com.legobmw99.stormlight.modules.combat.CombatSetup;
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import com.legobmw99.stormlight.modules.powers.client.PowersClientSetup;
 import com.legobmw99.stormlight.modules.powers.command.StormlightCommand;
+import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +25,7 @@ public class Stormlight {
     public static final String MODID = "stormlight";
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static final ItemGroup stormlight_group = new ItemGroup(Stormlight.MODID) {
+    public static final CreativeModeTab stormlight_group = new CreativeModeTab(Stormlight.MODID) {
         @Override
         public ItemStack makeIcon() {
             int type = (int) (System.currentTimeMillis() / (1000 * 60)) % 10;
@@ -40,6 +41,8 @@ public class Stormlight {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::clientInit);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(EntityType.class, WorldSetup::onEntityRegister);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::onEntityAttribute);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(SurgebindingCapability::registerCapability);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::registerEntityRenders);
         MinecraftForge.EVENT_BUS.addListener(Stormlight::registerCommands);
 
         PowersSetup.register();

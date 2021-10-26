@@ -3,8 +3,9 @@ package com.legobmw99.stormlight.api;
 import com.legobmw99.stormlight.util.Ideal;
 import com.legobmw99.stormlight.util.Order;
 import com.legobmw99.stormlight.util.Surge;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,11 +24,10 @@ public interface ISurgebindingData {
 
     void storeBlade(@Nonnull ItemStack blade);
 
-    ItemStack getBlade();
 
     boolean isBladeStored();
 
-    boolean addBladeToInventory(PlayerEntity player);
+    boolean addBladeToInventory(Player player);
 
     UUID getSprenID();
 
@@ -61,4 +61,8 @@ public interface ISurgebindingData {
         return order != null &&
                ((surge == order.getFirst() && order.getFirstIdeal().compareTo(ideal) < 0) || (surge == order.getSecond() && order.getSecondIdeal().compareTo(ideal) < 0));
     }
+
+    void load(CompoundTag nbt);
+
+    CompoundTag save();
 }

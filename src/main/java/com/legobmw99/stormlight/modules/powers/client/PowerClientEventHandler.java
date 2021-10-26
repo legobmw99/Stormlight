@@ -1,11 +1,11 @@
 package com.legobmw99.stormlight.modules.powers.client;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -58,7 +58,7 @@ public class PowerClientEventHandler {
             // set to air (on client only)
             eyePositions.forEach(p -> {
                 BlockState stateAtP = mc.level.getBlockState(p);
-                if (!savedStates.containsKey(p) && !stateAtP.isAir() && !(stateAtP.getBlock() instanceof FlowingFluidBlock)) {
+                if (!savedStates.containsKey(p) && !stateAtP.isAir() && !(stateAtP.getBlock() instanceof LiquidBlock)) {
                     savedStates.put(p, stateAtP);
                     // TODO: 1.17 - make it a light block instead
                     mc.level.setBlock(p, Blocks.AIR.defaultBlockState(), 0);

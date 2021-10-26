@@ -3,17 +3,21 @@ package com.legobmw99.stormlight.modules.combat.item;
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.*;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,7 +27,7 @@ public class ShardbladeItem extends SwordItem {
     private static final int ATTACK_DAMAGE = 12;
     private static final float ATTACK_SPEED = 10.0f;
 
-    private static final IItemTier SHARD = new IItemTier() {
+    private static final Tier SHARD = new Tier() {
         @Override
         public int getUses() {
             return -1;
@@ -82,9 +86,9 @@ public class ShardbladeItem extends SwordItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        IFormattableTextComponent lore = new TranslationTextComponent("item.stormlight.shardblade.lore");
-        lore.setStyle(lore.getStyle().withColor(Color.fromLegacyFormat(TextFormatting.AQUA)));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        MutableComponent lore = new TranslatableComponent("item.stormlight.shardblade.lore");
+        lore.setStyle(lore.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.AQUA)));
         tooltip.add(lore);
     }
 
@@ -98,15 +102,22 @@ public class ShardbladeItem extends SwordItem {
         return Rarity.RARE;
     }
 
-
     @Override
-    public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
-        return entity != null && stack.equals(entity.getUseItem());
+    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+        if (ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction) && stack.getUseDuration() > 0) {
+            return true;
+        }
+        return super.canPerformAction(stack, toolAction);
     }
 
+    //    @Override
+    //    public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
+    //        return entity != null && stack.equals(entity.getUseItem());
+    //    }
+
     @Override
-    public UseAction getUseAnimation(ItemStack p_77661_1_) {
-        return UseAction.BLOCK;
+    public UseAnim getUseAnimation(ItemStack p_77661_1_) {
+        return UseAnim.BLOCK;
     }
 
     @Override
@@ -115,9 +126,9 @@ public class ShardbladeItem extends SwordItem {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         player.startUsingItem(hand);
-        return ActionResult.consume(itemstack);
+        return InteractionResultHolder.consume(itemstack);
     }
 }

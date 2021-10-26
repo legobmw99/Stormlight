@@ -1,10 +1,10 @@
 package com.legobmw99.stormlight.modules.powers.effect;
 
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectType;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
-public class GenericEffect extends Effect {
-    public GenericEffect(EffectType type, int color) {
+public class GenericEffect extends MobEffect {
+    public GenericEffect(MobEffectCategory type, int color) {
         super(type, color);
     }
 

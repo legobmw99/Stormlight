@@ -17,13 +17,12 @@ apply plugin: 'org.spongepowered.mixin'
 
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-
 version = "2.0"
 group = "com.legobmw99.${mod_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "${mod_id}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
-
+// Mojang ships Java 16 to end users in 1.17+ instead of Java 8 in 1.16 or lower, so your mod should target Java 16.
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.

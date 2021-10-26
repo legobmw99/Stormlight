@@ -3,8 +3,9 @@ package com.legobmw99.stormlight.modules.powers.data;
 import com.legobmw99.stormlight.api.ISurgebindingData;
 import com.legobmw99.stormlight.util.Ideal;
 import com.legobmw99.stormlight.util.Order;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,14 +46,12 @@ public class DefaultSurgebindingData implements ISurgebindingData {
         this.blade = blade.copy();
     }
 
-    public ItemStack getBlade() {return this.blade.copy(); }
-
     public boolean isBladeStored() {
         return !blade.isEmpty();
     }
 
-    public boolean addBladeToInventory(PlayerEntity player) {
-        if (player.inventory.add(this.blade)) {
+    public boolean addBladeToInventory(Player player) {
+        if (player.getInventory().add(this.blade)) {
             this.blade = ItemStack.EMPTY;
             return true;
         }
@@ -72,5 +71,29 @@ public class DefaultSurgebindingData implements ISurgebindingData {
         return "Order: " + order + ", Ideal: " + ideal + ", Blade: " + blade + ", Spren: " + sprenID;
     }
 
+    @Override
+    public CompoundTag save() {
+        CompoundTag nbt = new CompoundTag();
+
+        nbt.putInt("order", this.getOrder() != null ? this.getOrder().getIndex() : -1);
+        nbt.putInt("ideal", this.getIdeal().getIndex());
+        nbt.put("blade", this.blade.copy().serializeNBT());
+
+        if (this.getSprenID() != null) {
+            nbt.putUUID("sprenID", this.getSprenID());
+        }
+        return nbt;
+    }
+
+    @Override
+    public void load(CompoundTag surgebinding_data) {
+        this.setOrder(Order.getOrNull(surgebinding_data.getInt("order")));
+        this.ideal = (Ideal.get(surgebinding_data.getInt("ideal")));
+        this.storeBlade(ItemStack.of(surgebinding_data.getCompound("blade")));
+
+        if (surgebinding_data.contains("sprenID")) {
+            this.setSprenID(surgebinding_data.getUUID("sprenID"));
+        }
+    }
 
 }

@@ -1,19 +1,20 @@
 package com.legobmw99.stormlight.modules.powers.mixin;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Primarily handles the Cohesion effect of phasing through blocks. Inspired by Origins
  */
-@Mixin(AbstractBlock.AbstractBlockState.class)
+@Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class AbstractBlockstateMixin {
 
     @Shadow(remap = false)
@@ -34,14 +35,17 @@ public abstract class AbstractBlockstateMixin {
     @Shadow(remap = false)
     protected abstract BlockState asState();
 
-    @Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/IBlockReader;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/shapes/ISelectionContext;)Lnet/minecraft/util/math/shapes/VoxelShape;", cancellable = true, remap = false)
-    private void noClip(IBlockReader world, BlockPos pos, ISelectionContext context, CallbackInfoReturnable<VoxelShape> info) {
-        Entity entity = context.getEntity();
-        if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
-            boolean isAbove = isAbove(entity, getBlock().getCollisionShape(asState(), world, pos, context), pos);
-            if (getBlock() != Blocks.BEDROCK && (!isAbove || entity.isShiftKeyDown())) {
-                info.setReturnValue(VoxelShapes.empty());
-            }
+    @Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true, remap = false)
+    private void noClip(BlockGetter world, BlockPos pos, CollisionContext context, CallbackInfoReturnable<VoxelShape> info) {
+        if (context instanceof EntityCollisionContext ectx) {
+            ectx.getEntity().ifPresent(entity -> {
+                if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
+                    boolean isAbove = isAbove(entity, getBlock().getCollisionShape(asState(), world, pos, context), pos);
+                    if (getBlock() != Blocks.BEDROCK && (!isAbove || entity.isShiftKeyDown())) {
+                        info.setReturnValue(Shapes.empty());
+                    }
+                }
+            });
         }
     }
 
@@ -51,7 +55,7 @@ public abstract class AbstractBlockstateMixin {
     }
 
     @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true, remap = false)
-    private void preventPushOut(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+    private void preventPushOut(Level world, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
             ci.cancel();
         }

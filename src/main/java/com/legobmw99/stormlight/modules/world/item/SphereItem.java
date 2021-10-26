@@ -2,20 +2,20 @@ package com.legobmw99.stormlight.modules.world.item;
 
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.api.ISurgebindingData;
-import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
+import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Gemstone;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
 public class SphereItem extends Item {
 
@@ -30,8 +30,8 @@ public class SphereItem extends Item {
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-        return this.infused ? UseAction.DRINK : UseAction.NONE;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return this.infused ? UseAnim.DRINK : UseAnim.NONE;
     }
 
     @Override
@@ -40,23 +40,23 @@ public class SphereItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player player, InteractionHand hand) {
         if (infused && player.getCapability(SurgebindingCapability.PLAYER_CAP).filter(ISurgebindingData::isKnight).isPresent()) {
             player.startUsingItem(hand);
-            return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
+            return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
         } else {
-            return new ActionResult<>(ActionResultType.FAIL, player.getItemInHand(hand));
+            return new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(hand));
         }
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        if (entityLiving instanceof PlayerEntity && this.infused) {
-            PlayerEntity player = (PlayerEntity) entityLiving;
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
+        if (entityLiving instanceof Player && this.infused) {
+            Player player = (Player) entityLiving;
             // Don't consume items in creative mode
-            if (!player.abilities.instabuild) {
+            if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
-                player.inventory.add(new ItemStack(this.swap(), 1, stack.getTag()));
+                player.getInventory().add(new ItemStack(this.swap(), 1, stack.getTag()));
             }
 
             if (!worldIn.isClientSide) {

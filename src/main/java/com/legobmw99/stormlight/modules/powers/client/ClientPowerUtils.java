@@ -8,12 +8,12 @@ import com.legobmw99.stormlight.network.packets.SummonBladePacket;
 import com.legobmw99.stormlight.network.packets.SurgePacket;
 import com.legobmw99.stormlight.util.Surge;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.phys.*;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -31,22 +31,22 @@ public class ClientPowerUtils {
      * @return a RayTraceResult for the requested raytrace
      */
     @Nullable
-    protected static RayTraceResult getMouseOverExtended(float dist) {
+    protected static HitResult getMouseOverExtended(float dist) {
         float partialTicks = mc.getFrameTime();
-        RayTraceResult objectMouseOver = null;
+        HitResult objectMouseOver = null;
         Entity entity = mc.getCameraEntity();
         if (entity != null) {
             if (mc.level != null) {
                 objectMouseOver = entity.pick(dist, partialTicks, false);
-                Vector3d vec3d = entity.getEyePosition(partialTicks);
+                Vec3 vec3d = entity.getEyePosition(partialTicks);
                 double d1 = objectMouseOver.getLocation().distanceToSqr(vec3d);
 
-                Vector3d vec3d1 = entity.getViewVector(1.0F);
-                Vector3d vec3d2 = vec3d.add(vec3d1.x * dist, vec3d1.y * dist, vec3d1.z * dist);
-                AxisAlignedBB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(dist)).inflate(1.0D, 1.0D, 1.0D);
-                EntityRayTraceResult entityraytraceresult = ProjectileHelper.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (e) -> true, d1);
+                Vec3 vec3d1 = entity.getViewVector(1.0F);
+                Vec3 vec3d2 = vec3d.add(vec3d1.x * dist, vec3d1.y * dist, vec3d1.z * dist);
+                AABB axisalignedbb = entity.getBoundingBox().expandTowards(vec3d1.scale(dist)).inflate(1.0D, 1.0D, 1.0D);
+                EntityHitResult entityraytraceresult = ProjectileUtil.getEntityHitResult(entity, vec3d, vec3d2, axisalignedbb, (e) -> true, d1);
                 if (entityraytraceresult != null) {
-                    Vector3d vec3d3 = entityraytraceresult.getLocation();
+                    Vec3 vec3d3 = entityraytraceresult.getLocation();
                     double d2 = vec3d.distanceToSqr(vec3d3);
                     if (d2 < d1) {
                         objectMouseOver = entityraytraceresult;
@@ -59,21 +59,21 @@ public class ClientPowerUtils {
     }
 
     protected static Set<BlockPos> getEyePos(LivingEntity entity, float rangeX, float rangeY, float rangeZ) {
-        Vector3d pos = entity.position().add(0, entity.getEyeHeight(entity.getPose()), 0);
-        AxisAlignedBB cameraBox = new AxisAlignedBB(pos, pos);
+        Vec3 pos = entity.position().add(0, entity.getEyeHeight(entity.getPose()), 0);
+        AABB cameraBox = new AABB(pos, pos);
         cameraBox = cameraBox.inflate(rangeX, rangeY, rangeZ);
         return BlockPos.betweenClosedStream(cameraBox).map(BlockPos::immutable).collect(Collectors.toSet());
     }
 
     @Nullable
     protected static BlockPos getMouseBlockPos(float dist) {
-        RayTraceResult trace = getMouseOverExtended(dist);
+        HitResult trace = getMouseOverExtended(dist);
         if (trace != null) {
-            if (trace.getType() == RayTraceResult.Type.BLOCK) {
-                return ((BlockRayTraceResult) trace).getBlockPos();
+            if (trace.getType() == HitResult.Type.BLOCK) {
+                return ((BlockHitResult) trace).getBlockPos();
             }
-            if (trace.getType() == RayTraceResult.Type.ENTITY) {
-                return ((EntityRayTraceResult) trace).getEntity().blockPosition();
+            if (trace.getType() == HitResult.Type.ENTITY) {
+                return ((EntityHitResult) trace).getEntity().blockPosition();
             }
         }
         return null;
@@ -93,7 +93,7 @@ public class ClientPowerUtils {
      */
     protected static void acceptInput(final int action) {
         // todo repeating and range as part of surge
-        PlayerEntity player = mc.player;
+        Player player = mc.player;
         if (mc.screen == null) {
             if (player == null || !mc.isWindowActive()) {
                 return;

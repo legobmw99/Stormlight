@@ -6,14 +6,14 @@ import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.network.packets.SummonBladePacket;
 import com.legobmw99.stormlight.network.packets.SurgePacket;
 import com.legobmw99.stormlight.network.packets.SurgebindingDataPacket;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 
 public class Network {
 
@@ -39,7 +39,7 @@ public class Network {
         INSTANCE.sendToServer(msg);
     }
 
-    public static void sendTo(Object msg, ServerPlayerEntity player) {
+    public static void sendTo(Object msg, ServerPlayer player) {
         if (!(player instanceof FakePlayer)) {
             INSTANCE.sendTo(msg, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
         }
@@ -49,15 +49,15 @@ public class Network {
         INSTANCE.send(target, msg);
     }
 
-    public static void sync(PlayerEntity player) {
+    public static void sync(Player player) {
         player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> sync(data, player));
     }
 
-    public static void sync(ISurgebindingData cap, PlayerEntity player) {
+    public static void sync(ISurgebindingData cap, Player player) {
         sync(new SurgebindingDataPacket(cap, player), player);
     }
 
-    public static void sync(Object msg, PlayerEntity player) {
+    public static void sync(Object msg, Player player) {
         sendTo(msg, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player));
     }
 

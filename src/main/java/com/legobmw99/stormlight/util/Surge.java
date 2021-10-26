@@ -2,8 +2,8 @@ package com.legobmw99.stormlight.util;
 
 import com.legobmw99.stormlight.modules.powers.Surges;
 import com.legobmw99.stormlight.modules.powers.client.SurgeEffects;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
 
@@ -58,7 +58,7 @@ public enum Surge {
         return range;
     }
 
-    public void fire(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified) {
+    public void fire(ServerPlayer player, @Nullable BlockPos looking, boolean modified) {
         surge.fire(player, looking, modified);
     }
 
@@ -72,7 +72,7 @@ public enum Surge {
 
 @FunctionalInterface
 interface ISurgePower {
-    void fire(ServerPlayerEntity player, @Nullable BlockPos looking, boolean modified);
+    void fire(ServerPlayer player, @Nullable BlockPos looking, boolean modified);
 }
 
 @FunctionalInterface

@@ -8,11 +8,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,31 +21,31 @@ import java.util.function.Predicate;
 public class StormlightCommand {
 
 
-    private static Predicate<CommandSource> permissions(int level) {
+    private static Predicate<CommandSourceStack> permissions(int level) {
         return (player) -> player.hasPermission(level);
     }
 
-    private static Collection<ServerPlayerEntity> sender(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
+    private static Collection<ServerPlayer> sender(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         return Collections.singleton(ctx.getSource().getPlayerOrException());
     }
 
-    private static Collection<ServerPlayerEntity> targets(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
+    private static Collection<ServerPlayer> targets(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         return EntityArgument.getPlayers(ctx, "targets");
     }
 
 
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
-        LiteralArgumentBuilder<CommandSource> root = Commands.literal("stormlight").requires(permissions(0));
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("stormlight").requires(permissions(0));
 
-        LiteralArgumentBuilder<CommandSource> order = Commands.literal("order")
+        LiteralArgumentBuilder<CommandSourceStack> order = Commands.literal("order")
 
-                                                              .then(Commands
-                                                                            .literal("get")
-                                                                            .requires(permissions(0))
-                                                                            .executes(ctx -> getOrder(ctx, sender(ctx)))
-                                                                            .then(Commands
-                                                                                          .argument("targets", EntityArgument.players())
-                                                                                          .executes(ctx -> getOrder(ctx, targets(ctx)))))
+                                                                   .then(Commands
+                                                                                 .literal("get")
+                                                                                 .requires(permissions(0))
+                                                                                 .executes(ctx -> getOrder(ctx, sender(ctx)))
+                                                                                 .then(Commands
+                                                                                               .argument("targets", EntityArgument.players())
+                                                                                               .executes(ctx -> getOrder(ctx, targets(ctx)))))
 
 
                                                               .then(Commands
@@ -58,18 +58,18 @@ public class StormlightCommand {
                                                                                                         .argument("targets", EntityArgument.players())
                                                                                                         .executes(ctx -> setOrder(ctx, targets(ctx))))));
 
-        LiteralArgumentBuilder<CommandSource> ideal = Commands.literal("ideal")
+        LiteralArgumentBuilder<CommandSourceStack> ideal = Commands.literal("ideal")
 
-                                                              .then(Commands
-                                                                            .literal("get")
-                                                                            .requires(permissions(0))
-                                                                            .executes(ctx -> getIdeal(ctx, sender(ctx)))
-                                                                            .then(Commands
-                                                                                          .argument("targets", EntityArgument.players())
-                                                                                          .executes(ctx -> getIdeal(ctx, targets(ctx)))))
+                                                                   .then(Commands
+                                                                                 .literal("get")
+                                                                                 .requires(permissions(0))
+                                                                                 .executes(ctx -> getIdeal(ctx, sender(ctx)))
+                                                                                 .then(Commands
+                                                                                               .argument("targets", EntityArgument.players())
+                                                                                               .executes(ctx -> getIdeal(ctx, targets(ctx)))))
 
 
-                                                              .then(Commands
+                                                                   .then(Commands
                                                                             .literal("set")
                                                                             .requires(permissions(2))
                                                                             .then(Commands
@@ -87,13 +87,13 @@ public class StormlightCommand {
     }
 
 
-    private static int setOrder(CommandContext<CommandSource> ctx, Collection<ServerPlayerEntity> players) {
+    private static int setOrder(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> players) {
         int i = 0;
         Order order = ctx.getArgument("order", Order.class);
-        for (ServerPlayerEntity player : players) {
+        for (ServerPlayer player : players) {
             int success = player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
                 data.setOrder(order);
-                ctx.getSource().sendSuccess(new TranslationTextComponent("commands.stormlight.setorder", player.getDisplayName(), order.toString()), true);
+                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.setorder", player.getDisplayName(), order.toString()), true);
                 return 1;
             }).orElse(0);
             if (success == 1) {
@@ -105,13 +105,13 @@ public class StormlightCommand {
     }
 
 
-    private static int setIdeal(CommandContext<CommandSource> ctx, Collection<ServerPlayerEntity> players) {
+    private static int setIdeal(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> players) {
         int i = 0;
         Ideal ideal = ctx.getArgument("ideal", Ideal.class);
-        for (ServerPlayerEntity player : players) {
+        for (ServerPlayer player : players) {
             int success = player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
                 data.setIdeal(ideal);
-                ctx.getSource().sendSuccess(new TranslationTextComponent("commands.stormlight.setideal", player.getDisplayName(), ideal.toString()), true);
+                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.setideal", player.getDisplayName(), ideal.toString()), true);
                 return 1;
             }).orElse(0);
             if (success == 1) {
@@ -122,22 +122,22 @@ public class StormlightCommand {
         return i;
     }
 
-    private static int getOrder(CommandContext<CommandSource> ctx, Collection<ServerPlayerEntity> players) {
+    private static int getOrder(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> players) {
         int i = 0;
-        for (ServerPlayerEntity player : players) {
+        for (ServerPlayer player : players) {
             i += player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
-                ctx.getSource().sendSuccess(new TranslationTextComponent("commands.stormlight.getorder", player.getDisplayName(), data.getOrder().toString()), true);
+                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.getorder", player.getDisplayName(), data.getOrder().toString()), true);
                 return 1;
             }).orElse(0);
         }
         return i;
     }
 
-    private static int getIdeal(CommandContext<CommandSource> ctx, Collection<ServerPlayerEntity> players) {
+    private static int getIdeal(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> players) {
         int i = 0;
-        for (ServerPlayerEntity player : players) {
+        for (ServerPlayer player : players) {
             i += player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
-                ctx.getSource().sendSuccess(new TranslationTextComponent("commands.stormlight.getideal", player.getDisplayName(), data.getIdeal().toString()), true);
+                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.getideal", player.getDisplayName(), data.getIdeal().toString()), true);
                 return 1;
             }).orElse(0);
         }

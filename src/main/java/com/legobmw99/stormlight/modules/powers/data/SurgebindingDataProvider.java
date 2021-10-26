@@ -1,8 +1,8 @@
 package com.legobmw99.stormlight.modules.powers.data;
 
 import com.legobmw99.stormlight.api.ISurgebindingData;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SurgebindingDataProvider implements ICapabilitySerializable<CompoundNBT> {
+public class SurgebindingDataProvider implements ICapabilitySerializable<CompoundTag> {
 
     private final DefaultSurgebindingData data = new DefaultSurgebindingData();
     private final LazyOptional<ISurgebindingData> dataOptional = LazyOptional.of(() -> this.data);
@@ -18,24 +18,24 @@ public class SurgebindingDataProvider implements ICapabilitySerializable<Compoun
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return this.dataOptional.cast();
+        return SurgebindingCapability.PLAYER_CAP.orEmpty(cap, this.dataOptional.cast());
     }
 
 
     @Override
-    public CompoundNBT serializeNBT() {
+    public CompoundTag serializeNBT() {
         if (SurgebindingCapability.PLAYER_CAP == null) {
-            return new CompoundNBT();
+            return new CompoundTag();
         } else {
-            return (CompoundNBT) SurgebindingCapability.PLAYER_CAP.writeNBT(this.data, null);
+            return this.data.save();
         }
 
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag data) {
         if (SurgebindingCapability.PLAYER_CAP != null) {
-            SurgebindingCapability.PLAYER_CAP.readNBT(this.data, null, nbt);
+            this.data.load(data);
         }
     }
 

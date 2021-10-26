@@ -1,13 +1,13 @@
 package com.legobmw99.stormlight.modules.powers.mixin;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeBlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 public interface IForgeBlockStateMixin {
 
     @Shadow(remap = false)
-    default BlockState getBlockState() {
+    private BlockState self() {
         return null;
     }
 
@@ -30,13 +30,17 @@ public interface IForgeBlockStateMixin {
      * @reason unable to inject into default interface method
      */
     @Overwrite(remap = false)
-    default float getSlipperiness(IWorldReader world, BlockPos pos, @Nullable Entity entity) {
-        if ((entity instanceof PlayerEntity && ((PlayerEntity) entity).hasEffect(PowersSetup.SLICKING.get())) ||
-            (entity instanceof BoatEntity && entity.hasPassenger(PlayerEntity.class) &&
-             entity.getPassengers().stream().anyMatch(e -> e instanceof LivingEntity && ((LivingEntity) e).hasEffect(PowersSetup.SLICKING.get())))) {
+    default float getFriction(LevelReader world, BlockPos pos, @Nullable Entity entity) {
+        if ((entity instanceof Player && ((Player) entity).hasEffect(PowersSetup.SLICKING.get())) || (entity instanceof Boat && entity.hasPassenger(e -> e instanceof Player) &&
+                                                                                                      entity
+                                                                                                              .getPassengers()
+                                                                                                              .stream()
+                                                                                                              .anyMatch(e -> e instanceof LivingEntity &&
+                                                                                                                             ((LivingEntity) e).hasEffect(
+                                                                                                                                     PowersSetup.SLICKING.get())))) {
             return 0.989f;
         }
-        return getBlockState().getBlock().getSlipperiness(getBlockState(), world, pos, entity);
+        return self().getBlock().getFriction(self(), world, pos, entity);
 
     }
 }

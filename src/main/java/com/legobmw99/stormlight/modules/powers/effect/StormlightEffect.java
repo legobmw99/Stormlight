@@ -1,12 +1,12 @@
 package com.legobmw99.stormlight.modules.powers.effect;
 
 import com.legobmw99.stormlight.modules.powers.PowersSetup;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.EffectType;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
 
 public class StormlightEffect extends GenericEffect {
     public StormlightEffect(int color) {
-        super(EffectType.BENEFICIAL, color);
+        super(MobEffectCategory.BENEFICIAL, color);
     }
 
     @Override

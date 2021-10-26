@@ -4,51 +4,50 @@ import com.legobmw99.stormlight.api.ISurgebindingData;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.FlyingMovementController;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.IFlyingAnimal;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.datasync.IDataSerializer;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.FlyingPathNavigator;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class SprenEntity extends TameableEntity implements IFlyingAnimal {
+public class SprenEntity extends TamableAnimal implements FlyingAnimal {
 
-    public static final IDataSerializer<Enum<Order>> ORDER = new IDataSerializer<Enum<Order>>() {
+    public static final EntityDataSerializer<Enum<Order>> ORDER = new EntityDataSerializer<Enum<Order>>() {
 
-        public void write(PacketBuffer buf, Enum<Order> order) {
+        public void write(FriendlyByteBuf buf, Enum<Order> order) {
             buf.writeEnum(order);
         }
 
-        public Enum<Order> read(PacketBuffer buf) {
+        public Enum<Order> read(FriendlyByteBuf buf) {
             return buf.readEnum(Order.class);
         }
 
@@ -58,19 +57,19 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     };
 
-    private static final DataParameter<Enum<Order>> SPREN_TYPE = EntityDataManager.defineId(SprenEntity.class, ORDER);
+    private static final EntityDataAccessor<Enum<Order>> SPREN_TYPE = SynchedEntityData.defineId(SprenEntity.class, ORDER);
     private static final float[][] colors = {{0.737F, 0.960F, 0.945F}, {0.356F, 0.333F, 0.407F}, {0.819F, 0.819F, 0.819F}, {0.349F, 0.670F, 0.466F}, {0.913F, 0.945F, 0.945F},
                                              {0.337F, 0.286F, 0.396F}, {0.188F, 0.145F, 0.129F}, {0.815F, 0.588F, 0.207F}, {0.513F, 0.027F, 0.098F}, {0.380F, 0.352F, 0.886F}};
-    private static final BasicParticleType[] particles = {ParticleTypes.CLOUD, ParticleTypes.PORTAL, ParticleTypes.ASH, ParticleTypes.HAPPY_VILLAGER, ParticleTypes.END_ROD,
-                                                          ParticleTypes.ENCHANT, ParticleTypes.SQUID_INK, ParticleTypes.EFFECT, ParticleTypes.LAVA, ParticleTypes.SOUL};
+    private static final SimpleParticleType[] particles = {ParticleTypes.CLOUD, ParticleTypes.PORTAL, ParticleTypes.ASH, ParticleTypes.HAPPY_VILLAGER, ParticleTypes.END_ROD,
+                                                           ParticleTypes.ENCHANT, ParticleTypes.SQUID_INK, ParticleTypes.EFFECT, ParticleTypes.LAVA, ParticleTypes.SOUL};
 
     static {
-        DataSerializers.registerSerializer(ORDER);
+        EntityDataSerializers.registerSerializer(ORDER);
     }
 
     private int delay = 0;
 
-    public SprenEntity(World world, Entity other) {
+    public SprenEntity(Level world, Entity other) {
         this(null, world);
         if (other instanceof SprenEntity) {
             this.setSprenType(((SprenEntity) other).getSprenType());
@@ -78,24 +77,24 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     }
 
 
-    public SprenEntity(EntityType<SprenEntity> entityEntityType, World world) {
+    public SprenEntity(EntityType<SprenEntity> entityEntityType, Level world) {
         super(WorldSetup.SPREN_ENTITY, world);
 
         this.setTame(false);
-        this.moveControl = new FlyingMovementController(this, 20, true);
+        this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
-    public static AttributeModifierMap createAttributes() {
+    public static AttributeSupplier createAttributes() {
 
-        return MonsterEntity.createMonsterAttributes().add(Attributes.FLYING_SPEED, 0.4D).add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.MAX_HEALTH, 18.0D).build();
+        return Monster.createMonsterAttributes().add(Attributes.FLYING_SPEED, 0.4D).add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.MAX_HEALTH, 18.0D).build();
 
     }
 
-    public static <T extends MobEntity> boolean checkSprenSpawnRules(EntityType<T> tEntityType,
-                                                                     IServerWorld iServerWorld,
-                                                                     SpawnReason spawnReason,
-                                                                     BlockPos blockPos,
-                                                                     Random random) {
+    public static <T extends Mob> boolean checkSprenSpawnRules(EntityType<T> tEntityType,
+                                                               ServerLevelAccessor iServerWorld,
+                                                               MobSpawnType spawnReason,
+                                                               BlockPos blockPos,
+                                                               Random random) {
         //todo biomes
         return checkMobSpawnRules(tEntityType, iServerWorld, spawnReason, blockPos, random);
     }
@@ -109,10 +108,16 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     }
 
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData data, @Nullable CompoundNBT nbt) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData data, @Nullable CompoundTag nbt) {
         //todo biomes
         this.setSprenType(Order.getOrNull(this.random.nextInt(10)));
         return super.finalizeSpawn(world, difficulty, reason, data, nbt);
+    }
+
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {
+        return null;
     }
 
     @Override
@@ -122,7 +127,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     }
 
     @Override
-    public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
         return super.mobInteract(player, hand);
     }
 
@@ -137,7 +142,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     @Override
     public void aiStep() {
         if (this.level.isClientSide && delay == 0) {
-            AxisAlignedBB aabb = getBoundingBox();
+            AABB aabb = getBoundingBox();
             double x = aabb.minX + Math.random() * (aabb.maxX - aabb.minX);
             double y = aabb.minY + Math.random() * (aabb.maxY - aabb.minY);
             double z = aabb.minZ + Math.random() * (aabb.maxZ - aabb.minZ);
@@ -170,12 +175,12 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     @Override
     public boolean isInvulnerableTo(DamageSource in) {
-        return (!isTame() || in.equals(DamageSource.playerAttack((PlayerEntity) getOwner()))) && !in.equals(DamageSource.OUT_OF_WORLD);
+        return (!isTame() || in.equals(DamageSource.playerAttack((Player) getOwner()))) && !in.equals(DamageSource.OUT_OF_WORLD);
     }
 
     @Override
-    protected PathNavigator createNavigation(World world) {
-        FlyingPathNavigator flying = new FlyingPathNavigator(this, world);
+    protected PathNavigation createNavigation(Level world) {
+        FlyingPathNavigation flying = new FlyingPathNavigation(this, world);
         flying.setCanOpenDoors(true);
         flying.setCanFloat(true);
         flying.setCanPassDoors(true);
@@ -191,12 +196,12 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new PanicGoal(this, 1.25D));
-        this.goalSelector.addGoal(0, new SwimGoal(this));
-        this.goalSelector.addGoal(1, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(2, new FollowOwnerGoal(this, 1.0D, 5.0F, 1.0F, true));
         this.goalSelector.addGoal(2, new WaterAvoidingRandomFlyingGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new FollowMobGoal(this, 1.0D, 3.0F, 7.0F));
-        this.goalSelector.addGoal(4, new SitGoal(this));
+        this.goalSelector.addGoal(4, new SitWhenOrderedToGoal(this));
 
     }
 
@@ -207,19 +212,19 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compoundNBT) {
+    public void addAdditionalSaveData(CompoundTag compoundNBT) {
         super.addAdditionalSaveData(compoundNBT);
         compoundNBT.putByte("type", (byte) getSprenType().getIndex());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compoundNBT) {
+    public void readAdditionalSaveData(CompoundTag compoundNBT) {
         super.readAdditionalSaveData(compoundNBT);
         setSprenType(Order.getOrNull(compoundNBT.getByte("type")));
     }
 
     @Override
-    public boolean causeFallDamage(float p_225503_1_, float p_225503_2_) {
+    public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource) {
         return false;
     }
 
@@ -242,7 +247,7 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
 
     @Override
     public boolean isAlliedTo(Entity e) {
-        if (e instanceof PlayerEntity) {
+        if (e instanceof Player) {
             Order order = e.getCapability(SurgebindingCapability.PLAYER_CAP).map(ISurgebindingData::getOrder).orElse(null);
             return order != null && order == this.entityData.get(SPREN_TYPE);
         }
@@ -251,19 +256,13 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     }
 
     @Override
-    public boolean canBeLeashed(PlayerEntity p) {
+    public boolean canBeLeashed(Player p) {
         return false;
     }
 
     @Override
-    public boolean canMate(AnimalEntity p_70878_1_) {
+    public boolean canMate(Animal p_70878_1_) {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public AgeableEntity getBreedOffspring(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
-        return null;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -279,5 +278,10 @@ public class SprenEntity extends TameableEntity implements IFlyingAnimal {
     @OnlyIn(Dist.CLIENT)
     public float getBlue() {
         return colors[getSprenType().getIndex()][2];
+    }
+
+    @Override
+    public boolean isFlying() {
+        return false;
     }
 }
