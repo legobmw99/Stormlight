@@ -101,7 +101,7 @@ public class PowersEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingDamage(final LivingAttackEvent event) {
         if (event.getEntityLiving().hasEffect(PowersSetup.STORMLIGHT.get()) && (event.getSource() == DamageSource.IN_WALL || event.getSource() == DamageSource.DROWN)) {
-            if (EffectHelper.drainStormlight(event.getEntityLiving(), 200)) {
+            if (EffectHelper.drainStormlight(event.getEntityLiving(), 4)) {
                 event.setCanceled(true);
             }
         }

@@ -1,9 +1,9 @@
 package com.legobmw99.stormlight.modules.powers.client;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 public class PowersClientSetup {

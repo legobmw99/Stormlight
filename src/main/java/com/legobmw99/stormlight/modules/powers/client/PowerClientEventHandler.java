@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class PowerClientEventHandler {
 
     // Heavily inspired by Origins, but not a mixin
     @SubscribeEvent
-    public static void renderLast(final RenderWorldLastEvent event) {
+    public static void renderLast(final RenderLevelLastEvent event) {
 
         if (mc.player != null && mc.player.hasEffect(PowersSetup.COHESION.get())) {
             Set<BlockPos> eyePositions = ClientPowerUtils.getEyePos(mc.player, 0.25F, 0.05F, 0.25F);

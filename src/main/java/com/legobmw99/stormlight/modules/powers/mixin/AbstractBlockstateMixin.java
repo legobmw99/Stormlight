@@ -38,15 +38,16 @@ public abstract class AbstractBlockstateMixin {
     @Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true, remap = false)
     private void noClip(BlockGetter world, BlockPos pos, CollisionContext context, CallbackInfoReturnable<VoxelShape> info) {
         if (context instanceof EntityCollisionContext ectx) {
-            ectx.getEntity().ifPresent(entity -> {
-                if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
-                    boolean isAbove = isAbove(entity, getBlock().getCollisionShape(asState(), world, pos, context), pos);
-                    if (getBlock() != Blocks.BEDROCK && (!isAbove || entity.isShiftKeyDown())) {
-                        info.setReturnValue(Shapes.empty());
-                    }
+            Entity entity = ectx.getEntity();
+            if (entity instanceof LivingEntity && ((LivingEntity) entity).hasEffect(PowersSetup.COHESION.get())) {
+                boolean isAbove = isAbove(entity, getBlock().getCollisionShape(asState(), world, pos, context), pos);
+                if (getBlock() != Blocks.BEDROCK && (!isAbove || entity.isShiftKeyDown())) {
+                    info.setReturnValue(Shapes.empty());
                 }
-            });
+            }
+
         }
+
     }
 
     @Unique

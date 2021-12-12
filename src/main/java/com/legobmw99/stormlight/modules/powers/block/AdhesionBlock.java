@@ -38,6 +38,7 @@ public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
 
 
     public AdhesionBlock() {
+        // TODO make more line vines?
         super(BlockBehaviour.Properties
                       .of(Material.TOP_SNOW)
                       .lightLevel((d) -> 15)

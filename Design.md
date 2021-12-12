@@ -35,11 +35,19 @@ Gems are made from glass and a diamond or emerald. Creates tiny spheres (8?).
 ### Becoming a Surgebinder
 Difficult. Perhaps requires certain achievements, as a kind of skill-tree (Oaths). Easy way out is to say Honorblades only.
 ### Spren
- * Tiny, cube entities of different colors. Spawn randomly? Need more thought, but probably will be "tameable" through something heroic, a nether star or something
+
+* Tiny, cube entities of different colors. Spawn randomly? Need more thought, but probably will be "tameable" through something heroic, a nether star or something
+
 ### Implementation
+
 Two options:
+
 1. Easy. Honorblades only, stormlight is a status effect
 2. Harder. Bonding and some sort of NBT data. A Capability with several fields - a Type field [1-10], power [0-5] and blade stored [0-1] at least.
 
-
 Progression:
+
+ArgetIstalri#5525:
+> This is gonna sound incredibly random, but have you ever played the 1.7.10 Naruto mod?
+> Essentially, in that mod, there’s a system for the sharingan. To “evolve” it, you have to wait a randomized time between 24 and 48 in-game hours. Obviously you could make this shorter, but the point is that it’s a “realistic” time to wait before you can evolve it. Once the time is reached you have to find a npc spawned at random coordinates, you could probably do the same with a spren npc spawned within 5-10 blocks of the player. The spren could give them a task to represent an oath, and then once the task is completed the oath is complete
+> Well, in the mod the task was just to defeat the npc that spawned. For the mod, you could probably make the tasks themed around each order. So like, Bondsmith would need to get Hero of the Village or sell a certain amount of times to Villagers, while a Windrunner has to kill 5 zombies while a Villager is near them

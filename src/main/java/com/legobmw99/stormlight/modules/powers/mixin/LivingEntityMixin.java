@@ -30,7 +30,7 @@ public abstract class LivingEntityMixin extends Entity {
     public void doCohesionClimb(CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValue()) {
             LivingEntity entity = (LivingEntity) (Entity) this;
-            if (entity.hasEffect(PowersSetup.STICKING.get()) && entity.level.getBlockCollisions(entity, entity.getBoundingBox().inflate(0.15, 0, 0.15)).findFirst().isPresent()) {
+            if (entity.hasEffect(PowersSetup.STICKING.get()) && entity.level.getBlockCollisions(entity, entity.getBoundingBox().inflate(0.15, 0, 0.15)).iterator().hasNext()) {
                 this.lastClimbablePos = Optional.of(blockPosition());
                 info.setReturnValue(true);
             }
