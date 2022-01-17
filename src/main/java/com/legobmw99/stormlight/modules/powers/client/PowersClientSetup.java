@@ -13,8 +13,10 @@ public class PowersClientSetup {
 
 
     public static void clientInit(final FMLClientSetupEvent e) {
-        MinecraftForge.EVENT_BUS.register(PowerClientEventHandler.class);
-        initKeybindings();
+        e.enqueueWork(() -> {
+            MinecraftForge.EVENT_BUS.register(PowerClientEventHandler.class);
+            initKeybindings();
+        });
     }
 
 

@@ -2,7 +2,6 @@ package com.legobmw99.stormlight.modules.world.entity;
 
 import com.legobmw99.stormlight.api.ISurgebindingData;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
-import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -77,8 +76,8 @@ public class SprenEntity extends TamableAnimal implements FlyingAnimal {
     }
 
 
-    public SprenEntity(EntityType<SprenEntity> entityEntityType, Level world) {
-        super(WorldSetup.SPREN_ENTITY, world);
+    public SprenEntity(EntityType<? extends TamableAnimal> entityEntityType, Level world) {
+        super(entityEntityType, world);
 
         this.setTame(false);
         this.moveControl = new FlyingMoveControl(this, 20, true);

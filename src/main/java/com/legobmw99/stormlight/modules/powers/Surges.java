@@ -148,6 +148,12 @@ public class Surges {
             }
 
         } else { // Basic lashing
+            // TODO set nogravity, store a vector (? where) and accelerate in that direction.
+            // accelerate based on effect level
+            // will also let you yeet other entities?
+            //   - if shift held and entity hit is a living entitiy?
+            //   - mark entity (give effect and glowing)
+            //   - on next click, set vector
             // TODO look into ENTITY_GRAVITY
             //            if (!shiftHeld) {
             //                EffectHelper.increasePermanentEffect(player, PowersSetup.GRAVITATION.get(), 6);

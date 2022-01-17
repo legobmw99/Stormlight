@@ -7,7 +7,6 @@ import com.legobmw99.stormlight.modules.powers.command.StormlightCommand;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +38,6 @@ public class Stormlight {
         instance = this;
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::clientInit);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(EntityType.class, WorldSetup::onEntityRegister);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::onEntityAttribute);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(SurgebindingCapability::registerCapability);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::registerEntityModels);
@@ -67,8 +65,7 @@ public class Stormlight {
 
     public static void init(final FMLCommonSetupEvent e) {
         PowersSetup.init(e);
-        Network.registerPackets();
+        e.enqueueWork(Network::registerPackets);
     }
-
 
 }

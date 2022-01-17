@@ -39,9 +39,12 @@ public class PowersSetup {
 
 
     public static void init(final FMLCommonSetupEvent e) {
-        ArgumentTypes.register("stormlight_ideal", StormlightArgType.IdealType.class, new EmptyArgumentSerializer<>(() -> StormlightArgType.IdealType.INSTANCE));
-        ArgumentTypes.register("stormlight_order", StormlightArgType.OrderType.class, new EmptyArgumentSerializer<>(() -> StormlightArgType.OrderType.INSTANCE));
+        e.enqueueWork(() -> {
+            ArgumentTypes.register("stormlight_ideal", StormlightArgType.IdealType.class, new EmptyArgumentSerializer<>(() -> StormlightArgType.IdealType.INSTANCE));
+            ArgumentTypes.register("stormlight_order", StormlightArgType.OrderType.class, new EmptyArgumentSerializer<>(() -> StormlightArgType.OrderType.INSTANCE));
 
-        MinecraftForge.EVENT_BUS.register(PowersEventHandler.class);
+            MinecraftForge.EVENT_BUS.register(PowersEventHandler.class);
+        });
+
     }
 }
