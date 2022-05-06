@@ -43,6 +43,7 @@ import java.util.function.Function;
 public class Surges {
 
     private static final Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+    private static final Map<Block, Block> transformableBlocks = buildBlockMap();
 
     private static boolean isBlockSafe(BlockPos pos, Level level) {
         return pos != null && level.isLoaded(pos) && !level.getBlockState(pos).isAir();
@@ -57,8 +58,6 @@ public class Surges {
         }
         return null;
     }
-
-    private static final Map<Block, Block> transformableBlocks = buildBlockMap();
 
     private static Map<Block, Block> buildBlockMap() {
         Map<Block, Block> map = new HashMap<Block, Block>();
@@ -213,8 +212,8 @@ public class Surges {
                     }
 
                     if (EffectHelper.drainStormlight(player, 20)) {
-                        FallingBlockEntity entity = new FallingBlockEntity(player.getLevel(), pos.getX() + .5, pos.getY() - 0.009, pos.getZ() + .5,
-                                                                           ((BlockItem) player.getMainHandItem().getItem()).getBlock().defaultBlockState());
+                        FallingBlockEntity entity = FallingBlockEntity.fall(player.getLevel(), pos,
+                                                                            ((BlockItem) player.getMainHandItem().getItem()).getBlock().defaultBlockState());
                         entity.dropItem = false;
                         entity.setNoGravity(true);
                         entity.noPhysics = true;

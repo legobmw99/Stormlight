@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,8 +37,8 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(at = @At("RETURN"), method = "canStandOnFluid(Lnet/minecraft/world/level/material/Fluid;)Z", cancellable = true, remap = false)
-    public void doTensionStand(Fluid fluid, CallbackInfoReturnable<Boolean> info) {
+    @Inject(at = @At("RETURN"), method = "canStandOnFluid(Lnet/minecraft/world/level/material/FluidState;)Z", cancellable = true, remap = false)
+    public void doTensionStand(FluidState fluid, CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValue()) {
             LivingEntity entity = (LivingEntity) (Entity) this;
             if (entity.hasEffect(PowersSetup.TENSION.get())) {

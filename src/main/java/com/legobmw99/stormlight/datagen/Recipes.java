@@ -7,7 +7,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -66,7 +66,7 @@ public class Recipes extends RecipeProvider {
         buildShaped(consumer, result, 1, criterion, lines);
     }
 
-    protected void add(char c, Tag.Named<Item> itemTag) {
+    protected void add(char c, TagKey<Item> itemTag) {
         this.defaultIngredients.put(c, Ingredient.of(itemTag));
     }
 
