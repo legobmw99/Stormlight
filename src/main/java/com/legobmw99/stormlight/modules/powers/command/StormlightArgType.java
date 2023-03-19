@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class StormlightArgType {
         public static final OrderType INSTANCE = new OrderType();
         private static final Set<String> types = Arrays.stream(Order.values()).map(Order::getName).collect(Collectors.toSet());
         private static final DynamicCommandExceptionType unknown_power = new DynamicCommandExceptionType(
-                o -> new TranslatableComponent("commands.stormlight.unrecognized_order", o));
+                o -> Component.translatable("commands.stormlight.unrecognized_order", o));
 
         @Override
         public Order parse(StringReader reader) throws CommandSyntaxException {
@@ -53,7 +53,7 @@ public class StormlightArgType {
         public static final IdealType INSTANCE = new IdealType();
         private static final Set<String> types = Arrays.stream(Ideal.values()).map(Ideal::getName).collect(Collectors.toSet());
         private static final DynamicCommandExceptionType unknown_power = new DynamicCommandExceptionType(
-                o -> new TranslatableComponent("commands.stormlight.unrecognized_ideal", o));
+                o -> Component.translatable("commands.stormlight.unrecognized_ideal", o));
 
 
         @Override

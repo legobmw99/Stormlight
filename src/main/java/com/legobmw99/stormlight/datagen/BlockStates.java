@@ -3,8 +3,9 @@ package com.legobmw99.stormlight.datagen;
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.powers.block.AdhesionBlock;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -15,7 +16,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import javax.annotation.Nonnull;
 
 public class BlockStates extends BlockStateProvider {
-    public BlockStates(DataGenerator gen, ExistingFileHelper exFileHelper) {
+    public BlockStates(PackOutput gen, ExistingFileHelper exFileHelper) {
         super(gen, Stormlight.MODID, exFileHelper);
     }
 
@@ -28,7 +29,8 @@ public class BlockStates extends BlockStateProvider {
         ModelFile layer = models()
                 .withExistingParent("stormlight:adhesion_light", modLoc("block/light"))
                 .texture("texture", modLoc("block/adhesion_light"))
-                .texture("particle", blockTexture(Blocks.SEA_LANTERN));
+                .texture("particle", blockTexture(Blocks.SEA_LANTERN))
+                .renderType("translucent");
 
         VariantBlockStateBuilder builder = getVariantBuilder(WorldSetup.ADHESION_BLOCK.get());
 

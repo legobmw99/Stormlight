@@ -7,7 +7,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -63,7 +62,7 @@ public class ShardbladeItem extends SwordItem {
     private final Order order;
 
     public ShardbladeItem(Order order) {
-        super(SHARD, ATTACK_DAMAGE, ATTACK_SPEED, Stormlight.createStandardItemProperties().stacksTo(1).fireResistant());
+        super(SHARD, ATTACK_DAMAGE, ATTACK_SPEED, new Properties().stacksTo(1).fireResistant());
         this.order = order;
 
     }
@@ -87,7 +86,7 @@ public class ShardbladeItem extends SwordItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        MutableComponent lore = new TranslatableComponent("item.stormlight.shardblade.lore");
+        MutableComponent lore = Component.translatable("item.stormlight.shardblade.lore");
         lore.setStyle(lore.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.AQUA)));
         tooltip.add(lore);
     }

@@ -24,7 +24,7 @@ public class SphereItem extends Item {
     private final Gemstone setting;
 
     public SphereItem(boolean infused, Gemstone setting) {
-        super(Stormlight.createStandardItemProperties().stacksTo(infused ? 1 : 4));
+        super(new Properties().stacksTo(infused ? 1 : 4));
         this.infused = infused;
         this.setting = setting;
 

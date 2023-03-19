@@ -13,6 +13,7 @@ import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,7 +37,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class SprenEntity extends TamableAnimal implements FlyingAnimal {
 
@@ -93,7 +93,7 @@ public class SprenEntity extends TamableAnimal implements FlyingAnimal {
                                                                ServerLevelAccessor iServerWorld,
                                                                MobSpawnType spawnReason,
                                                                BlockPos blockPos,
-                                                               Random random) {
+                                                               RandomSource random) {
         //todo biomes
         return checkMobSpawnRules(tEntityType, iServerWorld, spawnReason, blockPos, random);
     }
@@ -174,7 +174,7 @@ public class SprenEntity extends TamableAnimal implements FlyingAnimal {
 
     @Override
     public boolean isInvulnerableTo(DamageSource in) {
-        return (!isTame() || in.equals(DamageSource.playerAttack((Player) getOwner()))) && !in.equals(DamageSource.OUT_OF_WORLD);
+        return (!isTame() || in.equals(this.level.damageSources().playerAttack((Player) getOwner()))) && !in.equals(this.level.damageSources().outOfWorld());
     }
 
     @Override

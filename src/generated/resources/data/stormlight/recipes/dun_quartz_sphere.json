@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "forge:glass"
+    },
+    "q": {
+      "item": "minecraft:quartz"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gqg",
+    "ggg"
+  ],
+  "result": {
+    "count": 4,
+    "item": "stormlight:dun_quartz_sphere"
+  },
+  "show_notification": true
+}

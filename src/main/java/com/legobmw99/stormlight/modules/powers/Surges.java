@@ -9,13 +9,12 @@ import com.legobmw99.stormlight.network.packets.SurgePacket;
 import com.legobmw99.stormlight.util.Surge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +22,6 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -42,7 +40,7 @@ import java.util.function.Function;
 
 public class Surges {
 
-    private static final Direction DIRECTIONS[] = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+    private static final Direction[] DIRECTIONS = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
     private static final Map<Block, Block> transformableBlocks = buildBlockMap();
 
     private static boolean isBlockSafe(BlockPos pos, Level level) {
@@ -109,7 +107,7 @@ public class Surges {
 
     public static void cohesion(ServerPlayer player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
-            player.openMenu(new SimpleMenuProvider((i, inv, oplayer) -> new PortableStonecutterContainer(i, inv), new TranslatableComponent("surge.cohesion.stoneshaping")));
+            player.openMenu(new SimpleMenuProvider((i, inv, oplayer) -> new PortableStonecutterContainer(i, inv), Component.translatable("surge.cohesion.stoneshaping")));
         } else {
             EffectHelper.toggleEffect(player, PowersSetup.COHESION.get());
         }
@@ -128,8 +126,8 @@ public class Surges {
             if (EffectHelper.drainStormlight(player, 400)) {
                 player
                         .getLevel()
-                        .explode(player, DamageSource.MAGIC, null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true,
-                                 shiftHeld ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE);
+                        .explode(player, player.level.damageSources().magic(), null, pos.getX(), pos.getY(), pos.getZ(), 1.5F, true,
+                                 shiftHeld ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
             }
         }
     }
@@ -212,13 +210,18 @@ public class Surges {
                     }
 
                     if (EffectHelper.drainStormlight(player, 20)) {
+                        // TODO consider using DisplayBlock?
                         FallingBlockEntity entity = FallingBlockEntity.fall(player.getLevel(), pos,
                                                                             ((BlockItem) player.getMainHandItem().getItem()).getBlock().defaultBlockState());
                         entity.dropItem = false;
+                        entity.noPhysics = true;
                         entity.setNoGravity(true);
                         entity.noPhysics = true;
                         entity.time = -1200;
-                        player.getLevel().addFreshEntity(entity);
+                        entity.setDeltaMovement(Vec3.ZERO);
+                        entity.setPos(Vec3.atBottomCenterOf(pos));
+                        entity.hurtMarked = true;
+
                     }
                 } else if (player.getMainHandItem().isEmpty()) {
                     // remove entity if there
@@ -240,8 +243,7 @@ public class Surges {
         } else { // Growth
             if (isBlockSafe(pos, player.level)) {
                 BlockState state = player.level.getBlockState(pos);
-                if (state.getBlock() instanceof BonemealableBlock) {
-                    BonemealableBlock igrowable = (BonemealableBlock) state.getBlock();
+                if (state.getBlock() instanceof BonemealableBlock igrowable) {
                     if (igrowable.isValidBonemealTarget(player.level, pos, state, player.level.isClientSide)) {
                         if (igrowable.isBonemealSuccess(player.level, player.level.random, pos, state)) {
                             if (EffectHelper.drainStormlight(player, 100)) {
@@ -260,7 +262,7 @@ public class Surges {
 
     public static void transformation(ServerPlayer player, @Nullable BlockPos pos, boolean shiftHeld) {
         if (shiftHeld) {
-            player.openMenu(new SimpleMenuProvider((i, inv, oplayer) -> new PortableCraftingContainer(i, inv), new TranslatableComponent("surge.cohesion.soulcasting")));
+            player.openMenu(new SimpleMenuProvider((i, inv, oplayer) -> new PortableCraftingContainer(i, inv), Component.translatable("surge.cohesion.soulcasting")));
         } else {
             if (isBlockSafe(pos, player.level)) {
                 Block block = player.level.getBlockState(pos).getBlock();

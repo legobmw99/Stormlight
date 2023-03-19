@@ -3,8 +3,9 @@ package com.legobmw99.stormlight.datagen;
 import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.TagKey;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +26,7 @@ public class Recipes extends RecipeProvider {
 
     private final Map<Character, Ingredient> defaultIngredients = new HashMap<>();
 
-    public Recipes(DataGenerator generatorIn) {
+    public Recipes(PackOutput generatorIn) {
         super(generatorIn);
         add('g', Tags.Items.GLASS);
         add('d', Items.DIAMOND);
@@ -33,19 +35,19 @@ public class Recipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-        buildShaped(consumer, WorldSetup.DUN_SPHERES.get(0).get(), 4, Items.DIAMOND, "ggg", "gdg", "ggg");
-        buildShaped(consumer, WorldSetup.DUN_SPHERES.get(1).get(), 4, Items.EMERALD, "ggg", "geg", "ggg");
-        buildShaped(consumer, WorldSetup.DUN_SPHERES.get(2).get(), 4, Items.QUARTZ, "ggg", "gqg", "ggg");
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+
+        buildShaped(consumer, RecipeCategory.MISC, WorldSetup.DUN_SPHERES.get(0).get(), 4, Items.DIAMOND, "ggg", "gdg", "ggg");
+        buildShaped(consumer, RecipeCategory.MISC, WorldSetup.DUN_SPHERES.get(1).get(), 4, Items.EMERALD, "ggg", "geg", "ggg");
+        buildShaped(consumer, RecipeCategory.MISC, WorldSetup.DUN_SPHERES.get(2).get(), 4, Items.QUARTZ, "ggg", "gqg", "ggg");
     }
 
+    protected void buildShaped(Consumer<FinishedRecipe> consumer, RecipeCategory cat, ItemLike result, int count, Item criterion, String... lines) {
+        Stormlight.LOGGER.debug("Creating Shaped Recipe for " + ForgeRegistries.ITEMS.getKey(result.asItem()));
 
-    protected void buildShaped(Consumer<FinishedRecipe> consumer, ItemLike result, int count, Item criterion, String... lines) {
-        Stormlight.LOGGER.debug("Creating Shaped Recipe for " + result.asItem().getRegistryName());
+        ShapedRecipeBuilder builder = ShapedRecipeBuilder.shaped(cat, result, count);
 
-        ShapedRecipeBuilder builder = ShapedRecipeBuilder.shaped(result, count);
-
-        builder.unlockedBy("has_" + criterion.getRegistryName().getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(criterion));
+        builder.unlockedBy("has_" + ForgeRegistries.ITEMS.getKey(criterion).getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(criterion));
 
         Set<Character> characters = new HashSet<>();
         for (String line : lines) {
@@ -62,9 +64,6 @@ public class Recipes extends RecipeProvider {
         builder.save(consumer);
     }
 
-    protected void buildShaped(Consumer<FinishedRecipe> consumer, ItemLike result, Item criterion, String... lines) {
-        buildShaped(consumer, result, 1, criterion, lines);
-    }
 
     protected void add(char c, TagKey<Item> itemTag) {
         this.defaultIngredients.put(c, Ingredient.of(itemTag));
@@ -78,8 +77,5 @@ public class Recipes extends RecipeProvider {
         this.defaultIngredients.put(c, ingredient);
     }
 
-    @Override
-    public String getName() {
-        return "Stormlight recipes";
-    }
+
 }

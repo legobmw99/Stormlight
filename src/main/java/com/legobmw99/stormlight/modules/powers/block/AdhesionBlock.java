@@ -4,6 +4,7 @@ import com.legobmw99.stormlight.modules.powers.PowersSetup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
@@ -27,6 +28,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Random;
 
+// TODO look into GlowLichen and MultifaceBlock
 public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
 
     private static final VoxelShape TOP = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 0.5D, 16.0D);
@@ -38,12 +40,11 @@ public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
 
 
     public AdhesionBlock() {
-        // TODO make more line vines?
         super(BlockBehaviour.Properties
                       .of(Material.TOP_SNOW)
                       .lightLevel((d) -> 15)
                       .jumpFactor(0.0F)
-                      .noDrops()
+                      .noLootTable()
                       .strength(-1.0F, 3600000.0F)
                       .randomTicks()
                       .speedFactor(0.0F)
@@ -137,8 +138,9 @@ public class AdhesionBlock extends FaceAttachedHorizontalDirectionalBlock {
     }
 
 
+
     @Override
-    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         super.randomTick(state, world, pos, random);
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
     }

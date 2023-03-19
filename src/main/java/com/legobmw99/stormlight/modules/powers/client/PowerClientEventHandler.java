@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class PowerClientEventHandler {
     private static final Map<BlockPos, BlockState> savedStates = new HashMap<>();
 
     @SubscribeEvent
-    public static void onKeyInput(final InputEvent.KeyInputEvent event) {
+    public static void onKeyInput(final InputEvent.Key event) {
         if (event.getKey() == PowersClientSetup.firstSurge.getKey().getValue() || event.getKey() == PowersClientSetup.secondSurge.getKey().getValue() ||
             event.getKey() == PowersClientSetup.blade.getKey().getValue()) {
             ClientPowerUtils.acceptInput(event.getAction());
@@ -33,15 +33,18 @@ public class PowerClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onMouseInput(final InputEvent.MouseInputEvent event) {
+    public static void onMouseInput(final InputEvent.MouseButton event) {
         // todo investigate
         // ClientPowerUtils.acceptInput(event.getAction());
-
     }
 
     // Heavily inspired by Origins, but not a mixin
     @SubscribeEvent
-    public static void renderLast(final RenderLevelLastEvent event) {
+    public static void renderLast(final RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+            return;
+        }
+
 
         if (mc.player != null && mc.player.hasEffect(PowersSetup.COHESION.get())) {
             Set<BlockPos> eyePositions = ClientPowerUtils.getEyePos(mc.player, 0.25F, 0.05F, 0.25F);

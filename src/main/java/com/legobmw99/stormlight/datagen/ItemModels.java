@@ -5,15 +5,17 @@ import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Gemstone;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ItemModels extends ItemModelProvider {
-    public ItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
+    public ItemModels(PackOutput generator, ExistingFileHelper existingFileHelper) {
         super(generator, Stormlight.MODID, existingFileHelper);
     }
 
@@ -33,24 +35,24 @@ public class ItemModels extends ItemModelProvider {
 
         }
 
-        getBuilder(WorldSetup.SPREN_SPAWN_EGG.get().getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/template_spawn_egg")));
+        getBuilder(ForgeRegistries.ITEMS.getKey(WorldSetup.SPREN_SPAWN_EGG.get()).getPath()).parent(getExistingFile(mcLoc("item/template_spawn_egg")));
 
 
     }
 
     public void itemGenerated(Item item, String texture) {
-        Stormlight.LOGGER.debug("Creating Item Model for " + item.getRegistryName());
-        getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", modLoc(texture));
+        Stormlight.LOGGER.debug("Creating Item Model for " + ForgeRegistries.ITEMS.getKey(item));
+        getBuilder(ForgeRegistries.ITEMS.getKey(item).getPath()).parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", modLoc(texture));
     }
 
     public void parentedBlock(Block block, String model) {
-        Stormlight.LOGGER.debug("Creating Item Model for " + block.getRegistryName());
-        getBuilder(block.getRegistryName().getPath()).parent(new ModelFile.UncheckedModelFile(modLoc(model)));
+        Stormlight.LOGGER.debug("Creating Item Model for " + ForgeRegistries.BLOCKS.getKey(block));
+        getBuilder(ForgeRegistries.BLOCKS.getKey(block).getPath()).parent(new ModelFile.UncheckedModelFile(modLoc(model)));
     }
 
     public void itemHandheld(Item item, String texture) {
-        Stormlight.LOGGER.debug("Creating Item Model for " + item.getRegistryName());
-        getBuilder(item.getRegistryName().getPath()).parent(getExistingFile(mcLoc("item/handheld"))).texture("layer0", modLoc(texture));
+        Stormlight.LOGGER.debug("Creating Item Model for " + ForgeRegistries.ITEMS.getKey(item));
+        getBuilder(ForgeRegistries.ITEMS.getKey(item).getPath()).parent(getExistingFile(mcLoc("item/handheld"))).texture("layer0", modLoc(texture));
     }
 
     public void itemShardblade(Order order, String texture) {

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "d": {
+      "item": "minecraft:diamond"
+    },
+    "g": {
+      "tag": "forge:glass"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gdg",
+    "ggg"
+  ],
+  "result": {
+    "count": 4,
+    "item": "stormlight:dun_diamond_sphere"
+  },
+  "show_notification": true
+}

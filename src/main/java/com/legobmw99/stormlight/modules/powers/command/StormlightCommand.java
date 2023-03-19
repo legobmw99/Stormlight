@@ -11,7 +11,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
@@ -48,15 +48,15 @@ public class StormlightCommand {
                                                                                                .executes(ctx -> getOrder(ctx, targets(ctx)))))
 
 
-                                                              .then(Commands
-                                                                            .literal("set")
-                                                                            .requires(permissions(2))
-                                                                            .then(Commands
-                                                                                          .argument("order", StormlightArgType.OrderType.INSTANCE)
-                                                                                          .executes(ctx -> setOrder(ctx, sender(ctx)))
-                                                                                          .then(Commands
-                                                                                                        .argument("targets", EntityArgument.players())
-                                                                                                        .executes(ctx -> setOrder(ctx, targets(ctx))))));
+                                                                   .then(Commands
+                                                                                 .literal("set")
+                                                                                 .requires(permissions(2))
+                                                                                 .then(Commands
+                                                                                               .argument("order", StormlightArgType.OrderType.INSTANCE)
+                                                                                               .executes(ctx -> setOrder(ctx, sender(ctx)))
+                                                                                               .then(Commands
+                                                                                                             .argument("targets", EntityArgument.players())
+                                                                                                             .executes(ctx -> setOrder(ctx, targets(ctx))))));
 
         LiteralArgumentBuilder<CommandSourceStack> ideal = Commands.literal("ideal")
 
@@ -70,14 +70,14 @@ public class StormlightCommand {
 
 
                                                                    .then(Commands
-                                                                            .literal("set")
-                                                                            .requires(permissions(2))
-                                                                            .then(Commands
-                                                                                          .argument("ideal", StormlightArgType.IdealType.INSTANCE)
-                                                                                          .executes(ctx -> setIdeal(ctx, sender(ctx)))
-                                                                                          .then(Commands
-                                                                                                        .argument("targets", EntityArgument.players())
-                                                                                                        .executes(ctx -> setIdeal(ctx, targets(ctx))))));
+                                                                                 .literal("set")
+                                                                                 .requires(permissions(2))
+                                                                                 .then(Commands
+                                                                                               .argument("ideal", StormlightArgType.IdealType.INSTANCE)
+                                                                                               .executes(ctx -> setIdeal(ctx, sender(ctx)))
+                                                                                               .then(Commands
+                                                                                                             .argument("targets", EntityArgument.players())
+                                                                                                             .executes(ctx -> setIdeal(ctx, targets(ctx))))));
 
 
         root.then(order);
@@ -93,7 +93,7 @@ public class StormlightCommand {
         for (ServerPlayer player : players) {
             int success = player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
                 data.setOrder(order);
-                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.setorder", player.getDisplayName(), order.toString()), true);
+                ctx.getSource().sendSuccess(Component.translatable("commands.stormlight.setorder", player.getDisplayName(), order.toString()), true);
                 return 1;
             }).orElse(0);
             if (success == 1) {
@@ -111,7 +111,7 @@ public class StormlightCommand {
         for (ServerPlayer player : players) {
             int success = player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
                 data.setIdeal(ideal);
-                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.setideal", player.getDisplayName(), ideal.toString()), true);
+                ctx.getSource().sendSuccess(Component.translatable("commands.stormlight.setideal", player.getDisplayName(), ideal.toString()), true);
                 return 1;
             }).orElse(0);
             if (success == 1) {
@@ -126,7 +126,7 @@ public class StormlightCommand {
         int i = 0;
         for (ServerPlayer player : players) {
             i += player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
-                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.getorder", player.getDisplayName(), data.getOrder().toString()), true);
+                ctx.getSource().sendSuccess(Component.translatable("commands.stormlight.getorder", player.getDisplayName(), data.getOrder().toString()), true);
                 return 1;
             }).orElse(0);
         }
@@ -137,7 +137,7 @@ public class StormlightCommand {
         int i = 0;
         for (ServerPlayer player : players) {
             i += player.getCapability(SurgebindingCapability.PLAYER_CAP).map(data -> {
-                ctx.getSource().sendSuccess(new TranslatableComponent("commands.stormlight.getideal", player.getDisplayName(), data.getIdeal().toString()), true);
+                ctx.getSource().sendSuccess(Component.translatable("commands.stormlight.getideal", player.getDisplayName(), data.getIdeal().toString()), true);
                 return 1;
             }).orElse(0);
         }

@@ -7,7 +7,6 @@ import com.legobmw99.stormlight.modules.powers.effect.EffectHelper;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.network.Network;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -39,9 +38,9 @@ public class PowersEventHandler {
 
     @SubscribeEvent
     public static void onJoinWorld(final PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.getPlayer().level.isClientSide()) {
-            if (event.getPlayer() instanceof ServerPlayer) {
-                Network.sync(event.getPlayer());
+        if (!event.getEntity().level.isClientSide()) {
+            if (event.getEntity() instanceof ServerPlayer p) {
+                Network.sync(p);
             }
         }
     }
@@ -49,7 +48,7 @@ public class PowersEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onDeath(final LivingDeathEvent event) {
-        if (!event.isCanceled() && event.getEntityLiving() instanceof Player player) {
+        if (!event.isCanceled() && event.getEntity() instanceof Player player) {
             player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
                 if (data.isKnight() && !data.isBladeStored()) {
                     player.getInventory().items
@@ -70,9 +69,9 @@ public class PowersEventHandler {
 
     @SubscribeEvent
     public static void onPlayerClone(final PlayerEvent.Clone event) {
-        if (!event.getPlayer().level.isClientSide()) {
+        if (!event.getEntity().level.isClientSide()) {
             event.getOriginal().reviveCaps();
-            Player player = event.getPlayer();
+            Player player = event.getEntity();
             player.getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> event.getOriginal().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(oldData -> {
                 data.load(oldData.save());
             }));
@@ -86,51 +85,53 @@ public class PowersEventHandler {
 
     @SubscribeEvent
     public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event) {
-        if (!event.getPlayer().level.isClientSide()) {
-            Network.sync(event.getPlayer());
+        if (!event.getEntity().level.isClientSide()) {
+            Network.sync(event.getEntity());
         }
     }
 
     @SubscribeEvent
     public static void onChangeDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getPlayer().level.isClientSide()) {
-            Network.sync(event.getPlayer());
+        if (!event.getEntity().level.isClientSide()) {
+            Network.sync(event.getEntity());
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingDamage(final LivingAttackEvent event) {
-        if (event.getEntityLiving().hasEffect(PowersSetup.STORMLIGHT.get()) && (event.getSource() == DamageSource.IN_WALL || event.getSource() == DamageSource.DROWN)) {
-            if (EffectHelper.drainStormlight(event.getEntityLiving(), 4)) {
+        if (event.getEntity().hasEffect(PowersSetup.STORMLIGHT.get()) &&
+            (event.getSource() == event.getEntity().getLevel().damageSources().inWall() || event.getSource() == event.getEntity().getLevel().damageSources().drown())) {
+            if (EffectHelper.drainStormlight(event.getEntity(), 4)) {
                 event.setCanceled(true);
             }
         }
     }
 
     @SubscribeEvent
-    public static void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
-        if (event.getEntityLiving().hasEffect(PowersSetup.STORMLIGHT.get())) {
-            event.getEntityLiving().setGlowingTag(!event.getEntityLiving().hasEffect(MobEffects.INVISIBILITY));
-            event.getEntityLiving().fallDistance = 0;
+    public static void onEntityUpdate(LivingEvent.LivingTickEvent event) {
+        var entity = event.getEntity();
+        if (entity.hasEffect(PowersSetup.STORMLIGHT.get())) {
+            entity.setGlowingTag(!entity.hasEffect(MobEffects.INVISIBILITY));
+            entity.fallDistance = 0;
         } else {
-            event.getEntityLiving().setGlowingTag(false);
-            event.getEntityLiving().setNoGravity(false);
+            entity.setGlowingTag(false);
+            entity.setNoGravity(false);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onItemToss(ItemTossEvent event) {
-        ItemEntity entity = event.getEntityItem();
+        ItemEntity entity = event.getEntity();
         if (entity != null) {
             // Store dropped shardblades
-            Item item = event.getEntityItem().getItem().getItem();
+            Item item = entity.getItem().getItem();
             if (item instanceof ShardbladeItem) {
                 if (event.getPlayer() != null) {
                     event.getPlayer().getCapability(SurgebindingCapability.PLAYER_CAP).ifPresent(data -> {
                         if (data.isKnight() && !data.isBladeStored()) {
                             //Only store correct type of blade
                             if (((ShardbladeItem) item).getOrder() == data.getOrder()) {
-                                data.storeBlade(event.getEntityItem().getItem());
+                                data.storeBlade(entity.getItem());
                                 event.getEntity().kill();
                                 event.setCanceled(true);
                                 if (!entity.level.isClientSide()) {
@@ -150,9 +151,8 @@ public class PowersEventHandler {
                 if (event.getEntity().isAlive()) {
                     event.getEntity().kill();
 
-                    for (int i = 0; i < event.getEntityItem().getItem().getCount(); i++) {
-                        ItemEntity newEntity = new ItemEntity(event.getEntity().level, x, y, z,
-                                                              new ItemStack(((SphereItem) item).swap(), 1, event.getEntityItem().getItem().getTag()));
+                    for (int i = 0; i < entity.getItem().getCount(); i++) {
+                        ItemEntity newEntity = new ItemEntity(event.getEntity().level, x, y, z, new ItemStack(((SphereItem) item).swap(), 1, entity.getItem().getTag()));
                         event.getEntity().level.addFreshEntity(newEntity);
                     }
 
@@ -165,9 +165,9 @@ public class PowersEventHandler {
 
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onWorldTick(TickEvent.WorldTickEvent event) {
+    public static void onWorldTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            LevelData data = event.world.getLevelData();
+            LevelData data = event.level.getLevelData();
             if (data instanceof ServerLevelData info) {
                 if (info.getGameTime() % 96000 == 0) {
                     info.setClearWeatherTime(0);

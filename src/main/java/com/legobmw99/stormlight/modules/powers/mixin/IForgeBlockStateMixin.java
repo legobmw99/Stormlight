@@ -18,9 +18,7 @@ import javax.annotation.Nullable;
 public interface IForgeBlockStateMixin {
 
     @Shadow(remap = false)
-    private BlockState self() {
-        return null;
-    }
+    BlockState shadow$self();
 
     /**
      * Add stormlight mod checks for slipperiness
@@ -38,7 +36,7 @@ public interface IForgeBlockStateMixin {
             return 0.989f;
         }
 
-        return self().getBlock().getFriction(self(), world, pos, entity);
+        return shadow$self().getBlock().getFriction(shadow$self(), world, pos, entity);
 
     }
 }

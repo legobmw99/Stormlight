@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 public class EffectHelper {
 
     private static final int BASE_TIME = 600; // 20 seconds
-    private static final int MAX_TIME = Integer.MAX_VALUE;
 
     public static boolean toggleEffect(Player player, MobEffect effect) {
         return toggleEffect(player, effect, 0, true, true);
@@ -20,7 +19,7 @@ public class EffectHelper {
             player.removeEffect(effect);
             return false;
         } else {
-            player.addEffect(new MobEffectInstance(effect, MAX_TIME, level, ambient, false, showicon));
+            player.addEffect(new MobEffectInstance(effect, MobEffectInstance.INFINITE_DURATION, level, ambient, false, showicon));
             return true;
         }
     }
@@ -28,7 +27,7 @@ public class EffectHelper {
     public static int increasePermanentEffect(Player player, MobEffect effect, int max) {
         int level = player.hasEffect(effect) ? player.getEffect(effect).getAmplifier() : -1;
         level = level < max ? level + 1 : max;
-        player.addEffect(new MobEffectInstance(effect, MAX_TIME, level, true, false, true));
+        player.addEffect(new MobEffectInstance(effect, MobEffectInstance.INFINITE_DURATION, level, true, false, true));
         return level;
     }
 
@@ -39,7 +38,7 @@ public class EffectHelper {
         int level = player.getEffect(effect).getAmplifier() - 1;
         player.removeEffect(effect);
         if (level >= 0) {
-            player.addEffect(new MobEffectInstance(effect, MAX_TIME, level, true, false, true));
+            player.addEffect(new MobEffectInstance(effect, MobEffectInstance.INFINITE_DURATION, level, true, false, true));
         }
 
         return level;

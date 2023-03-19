@@ -6,12 +6,13 @@ import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.util.Gemstone;
 import com.legobmw99.stormlight.util.Order;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 public class Languages extends LanguageProvider {
 
 
-    public Languages(DataGenerator gen) {
+    public Languages(PackOutput gen) {
         super(gen, Stormlight.MODID, "en_us");
     }
 
@@ -21,7 +22,7 @@ public class Languages extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        add("itemGroup.stormlight", "Stormlight");
+        add("tabs.stormlight.main_tab", "Stormlight");
 
 
         for (Order o : Order.values()) {

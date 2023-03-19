@@ -1,0 +1,8 @@
+{
+  "parent": "stormlight:block/light",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "particle": "minecraft:block/sea_lantern",
+    "texture": "stormlight:block/adhesion_light"
+  }
+}

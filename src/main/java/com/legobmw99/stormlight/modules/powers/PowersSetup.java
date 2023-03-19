@@ -4,8 +4,9 @@ import com.legobmw99.stormlight.Stormlight;
 import com.legobmw99.stormlight.modules.powers.command.StormlightArgType;
 import com.legobmw99.stormlight.modules.powers.effect.GenericEffect;
 import com.legobmw99.stormlight.modules.powers.effect.StormlightEffect;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -31,20 +32,27 @@ public class PowersSetup {
                                                                                                                                           "a81758d2-c355-11eb-8529-0242ac130003",
                                                                                                                                           -0.08,
                                                                                                                                           AttributeModifier.Operation.ADDITION));
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, Stormlight.MODID);
+    private static final RegistryObject<SingletonArgumentInfo<StormlightArgType.IdealType>> COMMAND_IDEAL_TYPE = COMMAND_ARGUMENT_TYPES.register("stormlight_ideal",
+                                                                                                                                                 () -> ArgumentTypeInfos.registerByClass(
+                                                                                                                                                         StormlightArgType.IdealType.class,
+                                                                                                                                                         SingletonArgumentInfo.contextFree(
+                                                                                                                                                                 StormlightArgType.IdealType::new)));
 
+    private static final RegistryObject<SingletonArgumentInfo<StormlightArgType.OrderType>> COMMAND_ORDER_TYPE = COMMAND_ARGUMENT_TYPES.register("stormlight_order",
+                                                                                                                                                 () -> ArgumentTypeInfos.registerByClass(
+                                                                                                                                                         StormlightArgType.OrderType.class,
+                                                                                                                                                         SingletonArgumentInfo.contextFree(
+                                                                                                                                                                 StormlightArgType.OrderType::new)));
 
     public static void register() {
         EFFECTS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
 
     public static void init(final FMLCommonSetupEvent e) {
-        e.enqueueWork(() -> {
-            ArgumentTypes.register("stormlight_ideal", StormlightArgType.IdealType.class, new EmptyArgumentSerializer<>(() -> StormlightArgType.IdealType.INSTANCE));
-            ArgumentTypes.register("stormlight_order", StormlightArgType.OrderType.class, new EmptyArgumentSerializer<>(() -> StormlightArgType.OrderType.INSTANCE));
-
-            MinecraftForge.EVENT_BUS.register(PowersEventHandler.class);
-        });
+        e.enqueueWork(() -> MinecraftForge.EVENT_BUS.register(PowersEventHandler.class));
 
     }
 }

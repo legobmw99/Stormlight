@@ -1,7 +1,0 @@
-{
-  "parent": "stormlight:block/light",
-  "textures": {
-    "texture": "stormlight:block/adhesion_light",
-    "particle": "minecraft:block/sea_lantern"
-  }
-}

@@ -16,7 +16,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "2.0"
+version = "${version}"
 group = "com.legobmw99.${mod_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "${mod_id}"
 
@@ -34,8 +34,9 @@ minecraft {
     //
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-//    mappings channel: 'official', version: "${minecraft_version}"
+    // TODO use true 1.19.4 version
+    mappings channel: 'parchment', version: "1.19.3-${parchment_version}-${minecraft_version}"
+    // mappings channel: 'official', version: "${minecraft_version}"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -57,6 +58,8 @@ minecraft {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'stormlight'
+
             property 'mixin.debug.export', 'true'
 
             if (project.hasProperty('mc_uuid')) {
@@ -93,6 +96,8 @@ minecraft {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'stormlight'
+
             property 'mixin.debug.export', 'true'
 
             args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
@@ -123,6 +128,25 @@ minecraft {
 
             mods {
                 "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            property 'forge.logging.console.level', 'debug'
+
+            property 'forge.enabledGameTestNamespaces', 'stormlight'
+
+            mods {
+                stormlight {
                     source sourceSets.main
                 }
             }
@@ -188,6 +212,29 @@ jar {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 //publish.dependsOn('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+}
+
+task apiJar(type: Jar) {
+    classifier = 'api'
+    include 'com/legobmw99/allomancy/api/**/*'
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+}
+
+artifacts {
+    archives jar
+    archives apiJar
+    archives deobfJar
+}
+
 
 ////////////////
 // IntelliJ Project Import

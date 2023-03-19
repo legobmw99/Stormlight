@@ -7,11 +7,15 @@ import com.legobmw99.stormlight.modules.powers.command.StormlightCommand;
 import com.legobmw99.stormlight.modules.powers.data.SurgebindingCapability;
 import com.legobmw99.stormlight.modules.world.WorldSetup;
 import com.legobmw99.stormlight.network.Network;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -24,24 +28,25 @@ public class Stormlight {
     public static final String MODID = "stormlight";
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static final CreativeModeTab stormlight_group = new CreativeModeTab(Stormlight.MODID) {
-        @Override
-        public ItemStack makeIcon() {
-            int type = (int) (System.currentTimeMillis() / (1000 * 60)) % 10;
-            return new ItemStack(CombatSetup.SHARDBLADES.get(type).get());
-        }
-    };
-
     public static Stormlight instance;
 
     public Stormlight() {
         instance = this;
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Stormlight::clientInit);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::onEntityAttribute);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(SurgebindingCapability::registerCapability);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::registerEntityModels);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(WorldSetup::registerEntityRenders);
+        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(Stormlight::init);
+        modBus.addListener(Stormlight::clientInit);
+        modBus.addListener(WorldSetup::onEntityAttribute);
+        modBus.addListener(SurgebindingCapability::registerCapability);
+        modBus.addListener(WorldSetup::registerEntityModels);
+        modBus.addListener(WorldSetup::registerEntityRenders);
+        modBus.addListener(Stormlight::registerCreativeTabs);
+
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            modBus.addListener(PowersClientSetup::registerKeyBinding);
+        });
+
+
         MinecraftForge.EVENT_BUS.addListener(Stormlight::registerCommands);
 
         PowersSetup.register();
@@ -49,13 +54,8 @@ public class Stormlight {
         CombatSetup.register();
     }
 
-    public static Item.Properties createStandardItemProperties() {
-        return new Item.Properties().tab(stormlight_group).stacksTo(64);
-    }
-
     public static void clientInit(final FMLClientSetupEvent e) {
         PowersClientSetup.clientInit(e);
-        WorldSetup.clientInit(e);
         CombatSetup.clientInit(e);
     }
 
@@ -67,5 +67,28 @@ public class Stormlight {
         PowersSetup.init(e);
         e.enqueueWork(Network::registerPackets);
     }
+
+
+    public static CreativeModeTab stormlight_group;
+
+    public static void registerCreativeTabs(CreativeModeTabEvent.Register event) {
+        stormlight_group = event.registerCreativeModeTab(new ResourceLocation(MODID, "main_tab"), builder -> builder.icon(() -> {
+            int type = (int) (System.currentTimeMillis() / (1000 * 60)) % 10;
+            return new ItemStack(CombatSetup.SHARDBLADES.get(type).get());
+        }).title(Component.translatable("tabs.stormlight.main_tab")).displayItems((featureFlags, output) -> {
+            for (var shardblade : CombatSetup.SHARDBLADES) {
+                output.accept(shardblade.get());
+            }
+            for (var sphere : WorldSetup.DUN_SPHERES) {
+                output.accept(sphere.get());
+            }
+            for (var sphere : WorldSetup.INFUSED_SPHERES) {
+                output.accept(sphere.get());
+            }
+            output.accept(WorldSetup.SPREN_SPAWN_EGG.get());
+
+        }));
+    }
+
 
 }

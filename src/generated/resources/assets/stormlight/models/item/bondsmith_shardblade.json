@@ -1,0 +1,14 @@
+{
+  "parent": "stormlight:item/shardblade",
+  "overrides": [
+    {
+      "model": "stormlight:item/bondsmith_shield",
+      "predicate": {
+        "stormlight:shielding": 1.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "stormlight:item/bondsmith_shardblade"
+  }
+}

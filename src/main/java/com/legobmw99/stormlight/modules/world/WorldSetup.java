@@ -7,20 +7,15 @@ import com.legobmw99.stormlight.modules.world.entity.client.SprenModel;
 import com.legobmw99.stormlight.modules.world.entity.client.SprenRenderer;
 import com.legobmw99.stormlight.modules.world.item.SphereItem;
 import com.legobmw99.stormlight.util.Gemstone;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -32,14 +27,14 @@ import java.util.List;
 public class WorldSetup {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Stormlight.MODID);
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Stormlight.MODID);
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Stormlight.MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Stormlight.MODID);
 
 
     public static final List<RegistryObject<SphereItem>> DUN_SPHERES = new ArrayList<>();
     public static final List<RegistryObject<SphereItem>> INFUSED_SPHERES = new ArrayList<>();
     public static final RegistryObject<AdhesionBlock> ADHESION_BLOCK = BLOCKS.register("adhesion_light", AdhesionBlock::new);
     public static final RegistryObject<BlockItem> ADHESION_BLOCK_ITEM = ITEMS.register("adhesion_light",
-                                                                                       () -> new BlockItem(ADHESION_BLOCK.get(), Stormlight.createStandardItemProperties()));
+                                                                                       () -> new BlockItem(ADHESION_BLOCK.get(), new Item.Properties().stacksTo(64)));
 
     public static final RegistryObject<EntityType<SprenEntity>> SPREN_ENTITY = ENTITIES.register("spren", () -> EntityType.Builder
             .<SprenEntity>of(SprenEntity::new, MobCategory.AMBIENT)
@@ -52,7 +47,7 @@ public class WorldSetup {
             .build("spren"));
 
     public static final RegistryObject<SpawnEggItem> SPREN_SPAWN_EGG = ITEMS.register("spren_spawn_egg", () -> new ForgeSpawnEggItem(SPREN_ENTITY, 16382457, 10123246,
-                                                                                                                                     Stormlight.createStandardItemProperties()));
+                                                                                                                                     new Item.Properties().stacksTo(64)));
 
     static {
         for (Gemstone gem : Gemstone.values()) {
@@ -60,13 +55,6 @@ public class WorldSetup {
             DUN_SPHERES.add(ITEMS.register("dun_" + name + "_sphere", () -> new SphereItem(false, gem)));
             INFUSED_SPHERES.add(ITEMS.register("infused_" + name + "_sphere", () -> new SphereItem(true, gem)));
         }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static void clientInit(final FMLClientSetupEvent e) {
-        e.enqueueWork(() -> {
-            ItemBlockRenderTypes.setRenderLayer(ADHESION_BLOCK.get(), RenderType.translucent());
-        });
     }
 
     public static void register() {
